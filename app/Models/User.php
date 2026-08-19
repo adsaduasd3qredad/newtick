@@ -1,0 +1,66 @@
+<?php
+
+namespace App\Models;
+
+use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
+
+class User extends Authenticatable implements FilamentUser
+{
+    /** @use HasFactory<UserFactory> */
+    use HasFactory, Notifiable;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * กำหนดสิทธิ์การเข้าถึง Filament Admin Panel
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        // ถ้าไม่ใช่ admin ให้เคลียร์สถานะล็อกอินทิ้งทันที
+        if ($this->role !== 'admin') {
+            Auth::logout(); // ใช้ Auth Facade แทน auth()
+            return false;
+        }
+
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
+}
