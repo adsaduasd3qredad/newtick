@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="th">
+@extends('layouts.client')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เลือกที่นั่ง - จองตั๋วภาพยนตร์ - ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
+@section('title', 'เลือกที่นั่ง')
+
+@push('styles')
+<style>
+
         :root {
             --seat-size: 26px;
             --seat-gap: 3px;
@@ -105,49 +103,13 @@
             cursor: not-allowed;
             text-shadow: none;
         }
-    </style>
-</head>
+    
+</style>
+@endpush
 
-@php
-    $requiredSeats = (int) $quantity;
-@endphp
+@section('content')
+<div class="flex-1 flex flex-col items-center p-4 my-4 w-full">
 
-<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-between">
-
-    <!-- แถบประกาศด้านบน -->
-    <div
-        class="bg-gradient-to-r from-cyan-500 via-sky-500 to-violet-600 text-white text-sm font-medium py-2.5 px-4 text-center shadow-sm">
-        <a href="https://sci-rangsit.dole.go.th" target="_blank"
-            class="hover:opacity-90 transition inline-flex items-center justify-center gap-2 font-display tracking-wide">
-            <span aria-hidden="true">✦</span>
-            <span>คลิก <strong class="text-yellow-300 underline underline-offset-2 font-bold">ที่นี่</strong>
-                เพื่อเข้าสู่เว็บไซต์ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต</span>
-            <span aria-hidden="true">✦</span>
-        </a>
-    </div>
-
-    <!-- Header / Navbar -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-7xl mx-auto px-6 py-3.5 flex justify-between items-center">
-            <div class="flex items-center">
-                <a href="{{ route('showtimes.index') }}" class="flex items-center">
-                    <img src="{{ asset('images/logo.jpg') }}" alt="โลโก้ท้องฟ้าจำลองรังสิต"
-                        class="h-11 w-auto object-contain">
-                </a>
-            </div>
-            <a href="/admin" title="เข้าสู่ระบบเจ้าหน้าที่"
-                class="text-slate-400 hover:text-slate-700 p-2 rounded-lg transition-colors inline-flex items-center justify-center">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <rect x="5" y="11" width="14" height="10" rx="2" ry="2"></rect>
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0v4"></path>
-                </svg>
-            </a>
-        </div>
-    </header>
-
-    <!-- เนื้อหาหลัก -->
-    <main class="flex-1 flex items-center justify-center p-3 sm:p-8 my-6">
         <div class="max-w-5xl w-full bg-white p-4 sm:p-12 rounded-3xl shadow-sm border border-slate-200/80">
 
             <h1 class="text-2xl sm:text-3xl font-bold mb-8 text-center text-slate-900 tracking-tight">
@@ -226,9 +188,9 @@
             </div>
 
             <p class="text-center text-sm text-slate-600 mb-6 font-medium">
-                กรุณาเลือกที่นั่งจำนวน <span class="text-cyan-600 font-bold text-base">{{ $requiredSeats }}</span>
+                กรุณาเลือกที่นั่งจำนวน <span class="text-cyan-600 font-bold text-base">{{ $quantity }}</span>
                 ที่นั่ง
-                (เลือกแล้ว <span id="selectedCount" class="font-bold text-cyan-600">0</span> / {{ $requiredSeats }})
+                (เลือกแล้ว <span id="selectedCount" class="font-bold text-cyan-600">0</span> / {{ $quantity }})
             </p>
 
             <!-- Seat map container รองรับมือถือ (เลื่อนซ้าย-ขวาได้เมื่อหน้าจอเล็ก) -->
@@ -276,12 +238,11 @@
                             ไม่ว่าง
                         </div>
                     </div>
-                </main>
-            </div>
-        </div>
-    </main>
+                
+</div>
 
-    <!-- Sticky bottom bar -->
+<!-- Sticky bottom bar -->
+
     <form action="{{ route('bookings.store') }}" method="POST"
         class="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-lg z-50">
         @csrf
@@ -290,7 +251,7 @@
         <input type="hidden" name="booker_email" value="{{ $booker_email }}">
         <input type="hidden" name="booker_phone" value="{{ $booker_phone }}">
         <input type="hidden" name="visitor_type" value="{{ $visitor_type }}">
-        <input type="hidden" name="quantity" value="{{ $requiredSeats }}">
+        <input type="hidden" name="quantity" value="{{ $quantity }}">
         <div id="seatInputs"></div>
 
         <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-4">
@@ -306,28 +267,12 @@
         </div>
     </form>
 
-    <!-- Footer -->
-    <footer class="bg-white text-slate-600 py-8 border-t border-slate-200 mt-auto">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="flex items-center gap-4">
-                <img src="{{ asset('images/logo.jpg') }}" alt="โลโก้ท้องฟ้าจำลองรังสิต"
-                    class="h-10 w-auto object-contain bg-white p-1 rounded-md shadow-sm border border-slate-100">
-                <div>
-                    <p class="text-slate-900 font-display font-semibold text-sm">ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต
-                    </p>
-                    <p class="text-xs text-slate-500">RANGSIT SCIENCE CENTRE FOR EDUCATION</p>
-                </div>
-            </div>
+    
+@endsection
 
-            <div class="text-center md:text-right text-xs space-y-1">
-                <p class="text-slate-500">Copyright © 2026 ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต. All rights reserved</p>
-                <p class="text-slate-800 font-medium">โทร 02 577 5456 – 9 ต่อ 304</p>
-            </div>
-        </div>
-    </footer>
+@push('scripts')
+<script>
 
-    <!-- Script จัดวางตำแหน่งเก้าอี้ตามพิกัดต้นฉบับ -->
-    <script>
         document.addEventListener('DOMContentLoaded', function() {
             const seatGroups = [{
                     row: 'A',
@@ -458,7 +403,7 @@
             ];
 
             const bookedSeats = @json($bookedSeats);
-            const requiredSeats = {{ $requiredSeats }};
+            const requiredSeats = {{ $quantity }};
             const pricePerSeat = {{ $pricePerSeat }};
             const selected = new Set();
 
@@ -527,7 +472,6 @@
 
             render();
         });
-    </script>
-</body>
-
-</html>
+    
+</script>
+@endpush

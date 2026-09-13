@@ -11,14 +11,16 @@ use App\Models\Booking;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
 class BookingResource extends Resource
 {
     protected static ?string $model = Booking::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shopping-cart';
+    public static function getNavigationLabel(): string { return 'Orders (ออเดอร์)'; }
+    public static function getNavigationGroup(): ?string { return 'ระบบการจอง (Bookings)'; }
+    protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema
     {

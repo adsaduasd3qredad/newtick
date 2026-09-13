@@ -1,408 +1,167 @@
-<!DOCTYPE html>
-<html lang="th">
+@extends('layouts.client')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบจองตั๋ว - ท้องฟ้าจำลองรังสิต</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap"
-        rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        :root {
-            --void: #080b14;
-            --void-2: #10182c;
-            --nebula: #7c3aed;
-            --aurora: #22d3ee;
-            --star: #fbbf24;
-            --paper: #f6f7fb;
-            --ink: #1c2333;
-        }
+@section('title', 'Ticket System - Cinema')
 
-        body {
-            font-family: 'IBM Plex Sans Thai', sans-serif;
-        }
+@section('content')
 
-        .font-display {
-            font-family: 'Chakra Petch', 'IBM Plex Sans Thai', sans-serif;
-        }
-
-        /* signature element: drifting starfield used once, in the hero only */
-        .starfield {
-            position: absolute;
-            inset: 0;
-            background-image:
-                radial-gradient(1.5px 1.5px at 20% 30%, #fff, transparent),
-                radial-gradient(1.5px 1.5px at 65% 15%, #fff, transparent),
-                radial-gradient(1px 1px at 80% 55%, #fff, transparent),
-                radial-gradient(1.5px 1.5px at 40% 70%, #fff, transparent),
-                radial-gradient(1px 1px at 90% 80%, #fff, transparent),
-                radial-gradient(1.5px 1.5px at 10% 85%, #fff, transparent),
-                radial-gradient(1px 1px at 55% 45%, #fff, transparent);
-            background-repeat: repeat;
-            background-size: 260px 260px;
-            opacity: .55;
-            animation: twinkle 5s ease-in-out infinite alternate;
-        }
-
-        @keyframes twinkle {
-            0% {
-                opacity: .35;
-            }
-
-            100% {
-                opacity: .75;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .starfield {
-                animation: none;
-            }
-        }
-
-        .orbit-ring {
-            position: absolute;
-            border: 1px solid rgba(34, 211, 238, .25);
-            border-radius: 9999px;
-        }
-
-        .show-card {
-            position: relative;
-            background: linear-gradient(180deg, #ffffff 0%, #f3f6ff 100%);
-            border: 1px solid #e2e8f5;
-            transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
-        }
-
-        .show-card::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            padding: 1px;
-            background: linear-gradient(135deg, var(--aurora), var(--nebula));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            opacity: 0;
-            transition: opacity .15s ease;
-            pointer-events: none;
-        }
-
-        .show-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 24px -8px rgba(30, 41, 96, .25);
-        }
-
-        .show-card:hover::before {
-            opacity: 1;
-        }
-
-        .btn-book {
-            background: linear-gradient(135deg, var(--aurora), #2563eb);
-        }
-
-        .btn-book:hover {
-            background: linear-gradient(135deg, #06b6d4, #1d4ed8);
-        }
-
-        .day-col {
-            background: linear-gradient(180deg, #f8fafc 0%, #eef1fb 100%);
-        }
-    </style>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-</head>
-
-<!-- แถบประกาศด้านบน (จำลองตามเว็บต้นแบบ) -->
-<div
-    class="bg-gradient-to-r from-cyan-500 via-sky-500 to-violet-600 text-white text-sm font-medium py-2.5 px-4 text-center shadow-sm">
-    <a href="https://sci-rangsit.dole.go.th" target="_blank"
-        class="hover:opacity-90 transition inline-flex items-center justify-center gap-2 font-display tracking-wide">
-        <span aria-hidden="true">✦</span>
-        <span>คลิก <strong class="text-yellow-300 underline underline-offset-2 font-bold">ที่นี่</strong>
-            เพื่อเข้าสู่เว็บไซต์ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต</span>
-        <span aria-hidden="true">✦</span>
-    </a>
-</div>
-
-<body class="bg-[var(--paper)] text-[var(--ink)] min-h-screen">
-
-    <!-- Navbar / Header หน้าแรก -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-7xl mx-auto px-6 py-3.5 flex justify-between items-center">
-            <!-- โลโก้ทางซ้าย -->
-            <div class="flex items-center">
-                <a href="{{ route('showtimes.index') }}" class="flex items-center">
-                    <img src="{{ asset('images/logo.jpg') }}" alt="โลโก้ท้องฟ้าจำลองรังสิต"
-                        class="h-11 w-auto object-contain">
-                </a>
+    <!-- Hero Section (Promotional Banner) -->
+    <section class="bg-[#f0f0f0] border-b border-gray-200">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between min-h-[400px]">
+            <!-- Left: Graphic / Cards illustration -->
+            <div class="w-full md:w-1/2 p-8 md:p-12 relative overflow-hidden flex justify-center items-center">
+                <!-- Using a simple elegant text or graphic to match the reference -->
+                <div class="space-y-4 text-center md:text-left z-10">
+                    <h1 class="text-4xl md:text-5xl font-bold text-[#1c1c1c] leading-tight">
+                        เปิดประสบการณ์การเรียนรู้<br>
+                        <span class="text-blue-600 font-light">ผ่านโดมท้องฟ้าจำลอง</span>
+                    </h1>
+                    <p class="text-gray-600 text-lg mt-4">ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต แหล่งเรียนรู้ดาราศาสตร์และอวกาศสำหรับทุกคน</p>
+                </div>
+                <!-- Subtle background decoration -->
+                <div class="absolute -right-20 top-0 w-96 h-96 bg-gray-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
+                <div class="absolute -left-20 bottom-0 w-72 h-72 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
             </div>
-
-            <!-- 📌 กลุ่มไอคอนทางขวา (กุญแจสำหรับพนักงาน และไขควงสำหรับแอดมิน) -->
-            <div class="flex items-center space-x-1">
-                <!-- 🔑 ไอคอนกุญแจ (สำหรับ Staff / พนักงานเคาน์เตอร์ ไปหน้า /login) -->
-                <a href="{{ route('login') }}" title="เข้าสู่ระบบพนักงาน (Staff)"
-                    class="text-slate-400 hover:text-cyan-600 hover:bg-slate-100 p-2.5 rounded-xl transition-colors inline-flex items-center justify-center">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                        <rect x="5" y="11" width="14" height="10" rx="2" ry="2"></rect>
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0v4"></path>
-                    </svg>
-                </a>
-
-                <!-- 🪛 ไอคอนไขควง (สำหรับ Admin ไปหลังบ้าน Filament โดยตรง) -->
-                <a href="{{ url('/admin') }}" title="ระบบจัดการหลังบ้าน (Admin)"
-                    class="text-slate-400 hover:text-amber-600 hover:bg-slate-100 p-2.5 rounded-xl transition-colors inline-flex items-center justify-center">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M11.42 15.17L17.25 21A2.121 2.121 0 0020.25 18l-5.83-5.83M15 5.5l3.5 3.5m-9.5 3.5l-5 5V21h3.5l5-5m-2.5-7.5a2 2 0 11-4 0 2 2 0 014 0z">
-                        </path>
-                    </svg>
-                </a>
+            
+            <!-- Right: Image -->
+            <div class="w-full md:w-1/2 flex justify-end">
+                <!-- In a real scenario, this would be a high-quality promo image -->
             </div>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section
-        class="relative bg-[var(--void)] text-white py-24 px-6 text-center overflow-hidden border-b border-slate-800">
-        <div class="absolute inset-0 z-0">
-            <img src="{{ asset('images/solar.jpg') }}" alt="Solar System Background"
-                class="w-full h-full object-cover object-[0%_40%] opacity-60">
-            <div
-                class="absolute inset-0 bg-gradient-to-r from-[var(--void)]/70 via-[var(--void)]/25 to-[var(--void)]/70">
-            </div>
-            <div class="absolute inset-0 bg-gradient-to-b from-[var(--void)]/30 via-transparent to-[var(--void)]"></div>
-            <div class="starfield"></div>
-        </div>
-
-        <!-- decorative orbit rings, purely visual -->
-        <div class="orbit-ring w-[520px] h-[520px] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:block">
-        </div>
-        <div class="orbit-ring w-[720px] h-[720px] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:block"
-            style="border-color: rgba(124,58,237,.18);"></div>
-
-        <div class="relative z-10 max-w-5xl mx-auto">
-            <span
-                class="inline-flex items-center gap-2 px-4 py-1.5 mb-5 text-sm font-semibold text-cyan-100 bg-cyan-500/10 border border-cyan-400/40 rounded-full backdrop-blur-md font-display tracking-wide">
-                <span class="w-1.5 h-1.5 rounded-full bg-cyan-300 animate-pulse"></span>
-                ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต
-            </span>
-            <h1
-                class="font-display text-3xl md:text-5xl font-bold mb-4 tracking-tight leading-snug drop-shadow-md text-white">
-                จองตั๋วเข้าชมรอบการแสดง<span class="text-cyan-300">ท้องฟ้าจำลอง</span>
-            </h1>
-            <p class="text-slate-200 text-sm md:text-base max-w-4xl mx-auto font-light leading-relaxed drop-shadow">
-                เรียนรู้เรื่องราวทางดาราศาสตร์ผ่านภาพยนตร์เต็มโดมความคมชัดระดับ 4K
-                พร้อมระบบจองรอบการแสดงออนไลน์ที่สะดวกรวดเร็ว
-            </p>
         </div>
     </section>
 
-    <!-- Main Content: Matrix Table -->
-    <main class="max-w-7xl mx-auto px-6 py-12">
-        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
-            <h3 class="font-display text-xl font-bold text-slate-800 border-l-4 border-cyan-500 pl-3">
-                ตารางรอบการแสดงประจำสัปดาห์
-            </h3>
-
-            <!-- ปรับส่วนนี้ใหม่ -->
-            <div class="flex items-center gap-2">
-                <a href="{{ route('showtimes.index', ['week' => $weekOffset - 1]) }}"
-                    class="px-3.5 py-1.5 text-sm bg-white border border-slate-200 rounded-full hover:bg-slate-50 hover:border-cyan-300 transition font-display">
-                    ‹
-                </a>
-
-                <!-- ช่องเลือกวันที่แบบ Pop-up -->
-                <input type="text" id="datePicker"
-                    class="w-40 text-center text-xs py-1.5 bg-white border border-slate-200 rounded-full cursor-pointer hover:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-200"
-                    value="{{ $weekDates->first()->format('d/m/Y') }} - {{ $weekDates->last()->format('d/m/Y') }}"
-                    readonly>
-
-                <a href="{{ route('showtimes.index', ['week' => $weekOffset + 1]) }}"
-                    class="px-3.5 py-1.5 text-sm bg-white border border-slate-200 rounded-full hover:bg-slate-50 hover:border-cyan-300 transition font-display">
-                    ›
-                </a>
-            </div>
+    <!-- Tabs Navigation (ONGOING / COMING SOON) -->
+    <section class="max-w-7xl mx-auto px-4 mt-8">
+        <div class="flex items-center space-x-8 border-b border-gray-300">
+            <button class="py-3 font-semibold text-[#1c1c1c] border-b-2 border-[#1c1c1c] uppercase tracking-wider text-sm">
+                Ongoing
+            </button>
+            <button class="py-3 font-medium text-gray-400 hover:text-gray-600 uppercase tracking-wider text-sm transition">
+                Coming Soon
+            </button>
         </div>
+    </section>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-center border-collapse text-sm">
-                    <thead>
-                        <tr class="bg-[var(--void)] text-white">
-                            <th class="p-4 border-r border-white/10 w-36 font-display font-semibold text-cyan-200">วัน /
-                                เวลา</th>
+    <!-- Movies Grid -->
+    <section class="max-w-7xl mx-auto px-4 py-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            @forelse($movies as $movie)
+                <div class="group cursor-pointer relative overflow-hidden bg-gray-100 aspect-[2/3]">
+                    @if($movie->poster_path)
+                        <img src="{{ Storage::url($movie->poster_path) }}" alt="{{ $movie->title_th }}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                    @else
+                        <div class="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400 font-medium">
+                            NO POSTER
+                        </div>
+                    @endif
+                    
+                    <!-- Hover Overlay -->
+                    <div class="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-4">
+                        <h3 class="text-white font-semibold text-lg">{{ $movie->title_th }}</h3>
+                        <p class="text-gray-300 text-sm mt-1 truncate">{{ $movie->title_en }}</p>
+                        <a href="#schedule" class="mt-4 bg-white text-black text-center text-sm font-medium py-2 uppercase tracking-wide hover:bg-gray-200 transition">
+                            Book Now
+                        </a>
+                    </div>
+                </div>
+            @empty
+                <div class="col-span-full text-center py-12 text-gray-400">
+                    ไม่มีภาพยนตร์ที่กำลังเข้าฉายในขณะนี้
+                </div>
+            @endforelse
+        </div>
+    </section>
+
+    <!-- Showtimes Schedule (Timetable refactored to minimalist style) -->
+    <section id="schedule" class="bg-white py-16 border-t border-gray-100">
+        <div class="max-w-7xl mx-auto px-4">
+            
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-[#1c1c1c] uppercase tracking-wide">Showtimes Schedule</h2>
+                    <p class="text-gray-500 text-sm mt-1">ตารางรอบฉายภาพยนตร์ ({{ \Carbon\Carbon::parse($weekDates->first())->translatedFormat('d M') }} - {{ \Carbon\Carbon::parse($weekDates->last())->translatedFormat('d M Y') }})</p>
+                </div>
+                
+                <!-- Week Navigator -->
+                <div class="flex items-center space-x-2 mt-4 md:mt-0">
+                    <a href="{{ route('showtimes.index', ['week' => $weekOffset - 1]) }}" class="px-4 py-2 border border-gray-300 text-gray-600 hover:bg-gray-50 text-sm font-medium transition">&larr; PREV WEEK</a>
+                    <a href="{{ route('showtimes.index', ['week' => $weekOffset + 1]) }}" class="px-4 py-2 bg-[#1c1c1c] text-white hover:bg-black text-sm font-medium transition">NEXT WEEK &rarr;</a>
+                </div>
+            </div>
+
+            <!-- Minimalist Timetable (Redesigned like Mockup 3) -->
+            <div class="overflow-x-auto pb-4 shadow-2xl rounded-lg">
+                <table class="w-full text-center border-collapse min-w-[800px] border border-gray-300 bg-white">
+                    <thead class="bg-white">
+                        <tr class="border-b-2 border-gray-300">
+                            <th class="py-4 px-4 font-bold text-gray-900 border border-gray-300 w-48">Date / Day</th>
                             @foreach ($timeSlots as $time)
-                                <th
-                                    class="p-4 border-r border-white/10 font-display font-semibold last:border-r-0 {{ $time === '12:00' ? 'bg-black/20 text-slate-400' : '' }}">
-                                    {{ $time }}
-                                </th>
+                                <th class="py-4 px-2 font-bold text-gray-900 border border-gray-300">{{ $time }}</th>
                             @endforeach
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-200">
-                        @php
-                            $thDayNames = [
-                                'Sunday' => 'อาทิตย์',
-                                'Monday' => 'จันทร์',
-                                'Tuesday' => 'อังคาร',
-                                'Wednesday' => 'พุธ',
-                                'Thursday' => 'พฤหัสบดี',
-                                'Friday' => 'ศุกร์',
-                                'Saturday' => 'เสาร์',
-                            ];
-                        @endphp
-
-                        @foreach ($weekDates as $date)
-                            <tr class="hover:bg-slate-50/80 transition">
-                                <td class="p-4 font-display font-bold day-col border-r border-slate-200 text-slate-700">
-                                    {{ $thDayNames[$date->englishDayOfWeek] }}<br>
-                                    <span
-                                        class="text-xs font-normal text-slate-400">{{ $date->format('d/m/y') }}</span>
+                    <tbody class="divide-y divide-gray-300">
+                        @foreach($weekDates as $index => $date)
+                            <tr>
+                                <!-- Day Column -->
+                                <td class="py-4 px-4 border border-gray-300 bg-[#5482f5] text-white font-medium align-middle">
+                                    <div class="font-bold text-lg">{{ $date->format('l') }}</div>
+                                    <div class="text-xs opacity-90">{{ $date->format('d/m/y') }}</div>
                                 </td>
+                                
+                                @foreach($timeSlots as $time)
+                                    @php
+                                        $cellShowtime = $showtimes->first(function($st) use ($date, $time) {
+                                            return $st->show_date->toDateString() === $date->toDateString() && $st->show_time === $time.':00';
+                                        });
+                                    @endphp
 
-                                @foreach ($timeSlots as $time)
-                                    <td
-                                        class="p-3 border-r border-slate-200 last:border-r-0 align-middle {{ $time === '12:00' ? 'bg-slate-50 text-slate-400 text-xs font-medium uppercase tracking-wider font-display' : '' }}">
-                                        @if ($time === '12:00')
-                                            พักเที่ยง
-                                        @else
-                                            @php
-                                                $dayOfWeekIso = $date->dayOfWeekIso;
-
-                                                // 1. เช็ครอบพิเศษจากตาราง Showtimes
-                                                $specialShow = $showtimes->first(
-                                                    fn($item) => $item->show_date->format('Y-m-d') ===
-                                                        $date->format('Y-m-d') &&
-                                                        \Carbon\Carbon::parse($item->show_time)->format('H:i') ===
-                                                            $time,
-                                                );
-
-                                                // 2. เช็ครอบปกติจากตาราง Weekly Schedules (แม่แบบประจำสัปดาห์)
-                                                $weeklyShow = $weeklySchedules->first(
-                                                    fn($item) => (int) $item->day_of_week === $dayOfWeekIso &&
-                                                        \Carbon\Carbon::parse($item->show_time)->format('H:i') ===
-                                                            $time,
-                                                );
-
-                                                $activeShow = $specialShow ?? $weeklyShow;
-                                            @endphp
-
-                                            @if ($activeShow)
-                                                <div class="show-card p-3 rounded-xl text-left">
-
-                                                    <p
-                                                        class="font-display font-bold text-slate-800 text-xs mb-1.5 line-clamp-1">
-                                                        {{ $activeShow->movie->title_th ?? '-' }}
-                                                    </p>
-                                                    <span class="text-[11px] text-slate-500 block mb-2.5">
-                                                        @if (isset($specialShow))
-                                                            ว่าง: <strong
-                                                                class="text-[var(--star)]">{{ $specialShow->available_seats }}</strong>
-                                                            ที่นั่ง
-                                                        @else
-                                                            ที่นั่งรวม: <strong
-                                                                class="text-[var(--star)]">{{ $activeShow->total_seats ?? '-' }}</strong>
-                                                        @endif
-                                                    </span>
-
-                                                    <a href="{{ isset($specialShow) ? route('bookings.create', $specialShow->id) : route('bookings.create', ['weekly_id' => $activeShow->id, 'date' => $date->format('Y-m-d'), 'time' => $time]) }}"
-                                                        class="btn-book inline-block text-white text-xs font-medium font-display px-3 py-1.5 rounded-full shadow-sm transition">
-                                                        จองรอบนี้
-                                                    </a>
+                                    @if($time === '12:00')
+                                        @if($index === 0)
+                                            <td rowspan="7" class="border border-gray-300 bg-gray-50 text-gray-800 font-bold text-lg align-middle w-24">
+                                                <div class="flex items-center justify-center h-full">
+                                                    พักเครื่อง
                                                 </div>
-                                            @else
-                                                <span class="text-slate-300">–</span>
-                                            @endif
+                                            </td>
                                         @endif
-                                    </td>
+                                    @else
+                                        <td class="p-0 border border-gray-300 align-top w-[140px] relative {{ !$cellShowtime ? 'bg-[#999999]' : 'bg-black' }}">
+                                            @if($cellShowtime)
+                                                <!-- Valid Showtime (Can Book) -->
+                                                <a href="{{ route('bookings.create', $cellShowtime->id) }}" class="block relative w-full h-full min-h-[110px] overflow-hidden group cursor-pointer">
+                                                    @if($cellShowtime->movie->poster_path)
+                                                        <img src="{{ Storage::url($cellShowtime->movie->poster_path) }}" alt="{{ $cellShowtime->movie->title_th }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-70 group-hover:opacity-100">
+                                                    @endif
+                                                    
+                                                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/10"></div>
+                                                    
+                                                    <div class="absolute bottom-0 left-0 right-0 p-2 text-center flex flex-col justify-end h-full">
+                                                        <div class="font-bold text-xs text-white leading-tight drop-shadow-md mb-1" title="{{ $cellShowtime->movie->title_th }}">
+                                                            {{ Str::limit($cellShowtime->movie->title_th, 20) }}
+                                                        </div>
+                                                        <div class="inline-flex mx-auto items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-semibold {{ $cellShowtime->available_seats > 0 ? 'bg-cyan-500 text-white' : 'bg-red-500 text-white' }}">
+                                                            {{ $cellShowtime->available_seats > 0 ? $cellShowtime->available_seats . ' Seats' : 'FULL' }}
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            @else
+                                                <!-- Empty slot -->
+                                                <div class="flex items-center justify-center h-full min-h-[110px] text-gray-200 font-bold text-xl">
+                                                    -
+                                                </div>
+                                            @endif
+                                        </td>
+                                    @endif
                                 @endforeach
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
-        </div>
-    </main>
-
-    <!-- Contact + Map Section -->
-    <section class="bg-[var(--void)] text-white mt-20">
-        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-0">
-            <div class="px-6 md:px-12 py-16 flex flex-col justify-center">
-                <h3 class="font-display text-2xl md:text-3xl font-bold text-cyan-300 mb-6">ติดต่อเรา</h3>
-
-                <div class="space-y-2 text-slate-200 text-sm leading-relaxed mb-6">
-                    <p>ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต</p>
-                    <p>ที่อยู่ 5 หมู่ 2 ต.รังสิต อ.ธัญบุรี จ.ปทุมธานี 12110</p>
-                    <p>โทร 02 577 5456 – 9 ต่อ 304</p>
-                </div>
-
-                <a href="https://www.facebook.com/profile.php?id=100057238039008#" target="_blank"
-                    class="inline-flex items-center gap-2 text-sm text-slate-200 hover:text-cyan-300 transition mb-8">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                        class="w-5 h-5 fill-current text-blue-400">
-                        <path
-                            d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.57v1.88h2.78l-.44 2.91h-2.34V22c4.78-.79 8.44-4.94 8.44-9.94Z" />
-                    </svg>
-                    ท้องฟ้าจำลองรังสิต
-                </a>
-
-                <a href="https://www.google.com/maps/dir/?api=1&destination=Rangsit+Science+Center+for+Education,+Pathum+Thani"
-                    target="_blank"
-                    class="btn-book inline-flex items-center gap-2 w-fit text-white text-sm font-medium font-display px-5 py-2.5 rounded-full shadow-sm transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-4 h-4 fill-current">
-                        <path
-                            d="M12 2C7.86 2 4.5 5.36 4.5 9.5c0 5.62 6.62 11.7 7.5 12.5.88-.8 7.5-6.88 7.5-12.5C19.5 5.36 16.14 2 12 2Zm0 10.25a2.75 2.75 0 1 1 0-5.5 2.75 2.75 0 0 1 0 5.5Z" />
-                    </svg>
-                    แผนที่การเดินทาง
-                </a>
-            </div>
-
-            <div class="min-h-[380px] md:min-h-full">
-                <iframe class="w-full h-full min-h-[380px] border-0" loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"
-                    src="https://www.google.com/maps?q=Rangsit+Science+Center+for+Education,+5+Moo+2+Tambon+Rangsit,+Amphoe+Thanyaburi,+Pathum+Thani+12110&output=embed">
-                </iframe>
+            
+            
+                
             </div>
         </div>
     </section>
 
-    <!-- Footer พื้นหลังสีขาว -->
-    <footer class="bg-white text-slate-600 py-10 border-t border-slate-200">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="flex items-center gap-4">
-                <img src="{{ asset('images/logo.jpg') }}" alt="โลโก้ท้องฟ้าจำลองรังสิต"
-                    class="h-10 w-auto object-contain bg-white p-1 rounded-md shadow-sm border border-slate-100">
-                <div>
-                    <p class="text-slate-900 font-display font-semibold text-sm">ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต
-                    </p>
-                    <p class="text-xs text-slate-500">RANGSIT SCIENCE CENTRE FOR EDUCATION</p>
-                </div>
-            </div>
-
-            <div class="text-center md:text-right text-xs space-y-1">
-                <p class="text-slate-500">Copyright © 2026 ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต. All rights reserved</p>
-                <p class="text-slate-800 font-medium">โทร 02 577 5456 – 9 ต่อ 304</p>
-            </div>
-        </div>
-    </footer>
-    <script>
-        flatpickr("#datePicker", {
-            dateFormat: "d/m/Y",
-            // เมื่อเลือกวันที่ ให้ระบบ Redirect ไปยัง URL พร้อมค่า date
-            onChange: function(selectedDates, dateStr, instance) {
-                if (selectedDates.length > 0) {
-                    const date = instance.formatDate(selectedDates[0], "Y-m-d");
-                    window.location.href = "{{ route('showtimes.index') }}?date=" + date;
-                }
-            }
-        });
-    </script>
-</body>
-
-</html>
+@endsection

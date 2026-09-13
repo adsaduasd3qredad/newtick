@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: "IBM Plex Sans Thai", sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .font-display { font-family: "Chakra Petch", sans-serif; }
+        .wireframe-box { background: #ffffff; border: 1.5px solid #64748b; }
+        .wireframe-dashed { border: 1.5px dashed #94a3b8; background: #f1f5f9; }
+        .placeholder-cross {
+            position: relative;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            overflow: hidden;
+        }
+        .placeholder-cross::before, .placeholder-cross::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to top right, transparent calc(50% - 0.5px), #cbd5e1 50%, transparent calc(50% + 0.5px));
+        }
+        .placeholder-cross::after {
+            background: linear-gradient(to bottom right, transparent calc(50% - 0.5px), #cbd5e1 50%, transparent calc(50% + 0.5px));
+        }
+    </style>
+    <title>Wireframe UI/UX - สลิปตั๋วความร้อน Thermal 80mm</title>
+</head>
+<body class="p-6 max-w-2xl mx-auto space-y-6">
+    <div class="flex justify-between items-center border-b-2 border-slate-800 pb-3">
+        <div>
+            <div class="bg-slate-200 text-slate-700 text-[11px] font-mono font-bold px-2.5 py-1 rounded border border-slate-400 inline-block mb-3">WIRE-08 &bull; THERMAL RECEIPT</div>
+            <h1 class="text-xl font-bold text-slate-900 font-display">แบบร่างหน้าจอ: สลิปตั๋วความร้อนเคาน์เตอร์ POS (80mm / 58mm Receipt)</h1>
+        </div>
+        <a href="index.html" class="text-xs font-bold text-slate-600 border border-slate-400 px-3 py-1.5 rounded bg-white hover:bg-slate-100">← สารบัญแบบร่าง</a>
+    </div>
+
+    <!-- 80mm Thermal Receipt Wireframe Box -->
+    <div class="wireframe-box p-6 rounded-2xl max-w-[320px] mx-auto text-center space-y-3 font-mono text-[11px] border-2 border-slate-800 bg-white shadow-md">
+        <!-- Logo & Header -->
+        <div class="space-y-1 pb-3 border-b border-dashed border-slate-400">
+            <div class="w-10 h-10 placeholder-cross border border-slate-400 mx-auto mb-1"></div>
+            <p class="font-bold font-sans text-xs">ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต</p>
+            <p class="text-[10px] text-slate-500">ท้องฟ้าจำลองรังสิต (Planetarium)</p>
+            <p class="font-bold text-slate-800 uppercase tracking-wider text-[11px] pt-1">** บัตรเข้าชม (TICKET) **</p>
+        </div>
+
+        <!-- Meta -->
+        <div class="space-y-1 text-left py-2 border-b border-dashed border-slate-400 text-[10px]">
+            <div class="flex justify-between"><span>รหัสการจอง:</span><strong>#12345</strong></div>
+            <div class="flex justify-between"><span>วันที่:</span><span>23/08/2026 09:45</span></div>
+            <div class="flex justify-between"><span>ช่องทาง:</span><span>เคาน์เตอร์ POS หน้าร้าน</span></div>
+        </div>
+
+        <!-- Movie & Showtime -->
+        <div class="space-y-1 text-left py-2 border-b border-dashed border-slate-400">
+            <span class="text-[9px] text-slate-500 uppercase">เรื่องที่เข้าชม:</span>
+            <p class="font-bold font-sans text-xs">มหัศจรรย์แรงโน้มถ่วง (Gravity)</p>
+            <div class="grid grid-cols-2 gap-1 pt-1 text-[10px]">
+                <div class="p-1 border border-slate-300 rounded bg-slate-50 text-center">รอบวันที่: <strong>23/08/26</strong></div>
+                <div class="p-1 border border-slate-300 rounded bg-slate-50 text-center">รอบเวลา: <strong>10:00 น.</strong></div>
+            </div>
+        </div>
+
+        <!-- Seats -->
+        <div class="py-2 border-b border-dashed border-slate-400 text-left space-y-1">
+            <div class="flex justify-between"><span>ที่นั่ง (2 ใบ):</span><strong>A3, A4</strong></div>
+        </div>
+
+        <!-- Price -->
+        <div class="py-2 border-b border-dashed border-slate-400 text-left space-y-1">
+            <div class="flex justify-between font-bold text-xs"><span>ยอดชำระสุทธิ:</span><span>220.00 ฿</span></div>
+            <div class="flex justify-between text-[10px] text-slate-500"><span>การชำระ:</span><span>เงินสด (Cash) [PAID]</span></div>
+        </div>
+
+        <!-- QR Code -->
+        <div class="py-3 space-y-1.5">
+            <div class="w-32 h-32 placeholder-cross border border-slate-800 mx-auto flex items-center justify-center text-[10px] text-slate-400">
+                [ QR CODE ]
+            </div>
+            <p class="text-[10px] text-slate-600 font-bold">สแกน QR Code นี้ที่ประตูทางเข้า</p>
+        </div>
+
+        <!-- Footer Notice -->
+        <div class="pt-2 border-t border-dashed border-slate-400 text-[9px] text-slate-500 space-y-0.5">
+            <p>กรุณาเข้าห้องฉายก่อนเวลาเริ่ม 15 นาที</p>
+            <p>*** ขอบคุณที่ใช้บริการ ***</p>
+        </div>
+    </div>
+</body>
+</html>

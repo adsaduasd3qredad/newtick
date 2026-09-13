@@ -11,8 +11,15 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 
-    public function boot(): void
+        public function boot(): void
     {
-        //
+        $this->app->bind(\Filament\Http\Responses\Auth\Contracts\LogoutResponse::class, function () {
+            return new class implements \Filament\Http\Responses\Auth\Contracts\LogoutResponse {
+                public function toResponse($request)
+                {
+                    return redirect('/');
+                }
+            };
+        });
     }
 }

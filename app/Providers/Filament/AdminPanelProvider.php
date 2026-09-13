@@ -27,8 +27,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
-            
+                        
             ->brandName('ท้องฟ้าจำลองรังสิต')
             ->colors([
                 'primary' => Color::Amber,

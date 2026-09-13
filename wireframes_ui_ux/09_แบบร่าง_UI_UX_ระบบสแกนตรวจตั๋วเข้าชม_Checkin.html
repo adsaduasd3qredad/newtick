@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: "IBM Plex Sans Thai", sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .font-display { font-family: "Chakra Petch", sans-serif; }
+        .wireframe-box { background: #ffffff; border: 1.5px solid #64748b; }
+        .wireframe-dashed { border: 1.5px dashed #94a3b8; background: #f1f5f9; }
+        .placeholder-cross {
+            position: relative;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            overflow: hidden;
+        }
+        .placeholder-cross::before, .placeholder-cross::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to top right, transparent calc(50% - 0.5px), #cbd5e1 50%, transparent calc(50% + 0.5px));
+        }
+        .placeholder-cross::after {
+            background: linear-gradient(to bottom right, transparent calc(50% - 0.5px), #cbd5e1 50%, transparent calc(50% + 0.5px));
+        }
+    </style>
+    <title>Wireframe UI/UX - ระบบสแกนตรวจตั๋วเข้าชม</title>
+</head>
+<body class="p-6 max-w-5xl mx-auto space-y-6">
+    <div class="flex justify-between items-center border-b-2 border-slate-800 pb-3">
+        <div>
+            <div class="bg-slate-200 text-slate-700 text-[11px] font-mono font-bold px-2.5 py-1 rounded border border-slate-400 inline-block mb-3">WIRE-09 &bull; TICKET CHECKIN SCANNER</div>
+            <h1 class="text-xl font-bold text-slate-900 font-display">แบบร่างหน้าจอ: ระบบสแกนตรวจตั๋วเข้าชมหน้าประตู (Gate Check-in Scanner)</h1>
+        </div>
+        <a href="index.html" class="text-xs font-bold text-slate-600 border border-slate-400 px-3 py-1.5 rounded bg-white hover:bg-slate-100">← สารบัญแบบร่าง</a>
+    </div>
+
+    <!-- Scanner Layout Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs font-mono">
+        
+        <!-- Camera Scanner Area Wireframe -->
+        <div class="wireframe-box p-6 rounded-xl space-y-4 text-center">
+            <div class="flex justify-between items-center border-b border-slate-300 pb-2">
+                <span class="font-bold text-sm">เครื่องสแกน QR Code</span>
+                <span class="px-2 py-0.5 border border-slate-800 bg-slate-900 text-white rounded text-[10px]">กล้องออนไลน์ ●</span>
+            </div>
+
+            <!-- Video Feed Placeholder with Scanning Reticle -->
+            <div class="h-56 placeholder-cross border-2 border-slate-800 rounded-xl flex items-center justify-center relative">
+                <div class="w-36 h-36 border-2 border-dashed border-slate-900 rounded-lg flex items-center justify-center font-bold text-slate-600 bg-white/70">
+                    [ เล็ง QR Code ในกรอบนี้ ]
+                </div>
+            </div>
+
+            <!-- Manual Barcode/UUID Input -->
+            <div class="space-y-2 text-left">
+                <label class="font-bold block">หรือกรอกรหัสตั๋ว / ยิงเครื่องยิงบาร์โค้ด USB:</label>
+                <div class="flex gap-2">
+                    <div class="flex-1 p-2.5 border border-slate-400 rounded bg-slate-50 font-mono text-slate-400">[ #12345 หรือ UUID ]</div>
+                    <button class="px-5 py-2.5 bg-slate-900 text-white rounded font-bold">[ ตรวจสอบ ]</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today Check-in History & Stats -->
+        <div class="wireframe-box p-6 rounded-xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-300 pb-2">
+                <span class="font-bold text-sm">ประวัติการสแกนตรวจตั๋ววันนี้</span>
+                <span class="font-bold text-slate-900">ตรวจแล้ว: 115 ที่นั่ง</span>
+            </div>
+
+            <!-- Log Table -->
+            <div class="border border-slate-300 rounded-lg overflow-hidden">
+                <table class="w-full text-left text-[11px]">
+                    <thead class="bg-slate-100 border-b border-slate-300">
+                        <tr>
+                            <th class="p-2">เวลา</th>
+                            <th class="p-2">รหัสจอง</th>
+                            <th class="p-2">ภาพยนตร์</th>
+                            <th class="p-2">ที่นั่ง</th>
+                            <th class="p-2">สถานะ</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200">
+                        <tr>
+                            <td class="p-2 text-slate-500">09:50 น.</td>
+                            <td class="p-2 font-bold">#12345</td>
+                            <td class="p-2 font-sans font-medium">มหัศจรรย์แรงโน้มถ่วง</td>
+                            <td class="p-2 font-bold">A3, A4 (2)</td>
+                            <td class="p-2"><span class="px-1.5 py-0.5 bg-slate-900 text-white rounded text-[10px]">[ผ่าน]</span></td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 text-slate-500">09:48 น.</td>
+                            <td class="p-2 font-bold">#12344</td>
+                            <td class="p-2 font-sans font-medium">มหัศจรรย์แรงโน้มถ่วง</td>
+                            <td class="p-2 font-bold">B1-B10 (10)</td>
+                            <td class="p-2"><span class="px-1.5 py-0.5 bg-slate-900 text-white rounded text-[10px]">[ผ่าน]</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

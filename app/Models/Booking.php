@@ -13,6 +13,7 @@ class Booking extends Model
         'booker_email',
         'booker_phone',
         'visitor_type',
+        'visitor_details',
         'quantity',
         'seats',
         'total_amount',
@@ -27,6 +28,7 @@ class Booking extends Model
 
     protected $casts = [
         'seats' => 'array',
+        'visitor_details' => 'array',
         'expires_at' => 'datetime',
         'checked_in_at' => 'datetime',
     ];

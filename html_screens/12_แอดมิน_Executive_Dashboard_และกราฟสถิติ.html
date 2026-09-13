@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filament Admin Dashboard - ท้องฟ้าจำลองรังสิต</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>body { font-family: "IBM Plex Sans Thai", sans-serif; }</style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-slate-950 border-r border-slate-800 p-5 flex flex-col justify-between hidden md:flex">
+        <div>
+            <div class="flex items-center gap-3 mb-8">
+                <img src="images/logo.jpg" class="h-9 w-auto rounded">
+                <div>
+                    <h2 class="font-bold text-sm text-white">Planetarium Admin</h2>
+                    <p class="text-[11px] text-cyan-400">ท้องฟ้าจำลองรังสิต</p>
+                </div>
+            </div>
+            <nav class="space-y-1 text-xs">
+                <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-xl bg-cyan-600/20 text-cyan-400 font-semibold border border-cyan-500/30">📊 แดชบอร์ด (Dashboard)</a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-900">🎬 ภาพยนตร์ (Movies)</a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-900">📅 ตารางสัปดาห์ (Weekly)</a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-900">🎟️ รอบฉายจริง (Showtimes)</a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-900">📑 รายการจอง (Bookings)</a>
+            </nav>
+        </div>
+        <div class="text-[11px] text-slate-500">
+            Filament v3.2 &bull; Laravel 11
+        </div>
+    </aside>
+
+    <!-- Main Body -->
+    <main class="flex-1 p-6 sm:p-10 overflow-y-auto">
+        <div class="max-w-6xl mx-auto space-y-6">
+            
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold text-white">แผงควบคุมระบบ (Executive Dashboard)</h1>
+                    <p class="text-xs text-slate-400">ภาพรวมสถิติรายได้ การจอง และผู้เข้าชมศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต</p>
+                </div>
+                <span class="text-xs bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-xl text-slate-300">
+                    อัปเดตแบบเรียลไทม์
+                </span>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700">
+                    <p class="text-xs text-slate-400">รายได้วันนี้ (Revenue)</p>
+                    <p class="text-2xl font-bold text-emerald-400 mt-1">฿ 14,300.00</p>
+                    <p class="text-[10px] text-emerald-500 mt-1">↑ ยอดจำหน่ายตั๋ว 130 ที่นั่ง</p>
+                </div>
+                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700">
+                    <p class="text-xs text-slate-400">ยอดการจองวันนี้ (Bookings)</p>
+                    <p class="text-2xl font-bold text-cyan-400 mt-1">24 รายการ</p>
+                    <p class="text-[10px] text-cyan-500 mt-1">ทั้งออนไลน์และหน้าร้าน POS</p>
+                </div>
+                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700">
+                    <p class="text-xs text-slate-400">ตรวจตั๋วแล้ววันนี้ (Verified)</p>
+                    <p class="text-2xl font-bold text-indigo-400 mt-1">115 ที่นั่ง</p>
+                    <p class="text-[10px] text-indigo-400 mt-1">สแกน QR Code สำเร็จ</p>
+                </div>
+                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700">
+                    <p class="text-xs text-slate-400">รอบฉายทั้งหมดวันนี้ (Showtimes)</p>
+                    <p class="text-2xl font-bold text-amber-400 mt-1">6 รอบ</p>
+                    <p class="text-[10px] text-amber-500 mt-1">เปิดให้บริการตามปกติ</p>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Line Chart -->
+                <div class="lg:col-span-2 bg-slate-800/80 p-5 rounded-2xl border border-slate-700">
+                    <h3 class="text-sm font-bold text-slate-200 mb-4">📈 แนวโน้มรายได้ย้อนหลัง 14 วัน (Daily Revenue Trend)</h3>
+                    <canvas id="revChart" height="130"></canvas>
+                </div>
+
+                <!-- Doughnut Chart -->
+                <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700">
+                    <h3 class="text-sm font-bold text-slate-200 mb-4">👥 สัดส่วนประเภทผู้เข้าชม</h3>
+                    <canvas id="typeChart" height="180"></canvas>
+                </div>
+            </div>
+
+            <!-- Bar Chart Top Movies -->
+            <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700">
+                <h3 class="text-sm font-bold text-slate-200 mb-4">🏆 อันดับภาพยนตร์ที่มีผู้เข้าชมมากที่สุด (Top Movies)</h3>
+                <canvas id="movieChart" height="90"></canvas>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        new Chart(document.getElementById("revChart"), {
+            type: "line",
+            data: {
+                labels: ["10/08","11/08","12/08","13/08","14/08","15/08","16/08","17/08","18/08","19/08","20/08","21/08","22/08","23/08"],
+                datasets: [{
+                    label: "ยอดขาย (บาท)",
+                    data: [8800, 11000, 15400, 9900, 13200, 17600, 22000, 0, 7700, 12100, 14300, 16500, 19800, 14300],
+                    borderColor: "#0ea5e9",
+                    backgroundColor: "rgba(14, 165, 233, 0.15)",
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { labels: { color: "#cbd5e1" } } } }
+        });
+
+        new Chart(document.getElementById("typeChart"), {
+            type: "doughnut",
+            data: {
+                labels: ["บุคคลทั่วไป", "โรงเรียน/สถานศึกษา", "หน่วยงานราชการ", "บริษัท/เอกชน"],
+                datasets: [{
+                    data: [450, 1200, 320, 180],
+                    backgroundColor: ["#38bdf8", "#f59e0b", "#6366f1", "#10b981"]
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { position: "bottom", labels: { color: "#cbd5e1" } } } }
+        });
+
+        new Chart(document.getElementById("movieChart"), {
+            type: "bar",
+            data: {
+                labels: ["มหัศจรรย์แรงโน้มถ่วง", "คอสโมส มหัศจรรย์อวกาศ", "โลกนอกระบบสุริยะ", "กำเนิดโลกและจักรวาล", "ดาวเหนือกับการเดินทาง"],
+                datasets: [{
+                    label: "จำนวนที่นั่ง (ที่)",
+                    data: [640, 520, 410, 330, 250],
+                    backgroundColor: ["#0ea5e9", "#8b5cf6", "#ec4899", "#f97316", "#10b981"]
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { labels: { color: "#cbd5e1" } } } }
+        });
+    </script>
+</body>
+</html>

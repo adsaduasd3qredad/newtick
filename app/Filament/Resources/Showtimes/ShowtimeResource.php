@@ -11,14 +11,19 @@ use App\Models\Showtime;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
 class ShowtimeResource extends Resource
 {
     protected static ?string $model = Showtime::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calendar-days';
+    public static function getNavigationLabel(): string { return 'Showtimes (รอบฉาย)'; }
+    public static function getNavigationGroup(): ?string { return 'ระบบภาพยนตร์ (Cinema)'; }
+    protected static ?int $navigationSort = 2;
+    
+    protected static ?string $modelLabel = 'รอบฉาย';
+    protected static ?string $pluralModelLabel = 'รอบฉาย (Showtimes)';
 
     public static function form(Schema $schema): Schema
     {

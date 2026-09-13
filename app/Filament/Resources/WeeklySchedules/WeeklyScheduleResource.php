@@ -10,19 +10,18 @@ use App\Filament\Resources\WeeklySchedules\Schemas\WeeklyScheduleForm;
 use App\Filament\Resources\WeeklySchedules\Schemas\WeeklyScheduleInfolist;
 use App\Filament\Resources\WeeklySchedules\Tables\WeeklySchedulesTable;
 use App\Models\WeeklySchedule;
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use Filament\Forms;
-use Filament\Forms\Form;
 
 class WeeklyScheduleResource extends Resource
 {
     protected static ?string $model = WeeklySchedule::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static bool $shouldRegisterNavigation = false;
+    
+    protected static ?string $modelLabel = 'รอบฉายประจำสัปดาห์';
+    protected static ?string $pluralModelLabel = 'รอบฉายประจำสัปดาห์ (Weekly Schedules)';
 
     public static function form(Schema $schema): Schema
     {

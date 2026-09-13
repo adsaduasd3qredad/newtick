@@ -11,15 +11,19 @@ use App\Models\Movie;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use Filament\Forms\Components\FileUpload;
 
 class MovieResource extends Resource
 {
     protected static ?string $model = Movie::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-film';
+    public static function getNavigationLabel(): string { return 'Movies (ภาพยนตร์)'; }
+    public static function getNavigationGroup(): ?string { return 'ระบบภาพยนตร์ (Cinema)'; }
+    protected static ?int $navigationSort = 1;
+    
+    protected static ?string $modelLabel = 'ภาพยนตร์';
+    protected static ?string $pluralModelLabel = 'ภาพยนตร์ (Movies)';
 
     public static function form(Schema $schema): Schema
     {

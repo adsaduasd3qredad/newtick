@@ -10,6 +10,8 @@ use App\Models\Showtime;
 
 class StatsOverview extends BaseWidget
 {
+    protected ?string $pollingInterval = null; // Disable polling to save resources
+
     protected function getStats(): array
     {
         return [

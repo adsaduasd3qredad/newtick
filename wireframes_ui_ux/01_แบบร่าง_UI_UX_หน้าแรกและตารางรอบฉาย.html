@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: "IBM Plex Sans Thai", sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .font-display { font-family: "Chakra Petch", sans-serif; }
+        .wireframe-box { background: #ffffff; border: 1.5px solid #64748b; }
+        .wireframe-dashed { border: 1.5px dashed #94a3b8; background: #f1f5f9; }
+        .placeholder-cross {
+            position: relative;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            overflow: hidden;
+        }
+        .placeholder-cross::before, .placeholder-cross::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to top right, transparent calc(50% - 0.5px), #cbd5e1 50%, transparent calc(50% + 0.5px));
+        }
+        .placeholder-cross::after {
+            background: linear-gradient(to bottom right, transparent calc(50% - 0.5px), #cbd5e1 50%, transparent calc(50% + 0.5px));
+        }
+    </style>
+    <title>Wireframe UI/UX - หน้าแรกและตารางรอบฉาย (Homepage)</title>
+</head>
+<body class="p-6 max-w-6xl mx-auto space-y-6">
+    <div class="flex justify-between items-center border-b-2 border-slate-800 pb-3">
+        <div>
+            <div class="bg-slate-200 text-slate-700 text-[11px] font-mono font-bold px-2.5 py-1 rounded border border-slate-400 inline-block mb-3">WIRE-01 &bull; UI/UX MOCKUP</div>
+            <h1 class="text-xl font-bold text-slate-900 font-display">แบบร่างหน้าจอ: หน้าแรกและตารางรอบฉายภาพยนตร์ (Homepage & Timetable)</h1>
+        </div>
+        <a href="index.html" class="text-xs font-bold text-slate-600 border border-slate-400 px-3 py-1.5 rounded bg-white hover:bg-slate-100">← สารบัญแบบร่าง</a>
+    </div>
+
+    <!-- Header Navbar Wireframe -->
+    <header class="wireframe-box p-4 rounded-xl flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 placeholder-cross rounded border border-slate-400 flex items-center justify-center text-[10px] text-slate-500 font-mono">[LOGO]</div>
+            <div>
+                <p class="font-bold text-sm font-display">ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต (ท้องฟ้าจำลองรังสิต)</p>
+                <p class="text-[11px] text-slate-500">Rangsit Science Centre for Education</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3 text-xs font-mono">
+            <span class="px-2 py-1 bg-slate-100 border border-slate-300 rounded">[ เมนู: ตารางรอบฉาย ]</span>
+            <span class="px-2 py-1 bg-slate-100 border border-slate-300 rounded">[ เมนู: ภาพยนตร์ ]</span>
+            <span class="px-2 py-1 bg-slate-100 border border-slate-300 rounded">[ ค้นหาตั๋วของฉัน ]</span>
+            <span class="px-2 py-1 bg-slate-800 text-white rounded font-bold">[ Staff POS ]</span>
+        </div>
+    </header>
+
+    <!-- Hero Banner Wireframe -->
+    <section class="wireframe-dashed p-8 rounded-xl text-center space-y-3">
+        <span class="text-xs font-mono bg-white px-3 py-1 rounded border border-slate-400 inline-block">[ HERO BANNER SECTION ]</span>
+        <h2 class="text-2xl font-bold font-display text-slate-900">สำรวจห้วงอวกาศและดวงดาว ณ ท้องฟ้าจำลองรังสิต</h2>
+        <p class="text-xs text-slate-600 max-w-lg mx-auto">ระบบฉายดาวความละเอียดสูงและภาพยนตร์เต็มโดมดาราศาสตร์ (Full Dome Digital Planetarium)</p>
+        <div class="pt-2 flex justify-center gap-3">
+            <span class="px-4 py-2 bg-slate-900 text-white rounded text-xs font-mono font-bold">[ เลือกรอบฉายและจองตั๋ว ↓ ]</span>
+            <span class="px-4 py-2 bg-white border border-slate-600 rounded text-xs font-mono">[ ข้อมูลภาพยนตร์ ]</span>
+        </div>
+    </section>
+
+    <!-- Weekly Timetable Matrix Wireframe -->
+    <section class="wireframe-box p-6 rounded-xl space-y-4">
+        <div class="flex justify-between items-center border-b border-slate-300 pb-3">
+            <div>
+                <h3 class="font-bold text-base font-display">ตารางรอบการแสดงประจำสัปดาห์ (Weekly Timetable Matrix)</h3>
+                <p class="text-xs text-slate-500 font-mono">แสดงรอบฉาย วันที่ และจำนวนที่นั่งว่างแบบ Real-time</p>
+            </div>
+            <div class="flex gap-2 text-xs font-mono">
+                <span class="px-3 py-1.5 border border-slate-400 bg-slate-100 rounded">‹ สัปดาห์ก่อน</span>
+                <span class="px-3 py-1.5 border border-slate-800 bg-slate-800 text-white font-bold rounded">สัปดาห์นี้ (18-24 ส.ค.)</span>
+                <span class="px-3 py-1.5 border border-slate-400 bg-slate-100 rounded">สัปดาห์ถัดไป ›</span>
+            </div>
+        </div>
+
+        <!-- Matrix Columns (Mon - Sun) -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+            
+            <!-- Monday (Closed) -->
+            <div class="border-2 border-dashed border-slate-400 rounded-lg p-3 bg-slate-100/70 text-center space-y-2">
+                <div class="font-bold font-mono text-slate-700 pb-1 border-b border-slate-300">วันจันทร์ (Monday)</div>
+                <div class="py-8 text-slate-500 font-mono text-[11px]">
+                    <span class="block text-sm font-bold text-slate-400 mb-1">[CLOSED]</span>
+                    <strong>ปิดทำการประจำสัปดาห์</strong>
+                    <p class="text-[10px] text-slate-400">(Closed on Mondays)</p>
+                </div>
+            </div>
+
+            <!-- Tuesday -->
+            <div class="border border-slate-400 rounded-lg p-3 bg-white space-y-2.5">
+                <div class="font-bold font-mono text-slate-900 pb-1 border-b border-slate-300 flex justify-between">
+                    <span>วันอังคาร (Tue)</span>
+                    <span class="text-slate-500">19 ส.ค.</span>
+                </div>
+                
+                <!-- Showtime Card 1 -->
+                <div class="border border-slate-300 rounded p-2.5 bg-slate-50 space-y-1.5">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold font-mono text-slate-900">รอบ 10:00 น.</span>
+                        <span class="px-1.5 py-0.5 border border-slate-400 text-[10px] font-mono bg-white">ว่าง 140/160</span>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <div class="w-8 h-10 placeholder-cross border border-slate-300 shrink-0"></div>
+                        <p class="font-bold text-[11px] line-clamp-1">มหัศจรรย์แรงโน้มถ่วง</p>
+                    </div>
+                    <button class="w-full py-1 bg-slate-900 text-white rounded text-[10px] font-mono font-bold">[ จองรอบนี้ (110 ฿) ]</button>
+                </div>
+
+                <!-- Showtime Card 2 -->
+                <div class="border border-slate-300 rounded p-2.5 bg-slate-50 space-y-1.5">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold font-mono text-slate-900">รอบ 13:00 น.</span>
+                        <span class="px-1.5 py-0.5 border border-slate-400 text-[10px] font-mono bg-white">ว่าง 95/160</span>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <div class="w-8 h-10 placeholder-cross border border-slate-300 shrink-0"></div>
+                        <p class="font-bold text-[11px] line-clamp-1">คอสโมส มหัศจรรย์อวกาศ</p>
+                    </div>
+                    <button class="w-full py-1 bg-slate-900 text-white rounded text-[10px] font-mono font-bold">[ จองรอบนี้ (110 ฿) ]</button>
+                </div>
+            </div>
+
+            <!-- Wednesday -->
+            <div class="border border-slate-400 rounded-lg p-3 bg-white space-y-2.5">
+                <div class="font-bold font-mono text-slate-900 pb-1 border-b border-slate-300 flex justify-between">
+                    <span>วันพุธ (Wed)</span>
+                    <span class="text-slate-500">20 ส.ค.</span>
+                </div>
+                <div class="border border-slate-300 rounded p-2.5 bg-slate-50 space-y-1.5">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold font-mono text-slate-900">รอบ 11:00 น.</span>
+                        <span class="px-1.5 py-0.5 border border-slate-400 text-[10px] font-mono bg-white">ว่าง 160/160</span>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <div class="w-8 h-10 placeholder-cross border border-slate-300 shrink-0"></div>
+                        <p class="font-bold text-[11px] line-clamp-1">โลกนอกระบบสุริยะ</p>
+                    </div>
+                    <button class="w-full py-1 bg-slate-900 text-white rounded text-[10px] font-mono font-bold">[ จองรอบนี้ (110 ฿) ]</button>
+                </div>
+            </div>
+
+            <!-- Saturday / Sunday -->
+            <div class="border border-slate-400 rounded-lg p-3 bg-white space-y-2.5">
+                <div class="font-bold font-mono text-slate-900 pb-1 border-b border-slate-300 flex justify-between">
+                    <span>วันเสาร์ (Sat)</span>
+                    <span class="text-slate-500">23 ส.ค.</span>
+                </div>
+                <div class="border border-slate-300 rounded p-2.5 bg-slate-50 space-y-1.5">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold font-mono text-slate-900">รอบ 14:00 น.</span>
+                        <span class="px-1.5 py-0.5 border border-slate-800 text-[10px] font-mono bg-slate-200">เหลือ 15 ที่</span>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <div class="w-8 h-10 placeholder-cross border border-slate-300 shrink-0"></div>
+                        <p class="font-bold text-[11px] line-clamp-1">กำเนิดโลกและจักรวาล</p>
+                    </div>
+                    <button class="w-full py-1 bg-slate-900 text-white rounded text-[10px] font-mono font-bold">[ จองรอบนี้ (110 ฿) ]</button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Now Showing Showcase Wireframe -->
+    <section class="wireframe-box p-6 rounded-xl space-y-4">
+        <h3 class="font-bold text-base font-display">ภาพยนตร์เต็มโดมที่กำลังจัดแสดง (Now Showing Showcase)</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div class="border border-slate-300 rounded p-3 bg-white space-y-2">
+                <div class="h-32 placeholder-cross border border-slate-300 rounded flex items-center justify-center text-slate-400 font-mono">[ POSTER IMAGE ]</div>
+                <h4 class="font-bold text-sm">มหัศจรรย์แรงโน้มถ่วง (Gravity)</h4>
+                <p class="text-[11px] text-slate-500">ความยาว: 45 นาที &bull; ภาพยนตร์เต็มโดม 360 องศา</p>
+                <p class="text-slate-600 text-[11px] line-clamp-2">เรื่องย่อภาพยนตร์อธิบายปรากฏการณ์แรงโน้มถ่วงในจักรวาลและการโคจรของดวงดาว...</p>
+            </div>
+            <div class="border border-slate-300 rounded p-3 bg-white space-y-2">
+                <div class="h-32 placeholder-cross border border-slate-300 rounded flex items-center justify-center text-slate-400 font-mono">[ POSTER IMAGE ]</div>
+                <h4 class="font-bold text-sm">คอสโมส มหัศจรรย์อวกาศ (Cosmos)</h4>
+                <p class="text-[11px] text-slate-500">ความยาว: 40 นาที &bull; ภาพยนตร์เต็มโดม 360 องศา</p>
+                <p class="text-slate-600 text-[11px] line-clamp-2">ท่องไปในห้วงอวกาศลึกและทำความรู้จักกับกาแล็กซีต่างๆ ในจักรวาล...</p>
+            </div>
+            <div class="border border-slate-300 rounded p-3 bg-white space-y-2">
+                <div class="h-32 placeholder-cross border border-slate-300 rounded flex items-center justify-center text-slate-400 font-mono">[ POSTER IMAGE ]</div>
+                <h4 class="font-bold text-sm">โลกนอกระบบสุริยะ (World Beyond)</h4>
+                <p class="text-[11px] text-slate-500">ความยาว: 50 นาที &bull; ภาพยนตร์เต็มโดม 360 องศา</p>
+                <p class="text-slate-600 text-[11px] line-clamp-2">ค้นหาดาวเคราะห์นอกระบบสุริยะที่มีความเป็นไปได้ว่าจะมีสิ่งมีชีวิต...</p>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

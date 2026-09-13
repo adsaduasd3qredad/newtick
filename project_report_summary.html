@@ -1,0 +1,214 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เอกสารสรุปเนื้อหาโครงงาน - ท้องฟ้าจำลองรังสิต</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: "IBM Plex Sans Thai", sans-serif; }
+        .font-display { font-family: "Chakra Petch", sans-serif; }
+        @media print {
+            body { background: #ffffff !important; padding: 0 !important; }
+            .no-print { display: none !important; }
+            .page-break { page-break-before: always; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 p-6 sm:p-12">
+    <div class="max-w-4xl mx-auto bg-white p-8 sm:p-14 rounded-3xl shadow-sm border border-slate-200">
+        
+        <!-- Action bar -->
+        <div class="no-print flex justify-between items-center mb-8 pb-4 border-b border-slate-200">
+            <span class="text-xs font-mono text-slate-500 font-bold bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-300">
+                PROJECT DOCUMENTATION & REPORT GUIDE
+            </span>
+            <button onclick="window.print()" class="bg-slate-900 hover:bg-slate-800 text-white font-display text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                <span>พิมพ์เอกสาร / บันทึกเป็น PDF (Print)</span>
+            </button>
+        </div>
+
+        <!-- Header -->
+        <div class="text-center mb-10 pb-8 border-b-2 border-slate-900">
+            <h1 class="text-2xl sm:text-3xl font-bold font-display text-slate-900 mb-2">
+                ระบบบริหารจัดการการจองตั๋วภาพยนตร์ดาราศาสตร์และจุดจำหน่ายตั๋วหน้าร้าน
+            </h1>
+            <h2 class="text-base sm:text-lg font-bold font-display text-cyan-800 mb-2">
+                ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต (ท้องฟ้าจำลองรังสิต)
+            </h2>
+            <p class="text-xs text-slate-500 font-mono">
+                Rangsit Planetarium Showtime Ticketing & Point of Sale (POS) Management System
+            </p>
+        </div>
+
+        <!-- Content Body -->
+        <div class="space-y-8 text-sm text-slate-700 leading-relaxed">
+            
+            <section class="space-y-3">
+                <h3 class="text-lg font-bold font-display text-slate-900 border-l-4 border-cyan-600 pl-3">
+                    บทที่ 1: บทนำและความเป็นมา (Introduction & Background)
+                </h3>
+                <h4 class="font-bold text-slate-800">1.1 ความเป็นมาและความสำคัญ</h4>
+                <p>
+                    ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต (ท้องฟ้าจำลองรังสิต) เป็นแหล่งเรียนรู้ด้านดาราศาสตร์และวิทยาศาสตร์ที่สำคัญของประเทศไทย ให้บริการฉายภาพยนตร์ดาราศาสตร์เต็มโดมความละเอียดสูง (Full Dome Digital Planetarium) ขนาด 160 ที่นั่ง โดยมีผู้เข้าชมหลากหลายกลุ่ม ทั้งนักเรียน นักศึกษา หน่วยงานราชการ คณะทัศนศึกษา และประชาชนทั่วไป
+                </p>
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-1.5 text-xs">
+                    <p class="font-bold text-slate-800">ปัญหาและความท้าทายเดิม:</p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-600">
+                        <li><strong>การเข้าถึงข้อมูลรอบฉายและที่นั่งว่าง:</strong> ผู้เข้าชมไม่ทราบจำนวนที่นั่งว่างล่วงหน้าก่อนเดินทางมาถึง</li>
+                        <li><strong>ความแออัดบริเวณจุดจำหน่ายตั๋ว:</strong> ในช่วงวันหยุดการจำหน่ายตั๋วหน้าร้านใช้เวลาคีย์ข้อมูล ส่งผลให้แถวคอยยาว</li>
+                        <li><strong>การคัดกรองประเภทผู้เข้าชม:</strong> การแยกประเภทบุคคลทั่วไป, โรงเรียน, และหน่วยงานมักเกิดความผิดพลาด</li>
+                        <li><strong>ความล่าช้าในการตรวจตั๋ว:</strong> ขาดระบบสแกนตรวจตั๋วดิจิทัลที่สามารถป้องกันการใช้ตั๋วซ้ำได้อย่างมีประสิทธิภาพ</li>
+                        <li><strong>ขาดข้อมูลสถิติเชิงลึก:</strong> ผู้บริหารไม่สามารถเรียกดูรายงานสรุปรายได้และสถิติภาพยนตร์ยอดนิยมแบบ Real-time</li>
+                    </ul>
+                </div>
+
+                <h4 class="font-bold text-slate-800 pt-2">1.2 วัตถุประสงค์ของโครงงาน</h4>
+                <ol class="list-decimal list-inside space-y-1.5 text-slate-600 pl-2">
+                    <li>เพื่อพัฒนาเว็บไซต์ให้บริการตรวจสอบตารางรอบฉาย และจองตั๋วภาพยนตร์ดาราศาสตร์แบบออนไลน์ล่วงหน้า</li>
+                    <li>เพื่อพัฒนาระบบเลือกที่นั่งตามผังห้องฉายโดมดาราศาสตร์ (Dome Seating Map) ขนาด 160 ที่นั่ง แบบ Real-time</li>
+                    <li>เพื่อพัฒนาระบบชำระเงินดิจิทัลผ่าน PromptPay QR Code และออกบัตรเข้าชมอิเล็กทรอนิกส์ (E-Ticket)</li>
+                    <li>เพื่อพัฒนาระบบจุดจำหน่ายตั๋วหน้าร้าน (Staff POS) พร้อมฟังก์ชันขายด่วน (Quick Sell) และพิมพ์สลิปความร้อน 80mm</li>
+                    <li>เพื่อพัฒนาระบบสแกนตรวจตั๋วเข้าชม (Ticket Check-in Scanner) ด้วยกล้องอุปกรณ์หรือเครื่องยิงบาร์โค้ด</li>
+                    <li>เพื่อพัฒนาระบบผู้ดูแลระบบและแดชบอร์ดสรุปสถิติวิเคราะห์สำหรับผู้บริหาร (Executive Analytics Dashboard)</li>
+                </ol>
+            </section>
+
+            <section class="space-y-3 pt-4 border-t border-slate-200">
+                <h3 class="text-lg font-bold font-display text-slate-900 border-l-4 border-cyan-600 pl-3">
+                    บทที่ 2: ขอบเขตของโครงงาน (Project Scope)
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                        <h4 class="font-bold font-display text-cyan-800 flex items-center gap-1.5">
+                            <span>1. ผู้เข้าชมทั่วไป (Visitor / Public)</span>
+                        </h4>
+                        <ul class="text-xs space-y-1 text-slate-600 list-disc list-inside">
+                            <li>ดูตารางรอบฉายประจำสัปดาห์ (วันอังคาร–อาทิตย์) แสดงสถานะที่นั่งว่าง Real-time</li>
+                            <li>ระบบจองตั๋ว 4 ขั้นตอน: กรอกข้อมูล, เลือกที่นั่งบนผังโดม 160 ที่, ชำระเงิน PromptPay, รับบัตร E-Ticket</li>
+                            <li>จำกัดโควตา: บุคคลทั่วไปสูงสุด 10 ที่นั่ง, โรงเรียน/หน่วยงานสูงสุด 160 ที่นั่ง</li>
+                            <li>ระบบค้นหาตั๋วและตรวจสอบสถานะ (Track Booking) ด้วยเบอร์โทรหรือรหัสจอง</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                        <h4 class="font-bold font-display text-cyan-800 flex items-center gap-1.5">
+                            <span>2. เจ้าหน้าที่จำหน่ายตั๋ว (Staff POS)</span>
+                        </h4>
+                        <ul class="text-xs space-y-1 text-slate-600 list-disc list-inside">
+                            <li>ระบบเข้าสู่ระบบเจ้าหน้าที่ (Staff Authentication)</li>
+                            <li><strong>ระบบขายด่วน (Quick Sell 1-Click):</strong> เลือก 1, 2, 3, 5, 10 ใบ ตัดที่นั่งให้อัตโนมัติในคลิกเดียว</li>
+                            <li>รองรับการรับชำระทั้งเงินสด (Cash) และ PromptPay QR</li>
+                            <li>พิมพ์สลิปตั๋วความร้อนมาตรฐาน 80mm พร้อม QR Code ประจำใบ</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                        <h4 class="font-bold font-display text-cyan-800 flex items-center gap-1.5">
+                            <span>3. เจ้าหน้าที่ตรวจตั๋ว (Gate Check-in)</span>
+                        </h4>
+                        <ul class="text-xs space-y-1 text-slate-600 list-disc list-inside">
+                            <li>สแกน QR Code ตรวจตั๋วผ่านกล้องเว็บแคม, กล้องมือถือ หรือเครื่องยิงบาร์โค้ด USB</li>
+                            <li>ระบบป้องกันการใช้ตั๋วซ้ำ (Double Check-in Protection)</li>
+                            <li>เสียงสัญญาณสังเคราะห์แจ้งเตือนผล (Web Audio API)</li>
+                            <li>ตารางประวัติผู้เข้าชมที่สแกนผ่านประตูแล้วแบบเรียลไทม์</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                        <h4 class="font-bold font-display text-cyan-800 flex items-center gap-1.5">
+                            <span>4. ผู้ดูแลระบบและผู้บริหาร (Admin)</span>
+                        </h4>
+                        <ul class="text-xs space-y-1 text-slate-600 list-disc list-inside">
+                            <li>จัดการข้อมูลภาพยนตร์, แม่แบบตารางสัปดาห์, รอบฉาย, และรายการจอง</li>
+                            <li><strong>ระบบสร้างรอบฉายอัตโนมัติ (1-Click Generator):</strong> ล่วงหน้า 7 วัน, 14 วัน, สิ้นเดือน, ตลอดเดือนถัดไป</li>
+                            <li><strong>Executive Analytics Dashboard:</strong> กราฟแนวโน้มรายได้, สัดส่วนกลุ่มผู้เข้าชม, และอันดับภาพยนตร์ยอดนิยม</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </section>
+
+            <section class="space-y-3 pt-4 border-t border-slate-200">
+                <h3 class="text-lg font-bold font-display text-slate-900 border-l-4 border-cyan-600 pl-3">
+                    บทที่ 3: สถาปัตยกรรมและเทคโนโลยีที่ใช้พัฒนา (Technical Architecture)
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left border-collapse border border-slate-200">
+                        <thead class="bg-slate-100 font-bold text-slate-800">
+                            <tr>
+                                <th class="p-2.5 border border-slate-200">ส่วนของระบบ</th>
+                                <th class="p-2.5 border border-slate-200">เทคโนโลยี / เครื่องมือ</th>
+                                <th class="p-2.5 border border-slate-200">หน้าที่การทำงาน</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 text-slate-600">
+                            <tr>
+                                <td class="p-2.5 font-bold text-slate-800 border border-slate-200">Backend Core</td>
+                                <td class="p-2.5 font-mono border border-slate-200">Laravel 11.x (PHP 8.2+)</td>
+                                <td class="p-2.5 border border-slate-200">สถาปัตยกรรม MVC, Eloquent ORM, Routing, Security, Database Transactions</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 font-bold text-slate-800 border border-slate-200">Admin Engine</td>
+                                <td class="p-2.5 font-mono border border-slate-200">Filament PHP v3 (Livewire 3)</td>
+                                <td class="p-2.5 border border-slate-200">ระบบจัดการหลังบ้าน, Form & Table Builders, Modal Actions, Metric Widgets</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 font-bold text-slate-800 border border-slate-200">Database</td>
+                                <td class="p-2.5 font-mono border border-slate-200">MySQL / SQLite</td>
+                                <td class="p-2.5 border border-slate-200">จัดเก็บข้อมูลภาพยนตร์, ตารางรอบฉาย, ข้อมูลการจอง และผู้ใช้งาน</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 font-bold text-slate-800 border border-slate-200">Frontend / CSS</td>
+                                <td class="p-2.5 font-mono border border-slate-200">Blade Templates & Tailwind CSS v4</td>
+                                <td class="p-2.5 border border-slate-200">การแสดงผลแบบ Responsive รองรับทั้งคอมพิวเตอร์และอุปกรณ์เคลื่อนที่</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 font-bold text-slate-800 border border-slate-200">Typography & Icons</td>
+                                <td class="p-2.5 font-mono border border-slate-200">IBM Plex Sans Thai + Vector SVG</td>
+                                <td class="p-2.5 border border-slate-200">ฟอนต์ภาษาไทยมาตรฐานองค์กร และไอคอนเวกเตอร์มินิมอลไม่มีอิโมจิ</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 font-bold text-slate-800 border border-slate-200">QR Code Engine</td>
+                                <td class="p-2.5 font-mono border border-slate-200">SimpleSoftwareIO/simple-qrcode</td>
+                                <td class="p-2.5 border border-slate-200">สร้าง QR Code PromptPay สำหรับจ่ายเงิน และ Ticket Reference สำหรับตรวจตั๋ว</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 font-bold text-slate-800 border border-slate-200">Camera Scanner</td>
+                                <td class="p-2.5 font-mono border border-slate-200">html5-qrcode (JavaScript)</td>
+                                <td class="p-2.5 border border-slate-200">สแกนถอดรหัส QR Code ผ่านกล้องเว็บแคมและกล้องสมาร์ตโฟนแบบเรียลไทม์</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="space-y-3 pt-4 border-t border-slate-200">
+                <h3 class="text-lg font-bold font-display text-slate-900 border-l-4 border-cyan-600 pl-3">
+                    บทที่ 4: ประโยชน์ที่ได้รับจากโครงงาน (Project Benefits)
+                </h3>
+                <div class="space-y-2 text-xs">
+                    <p><strong>1. ด้านผู้รับบริการ (ผู้เข้าชม):</strong> เพิ่มความสะดวกในการวางแผนและสำรองที่นั่งล่วงหน้า 24 ชม. สามารถเลือกตำแหน่งที่นั่งที่พึงพอใจ และได้รับบัตรดิจิทัลทันทีโดยไม่ต้องต่อคิว</p>
+                    <p><strong>2. ด้านผู้ให้บริการ (ศูนย์วิทยาศาสตร์และเจ้าหน้าที่):</strong> ลดความแออัดหน้าเคาน์เตอร์ จุดขายตั๋วหน้าร้านออกตั๋วได้รวดเร็วภายใน 5 วินาที กระบวนการตรวจตั๋วหน้าทางเข้าแม่นยำ ป้องกันการใช้ตั๋วซ้ำได้ 100%</p>
+                    <p><strong>3. ด้านการบริหารจัดการ (ผู้บริหาร):</strong> มีแดชบอร์ดสรุปสถิติรายได้และข้อมูลเชิงลึกแบบ Real-time ช่วยสนับสนุนการวางแผนรอบฉายและการคัดเลือกสื่อภาพยนตร์ดาราศาสตร์ได้อย่างมีประสิทธิภาพ</p>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-12 pt-6 border-t border-slate-200 text-center text-xs text-slate-400 font-mono">
+            ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต (ท้องฟ้าจำลองรังสิต) &bull; เอกสารประกอบเล่มรายงานโครงงาน
+        </div>
+
+    </div>
+</body>
+</html>

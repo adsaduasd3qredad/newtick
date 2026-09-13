@@ -4,50 +4,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>จองสำเร็จ - ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต</title>
+    <title>บัตรเข้าชมภาพยนตร์ (E-Ticket) - ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        body {
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+        }
+
+        .font-display {
+            font-family: 'Chakra Petch', 'IBM Plex Sans Thai', sans-serif;
+        }
+
+        @media print {
+            body {
+                background: #ffffff !important;
+                padding: 0 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .ticket-card {
+                box-shadow: none !important;
+                border: 1px solid #cbd5e1 !important;
+                max-width: 100% !important;
+            }
+        }
+    </style>
 </head>
 
 <body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-between">
 
     <!-- แถบประกาศด้านบน -->
-    <div
-        class="bg-gradient-to-r from-cyan-500 via-sky-500 to-violet-600 text-white text-sm font-medium py-2.5 px-4 text-center shadow-sm">
+    <div class="no-print bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 text-white text-xs sm:text-sm font-medium py-2 px-4 text-center shadow-sm">
         <a href="https://sci-rangsit.dole.go.th" target="_blank"
-            class="hover:opacity-90 transition inline-flex items-center justify-center gap-2 font-display tracking-wide">
-            <span aria-hidden="true">✦</span>
-            <span>คลิก <strong class="text-yellow-300 underline underline-offset-2 font-bold">ที่นี่</strong>
-                เพื่อเข้าสู่เว็บไซต์ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต</span>
-            <span aria-hidden="true">✦</span>
+            class="hover:underline transition inline-flex items-center justify-center gap-1.5 font-display tracking-wide">
+            <span>ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต (ท้องฟ้าจำลองรังสิต)</span>
+            <svg class="w-3.5 h-3.5 text-cyan-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
         </a>
     </div>
 
     <!-- Header / Navbar -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-7xl mx-auto px-6 py-3.5 flex justify-between items-center">
-            <div class="flex items-center">
-                <a href="{{ route('showtimes.index') }}" class="flex items-center">
-                    <img src="{{ asset('images/logo.jpg') }}" alt="โลโก้ท้องฟ้าจำลองรังสิต"
-                        class="h-11 w-auto object-contain">
-                </a>
-            </div>
-            <a href="/admin" title="เข้าสู่ระบบเจ้าหน้าที่"
-                class="text-slate-400 hover:text-slate-700 p-2 rounded-lg transition-colors inline-flex items-center justify-center">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <rect x="5" y="11" width="14" height="10" rx="2" ry="2"></rect>
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0v4"></path>
-                </svg>
+    <header class="no-print bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex justify-between items-center">
+            <a href="{{ route('showtimes.index') }}" class="flex items-center gap-3">
+                <img src="{{ asset('images/logo.jpg') }}" alt="โลโก้ท้องฟ้าจำลองรังสิต"
+                    class="h-10 sm:h-11 w-auto object-contain">
+                <div class="hidden sm:block">
+                    <p class="font-display font-bold text-slate-900 text-sm leading-tight">ท้องฟ้าจำลองรังสิต</p>
+                    <p class="text-[11px] text-slate-500">ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต</p>
+                </div>
+            </a>
+            <a href="{{ route('showtimes.index') }}"
+                class="text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3.5 py-2 rounded-xl transition">
+                ← กลับหน้าหลัก
             </a>
         </div>
     </header>
 
-    <!-- เนื้อหาหลัก -->
-    <main class="flex-1 flex items-center justify-center p-4 sm:p-8 my-6">
-        <div class="max-w-3xl w-full bg-white p-6 sm:p-12 rounded-3xl shadow-sm border border-slate-200/85 text-center">
+    <!-- Main Content -->
+    <main class="flex-1 flex items-center justify-center p-4 sm:p-8 my-4">
+        <div class="max-w-3xl w-full">
 
-            <!-- Step indicator (สถานะปัจจุบันอยู่ที่ 4: เสร็จสมบูรณ์) -->
-            <div class="flex items-center justify-center gap-2 sm:gap-6 mb-10 overflow-x-auto py-2">
+            <!-- Step indicator -->
+            <div class="no-print flex items-center justify-center gap-2 sm:gap-6 mb-8 overflow-x-auto py-2">
                 @php
                     $steps = [
                         ['n' => 1, 'label' => 'กรอกข้อมูล'],
@@ -61,64 +87,162 @@
                     <div class="flex items-center">
                         <div class="flex flex-col items-center">
                             <div
-                                class="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold shadow-sm
-                                    {{ $step['n'] < $currentStep ? 'bg-cyan-600 text-white' : ($step['n'] == $currentStep ? 'bg-emerald-500 text-white ring-4 ring-emerald-50' : 'bg-slate-200 text-slate-400') }}">
-                                @if ($step['n'] < $currentStep)
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                            d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                @else
-                                    {{ $step['n'] }}
-                                @endif
+                                class="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold shadow-sm bg-emerald-500 text-white ring-4 ring-emerald-50">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                                </svg>
                             </div>
-                            <span
-                                class="text-[10px] sm:text-[11px] mt-1.5 text-center max-w-[70px] {{ $step['n'] <= $currentStep ? 'text-slate-800 font-semibold' : 'text-slate-400' }}">
+                            <span class="text-[10px] sm:text-[11px] mt-1.5 text-center max-w-[70px] text-slate-800 font-semibold">
                                 {{ $step['label'] }}
                             </span>
                         </div>
                         @if (!$loop->last)
-                            <div
-                                class="w-4 sm:w-14 h-0.5 {{ $step['n'] < $currentStep ? 'bg-cyan-600' : 'bg-slate-200' }} mx-1 sm:mx-2 mt-[-14px]">
-                            </div>
+                            <div class="w-4 sm:w-14 h-0.5 bg-emerald-500 mx-1 sm:mx-2 mt-[-14px]"></div>
                         @endif
                     </div>
                 @endforeach
             </div>
 
-            <!-- หัวข้อสถานะสำเร็จ -->
-            <div class="mb-8">
-                <div
-                    class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7">
-                        </path>
-                    </svg>
-                </div>
-                <h1 class="text-2xl sm:text-3xl font-bold mb-2 text-emerald-600 tracking-tight">จองสำเร็จ!</h1>
-                <p class="text-slate-500 text-base font-medium">รหัสจอง <strong
-                        class="text-slate-800">#{{ $booking->id }}</strong></p>
-            </div>
+            <!-- Ticket Card (Boarding Pass Cinema Design) -->
+            <div class="ticket-card bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
+                
+                <!-- Ticket Header -->
+                <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-indigo-900">
+                    <div class="flex items-center gap-4 text-center sm:text-left">
+                        <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center text-cyan-300 shadow-inner shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <span class="text-xs text-cyan-300 font-semibold tracking-wider uppercase font-display">
+                                บัตรเข้าชมภาพยนตร์เต็มโดม (E-TICKET)
+                            </span>
+                            <h2 class="text-xl sm:text-2xl font-bold font-display text-white">
+                                ท้องฟ้าจำลองรังสิต
+                            </h2>
+                        </div>
+                    </div>
 
-            <p class="text-slate-600 text-sm sm:text-base mb-6 font-medium">กรุณานำ QR
-                นี้ไปแสดงที่เคาน์เตอร์เพื่อรับตั๋ว</p>
-
-            <!-- กล่องแสดง QR Code -->
-            <div class="flex justify-center mb-8">
-                <div
-                    class="bg-white p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-slate-200/80 text-center max-w-xs w-full">
-                    <div
-                        class="bg-slate-50 w-full aspect-square rounded-2xl flex items-center justify-center border border-slate-200/60 p-4">
-                        {!! QrCode::size(200)->generate($booking->qr_ticket_ref) !!}
+                    <div class="text-center sm:text-right">
+                        <span class="px-3 py-1 text-xs font-bold bg-emerald-500 text-white rounded-full inline-block shadow-sm">
+                            ชำระเงินสำเร็จ (PAID)
+                        </span>
+                        <p class="text-xs text-slate-300 mt-1.5 font-mono">
+                            รหัสจอง: <strong class="text-white text-sm">#{{ $booking->id }}</strong>
+                        </p>
                     </div>
                 </div>
+
+                <!-- Ticket Body Grid -->
+                <div class="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                    
+                    <!-- Movie & Details (2 Cols) -->
+                    <div class="md:col-span-2 space-y-5">
+                        
+                        <!-- Movie Title -->
+                        <div>
+                            <p class="text-xs text-slate-400 uppercase font-semibold">ภาพยนตร์รอบการแสดง</p>
+                            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-display mt-0.5">
+                                {{ $booking->showtime->movie->title_th ?? '-' }}
+                            </h3>
+                            @if ($booking->showtime->movie && $booking->showtime->movie->title_en)
+                                <p class="text-xs text-slate-500">{{ $booking->showtime->movie->title_en }}</p>
+                            @endif
+                        </div>
+
+                        <!-- Date & Time Grid -->
+                        <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200/70 text-sm">
+                            <div>
+                                <p class="text-xs text-slate-400 font-medium">วันที่จัดแสดง</p>
+                                <p class="font-bold text-slate-800 font-display mt-0.5">
+                                    {{ \Carbon\Carbon::parse($booking->showtime->show_date)->locale('th')->translatedFormat('l j F Y') }}
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-400 font-medium">รอบเวลา</p>
+                                <div class="flex items-center gap-1 font-bold text-cyan-700 font-display text-base mt-0.5">
+                                    <svg class="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>{{ \Carbon\Carbon::parse($booking->showtime->show_time)->format('H:i') }} น.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Seats badges -->
+                        <div>
+                            <p class="text-xs text-slate-400 uppercase font-semibold mb-2">
+                                ที่นั่งที่ระบุ ({{ $booking->quantity }} ที่นั่ง)
+                            </p>
+                            <div class="flex flex-wrap gap-1.5">
+                                @if (!empty($booking->seats) && is_array($booking->seats))
+                                    @foreach ($booking->seats as $seat)
+                                        <span class="px-3 py-1 bg-cyan-600 text-white font-bold rounded-lg text-xs font-display shadow-xs">
+                                            {{ $seat }}
+                                        </span>
+                                    @endforeach
+                                @else
+                                    <span class="text-xs text-slate-500">จำนวน {{ $booking->quantity }} ที่นั่ง</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Booker info & payment -->
+                        <div class="pt-3 border-t border-slate-100 flex flex-wrap justify-between items-center text-xs text-slate-600 gap-2">
+                            <div>
+                                <span>ผู้จอง: <strong class="text-slate-800">{{ $booking->booker_name }}</strong></span>
+                                @if ($booking->booker_phone)
+                                    <span class="text-slate-400 ml-2">({{ $booking->booker_phone }})</span>
+                                @endif
+                            </div>
+                            <div>
+                                                            <div class="flex items-center gap-2">
+                                <span>ยอดชำระ: <strong class="text-emerald-600 text-sm font-bold">{{ number_format($booking->total_amount, 2) }} บาท</strong></span>
+                                @if(in_array($booking->status, ['pending', 'awaiting_payment']))
+                                    <span class="px-2 py-0.5 bg-rose-100 text-rose-700 rounded text-[10px] font-bold">รอชำระเงิน</span>
+                                @elseif($booking->status == 'paid')
+                                    <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded text-[10px] font-bold">ชำระแล้ว</span>
+                                @endif
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QR Stub (1 Col) -->
+                    <div class="text-center flex flex-col items-center justify-center p-6 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
+                        <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-200 mb-3">
+                            {!! QrCode::size(160)->generate($booking->qr_ticket_ref) !!}
+                        </div>
+                        <p class="text-xs font-bold text-slate-700">สแกนเพื่อเข้าชม</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5 max-w-[180px] break-all font-mono">
+                            Ref: {{ substr($booking->qr_ticket_ref, 0, 13) }}...
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Ticket Instructions Footer -->
+                <div class="bg-slate-50/90 px-6 sm:px-8 py-3.5 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-2">
+                    <p>กรุณาแสดงหน้านี้หรือตั๋วที่พิมพ์แก่เจ้าหน้าที่ ณ ประตูทางเข้าก่อนรอบฉาย 15 นาที</p>
+                    <p class="font-mono text-slate-400">Issued: {{ now()->format('d/m/Y H:i') }}</p>
+                </div>
             </div>
 
-            <!-- ปุ่มกลับหน้าแรกหรือรอบฉาย -->
-            <div>
+            <!-- Action Buttons (Print / Home) -->
+            <div class="no-print mt-8 flex flex-wrap justify-center gap-4">
+                <button onclick="window.print()"
+                    class="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 font-semibold py-3 px-6 rounded-xl border border-slate-300 shadow-sm transition text-sm">
+                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    <span>พิมพ์ตั๋ว / บันทึก PDF</span>
+                </button>
+
                 <a href="{{ route('showtimes.index') }}"
-                    class="inline-block bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 px-8 rounded-xl shadow-md transition duration-200 text-sm">
-                    กลับสู่หน้าหลัก
+                    class="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 px-8 rounded-xl shadow-md transition text-sm font-display">
+                    <span>กลับสู่หน้าหลัก</span>
+                    <span>→</span>
                 </a>
             </div>
 
@@ -126,21 +250,10 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white text-slate-600 py-8 border-t border-slate-200 mt-auto">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="flex items-center gap-4">
-                <img src="{{ asset('images/logo.jpg') }}" alt="โลโก้ท้องฟ้าจำลองรังสิต"
-                    class="h-10 w-auto object-contain bg-white p-1 rounded-md shadow-sm border border-slate-100">
-                <div>
-                    <p class="text-slate-900 font-display font-semibold text-sm">ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต</p>
-                    <p class="text-xs text-slate-500">RANGSIT SCIENCE CENTRE FOR EDUCATION</p>
-                </div>
-            </div>
-
-            <div class="text-center md:text-right text-xs space-y-1">
-                <p class="text-slate-500">Copyright © 2026 ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต. All rights reserved</p>
-                <p class="text-slate-800 font-medium">โทร 02 577 5456 – 9 ต่อ 304</p>
-            </div>
+    <footer class="no-print bg-white text-slate-600 py-6 border-t border-slate-200 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 text-center text-xs text-slate-400 space-y-1">
+            <p>ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต (ท้องฟ้าจำลองรังสิต) &bull; โทร 02 577 5456 – 9 ต่อ 304</p>
+            <p>© 2026 ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต. All rights reserved.</p>
         </div>
     </footer>
 </body>

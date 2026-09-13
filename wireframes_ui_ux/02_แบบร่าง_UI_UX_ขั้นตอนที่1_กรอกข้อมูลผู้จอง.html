@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: "IBM Plex Sans Thai", sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .font-display { font-family: "Chakra Petch", sans-serif; }
+        .wireframe-box { background: #ffffff; border: 1.5px solid #64748b; }
+        .wireframe-dashed { border: 1.5px dashed #94a3b8; background: #f1f5f9; }
+        .placeholder-cross {
+            position: relative;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            overflow: hidden;
+        }
+        .placeholder-cross::before, .placeholder-cross::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to top right, transparent calc(50% - 0.5px), #cbd5e1 50%, transparent calc(50% + 0.5px));
+        }
+        .placeholder-cross::after {
+            background: linear-gradient(to bottom right, transparent calc(50% - 0.5px), #cbd5e1 50%, transparent calc(50% + 0.5px));
+        }
+    </style>
+    <title>Wireframe UI/UX - ขั้นตอนที่ 1: กรอกข้อมูลผู้จอง</title>
+</head>
+<body class="p-6 max-w-4xl mx-auto space-y-6">
+    <div class="flex justify-between items-center border-b-2 border-slate-800 pb-3">
+        <div>
+            <div class="bg-slate-200 text-slate-700 text-[11px] font-mono font-bold px-2.5 py-1 rounded border border-slate-400 inline-block mb-3">WIRE-02 &bull; BOOKING STEP 1</div>
+            <h1 class="text-xl font-bold text-slate-900 font-display">แบบร่างหน้าจอ: ขั้นตอนการจองที่ 1 - กรอกข้อมูลผู้จอง & เลือกประเภท</h1>
+        </div>
+        <a href="index.html" class="text-xs font-bold text-slate-600 border border-slate-400 px-3 py-1.5 rounded bg-white hover:bg-slate-100">← สารบัญแบบร่าง</a>
+    </div>
+
+    <!-- Stepper Wireframe -->
+    <div class="wireframe-box p-4 rounded-xl flex justify-between items-center text-xs font-mono text-center">
+        <div class="flex-1 font-bold text-slate-900 border-b-2 border-slate-900 pb-1">1. กรอกข้อมูล ●</div>
+        <div class="flex-1 text-slate-400">2. เลือกที่นั่ง ○</div>
+        <div class="flex-1 text-slate-400">3. ชำระเงิน ○</div>
+        <div class="flex-1 text-slate-400">4. บัตร E-Ticket ○</div>
+    </div>
+
+    <!-- Showtime Summary Card Wireframe -->
+    <div class="wireframe-box p-4 rounded-xl flex gap-4 items-center bg-slate-50">
+        <div class="w-14 h-16 placeholder-cross border border-slate-400 shrink-0"></div>
+        <div class="space-y-1 text-xs">
+            <p class="font-bold text-sm">เรื่อง: มหัศจรรย์แรงโน้มถ่วง (Gravity)</p>
+            <p class="text-slate-600">วันที่: 23 สิงหาคม 2569 &bull; รอบเวลา: 10:00 น. &bull; ราคา: 110 บาท/ที่นั่ง</p>
+            <p class="text-slate-500 font-mono">ที่นั่งว่างคงเหลือ: 140 / 160 ที่นั่ง</p>
+        </div>
+    </div>
+
+    <!-- Form Wireframe -->
+    <div class="wireframe-box p-6 rounded-xl space-y-4 text-xs">
+        <h3 class="font-bold text-sm border-b border-slate-300 pb-2">ข้อมูลผู้ทำการจอง (Booker Details)</h3>
+        
+        <!-- Visitor Type Selector -->
+        <div class="space-y-1.5">
+            <label class="font-bold block">ประเภทผู้เข้าชม (Visitor Type) *</label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono">
+                <div class="p-3 border-2 border-slate-800 bg-slate-100 rounded text-center font-bold">
+                    [ ● บุคคลทั่วไป ]
+                    <span class="block text-[10px] text-slate-500 mt-0.5">(สูงสุด 10 ที่นั่ง)</span>
+                </div>
+                <div class="p-3 border border-slate-300 bg-white rounded text-center">
+                    [ ○ โรงเรียน/สถาบัน ]
+                    <span class="block text-[10px] text-slate-500 mt-0.5">(สูงสุด 160 ที่นั่ง)</span>
+                </div>
+                <div class="p-3 border border-slate-300 bg-white rounded text-center">
+                    [ ○ หน่วยงานราชการ ]
+                    <span class="block text-[10px] text-slate-500 mt-0.5">(สูงสุด 160 ที่นั่ง)</span>
+                </div>
+                <div class="p-3 border border-slate-300 bg-white rounded text-center">
+                    [ ○ บริษัท/เอกชน ]
+                    <span class="block text-[10px] text-slate-500 mt-0.5">(สูงสุด 160 ที่นั่ง)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Inputs -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+                <label class="font-bold">ชื่อ-นามสกุล / ชื่อผู้ประสานงาน *</label>
+                <div class="p-2.5 border border-slate-400 rounded bg-slate-50 font-mono text-slate-400">[ กรอกชื่อ-นามสกุลผู้จอง ]</div>
+            </div>
+            <div class="space-y-1">
+                <label class="font-bold">เบอร์โทรศัพท์ติดต่อ *</label>
+                <div class="p-2.5 border border-slate-400 rounded bg-slate-50 font-mono text-slate-400">[ 08x-xxx-xxxx ]</div>
+            </div>
+            <div class="space-y-1">
+                <label class="font-bold">อีเมลรับตั๋ว E-Ticket *</label>
+                <div class="p-2.5 border border-slate-400 rounded bg-slate-50 font-mono text-slate-400">[ example@mail.com ]</div>
+            </div>
+            <div class="space-y-1">
+                <label class="font-bold">จำนวนที่นั่งที่ต้องการ (1 - 10 ที่) *</label>
+                <div class="p-2.5 border border-slate-400 rounded bg-slate-50 font-mono text-slate-400">[ 2 ]</div>
+            </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-300 flex justify-between items-center">
+            <span class="text-xs text-slate-500 font-mono">ประมาณการยอดชำระ: 220.00 บาท</span>
+            <button class="px-6 py-2.5 bg-slate-900 text-white rounded text-xs font-mono font-bold">[ ไปขั้นตอนถัดไป: เลือกที่นั่ง → ]</button>
+        </div>
+    </div>
+</body>
+</html>

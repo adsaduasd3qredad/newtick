@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บัตรเข้าชมภาพยนตร์ (E-Ticket) - ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="preload" as="style" href="http://localhost/build/assets/app-CNRoyAwL.css" /><link rel="modulepreload" as="script" href="http://localhost/build/assets/app-BvRk9kiK.js" />    <style>
+        body {
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+        }
+
+        .font-display {
+            font-family: 'Chakra Petch', 'IBM Plex Sans Thai', sans-serif;
+        }
+
+        @media print {
+            body {
+                background: #ffffff !important;
+                padding: 0 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .ticket-card {
+                box-shadow: none !important;
+                border: 1px solid #cbd5e1 !important;
+                max-width: 100% !important;
+            }
+        }
+    </style>
+<script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- แถบประกาศด้านบน -->
+    <div class="no-print bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 text-white text-xs sm:text-sm font-medium py-2 px-4 text-center shadow-sm">
+        <a href="https://sci-rangsit.dole.go.th" target="_blank"
+            class="hover:underline transition inline-flex items-center justify-center gap-1.5 font-display tracking-wide">
+            <span>ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต (ท้องฟ้าจำลองรังสิต)</span>
+            <svg class="w-3.5 h-3.5 text-cyan-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+        </a>
+    </div>
+
+    <!-- Header / Navbar -->
+    <header class="no-print bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex justify-between items-center">
+            <a href="http://localhost" class="flex items-center gap-3">
+                <img src="images/logo.jpg" alt="โลโก้ท้องฟ้าจำลองรังสิต"
+                    class="h-10 sm:h-11 w-auto object-contain">
+                <div class="hidden sm:block">
+                    <p class="font-display font-bold text-slate-900 text-sm leading-tight">ท้องฟ้าจำลองรังสิต</p>
+                    <p class="text-[11px] text-slate-500">ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต</p>
+                </div>
+            </a>
+            <a href="http://localhost"
+                class="text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3.5 py-2 rounded-xl transition">
+                ← กลับหน้าหลัก
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex items-center justify-center p-4 sm:p-8 my-4">
+        <div class="max-w-3xl w-full">
+
+            <!-- Step indicator -->
+            <div class="no-print flex items-center justify-center gap-2 sm:gap-6 mb-8 overflow-x-auto py-2">
+                                                    <div class="flex items-center">
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold shadow-sm bg-emerald-500 text-white ring-4 ring-emerald-50">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <span class="text-[10px] sm:text-[11px] mt-1.5 text-center max-w-[70px] text-slate-800 font-semibold">
+                                กรอกข้อมูล
+                            </span>
+                        </div>
+                                                    <div class="w-4 sm:w-14 h-0.5 bg-emerald-500 mx-1 sm:mx-2 mt-[-14px]"></div>
+                                            </div>
+                                    <div class="flex items-center">
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold shadow-sm bg-emerald-500 text-white ring-4 ring-emerald-50">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <span class="text-[10px] sm:text-[11px] mt-1.5 text-center max-w-[70px] text-slate-800 font-semibold">
+                                เลือกที่นั่ง
+                            </span>
+                        </div>
+                                                    <div class="w-4 sm:w-14 h-0.5 bg-emerald-500 mx-1 sm:mx-2 mt-[-14px]"></div>
+                                            </div>
+                                    <div class="flex items-center">
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold shadow-sm bg-emerald-500 text-white ring-4 ring-emerald-50">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <span class="text-[10px] sm:text-[11px] mt-1.5 text-center max-w-[70px] text-slate-800 font-semibold">
+                                ชำระเงิน
+                            </span>
+                        </div>
+                                                    <div class="w-4 sm:w-14 h-0.5 bg-emerald-500 mx-1 sm:mx-2 mt-[-14px]"></div>
+                                            </div>
+                                    <div class="flex items-center">
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold shadow-sm bg-emerald-500 text-white ring-4 ring-emerald-50">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <span class="text-[10px] sm:text-[11px] mt-1.5 text-center max-w-[70px] text-slate-800 font-semibold">
+                                เสร็จสมบูรณ์
+                            </span>
+                        </div>
+                                            </div>
+                            </div>
+
+            <!-- Ticket Card (Boarding Pass Cinema Design) -->
+            <div class="ticket-card bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
+                
+                <!-- Ticket Header -->
+                <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-indigo-900">
+                    <div class="flex items-center gap-4 text-center sm:text-left">
+                        <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center text-cyan-300 shadow-inner shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <span class="text-xs text-cyan-300 font-semibold tracking-wider uppercase font-display">
+                                บัตรเข้าชมภาพยนตร์เต็มโดม (E-TICKET)
+                            </span>
+                            <h2 class="text-xl sm:text-2xl font-bold font-display text-white">
+                                ท้องฟ้าจำลองรังสิต
+                            </h2>
+                        </div>
+                    </div>
+
+                    <div class="text-center sm:text-right">
+                        <span class="px-3 py-1 text-xs font-bold bg-emerald-500 text-white rounded-full inline-block shadow-sm">
+                            ชำระเงินสำเร็จ (PAID)
+                        </span>
+                        <p class="text-xs text-slate-300 mt-1.5 font-mono">
+                            รหัสจอง: <strong class="text-white text-sm">#16</strong>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Ticket Body Grid -->
+                <div class="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                    
+                    <!-- Movie & Details (2 Cols) -->
+                    <div class="md:col-span-2 space-y-5">
+                        
+                        <!-- Movie Title -->
+                        <div>
+                            <p class="text-xs text-slate-400 uppercase font-semibold">ภาพยนตร์รอบการแสดง</p>
+                            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-display mt-0.5">
+                                ผจญภัยนอกโลก ท่องสู่ระบบสุริยะ
+                            </h3>
+                                                            <p class="text-xs text-slate-500">TO WORLDS BEYOND - Journey through the solar system</p>
+                                                    </div>
+
+                        <!-- Date & Time Grid -->
+                        <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200/70 text-sm">
+                            <div>
+                                <p class="text-xs text-slate-400 font-medium">วันที่จัดแสดง</p>
+                                <p class="font-bold text-slate-800 font-display mt-0.5">
+                                    อาทิตย์ 23 สิงหาคม 2026
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-400 font-medium">รอบเวลา</p>
+                                <div class="flex items-center gap-1 font-bold text-cyan-700 font-display text-base mt-0.5">
+                                    <svg class="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>10:00 น.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Seats badges -->
+                        <div>
+                            <p class="text-xs text-slate-400 uppercase font-semibold mb-2">
+                                ที่นั่งที่ระบุ (1 ที่นั่ง)
+                            </p>
+                            <div class="flex flex-wrap gap-1.5">
+                                                                                                            <span class="px-3 py-1 bg-cyan-600 text-white font-bold rounded-lg text-xs font-display shadow-xs">
+                                            H15
+                                        </span>
+                                                                                                </div>
+                        </div>
+
+                        <!-- Booker info & payment -->
+                        <div class="pt-3 border-t border-slate-100 flex flex-wrap justify-between items-center text-xs text-slate-600 gap-2">
+                            <div>
+                                <span>ผู้จอง: <strong class="text-slate-800">by</strong></span>
+                                                                    <span class="text-slate-400 ml-2">(0999999999)</span>
+                                                            </div>
+                            <div>
+                                <span>ยอดรวม: <strong class="text-emerald-600 text-sm font-bold">110.00 ฿</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QR Stub (1 Col) -->
+                    <div class="text-center flex flex-col items-center justify-center p-6 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
+                        <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-200 mb-3">
+                            <?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="160" height="160" viewBox="0 0 160 160"><rect x="0" y="0" width="160" height="160" fill="#ffffff"/><g transform="scale(5.517)"><g transform="translate(0,0)"><path fill-rule="evenodd" d="M10 0L10 2L11 2L11 0ZM12 0L12 1L13 1L13 2L12 2L12 4L13 4L13 3L14 3L14 4L16 4L16 5L15 5L15 6L14 6L14 8L15 8L15 9L12 9L12 7L13 7L13 5L11 5L11 6L10 6L10 4L11 4L11 3L8 3L8 4L9 4L9 5L8 5L8 7L9 7L9 8L6 8L6 9L10 9L10 11L11 11L11 9L12 9L12 10L13 10L13 11L12 11L12 13L13 13L13 12L14 12L14 13L15 13L15 12L16 12L16 13L18 13L18 14L20 14L20 16L19 16L19 15L18 15L18 16L17 16L17 14L15 14L15 15L14 15L14 16L15 16L15 17L12 17L12 15L13 15L13 14L11 14L11 16L10 16L10 19L11 19L11 17L12 17L12 18L13 18L13 19L12 19L12 21L13 21L13 20L14 20L14 21L16 21L16 22L15 22L15 23L14 23L14 24L15 24L15 25L12 25L12 23L13 23L13 22L11 22L11 20L10 20L10 21L9 21L9 20L8 20L8 23L9 23L9 24L8 24L8 29L11 29L11 26L10 26L10 25L9 25L9 24L11 24L11 25L12 25L12 26L13 26L13 27L12 27L12 29L13 29L13 28L14 28L14 29L19 29L19 28L21 28L21 26L22 26L22 27L23 27L23 29L24 29L24 28L25 28L25 27L27 27L27 28L26 28L26 29L27 29L27 28L28 28L28 26L29 26L29 25L27 25L27 24L28 24L28 23L27 23L27 24L25 24L25 23L26 23L26 22L29 22L29 21L27 21L27 20L25 20L25 19L28 19L28 18L29 18L29 17L28 17L28 16L29 16L29 15L28 15L28 14L29 14L29 13L28 13L28 12L29 12L29 11L28 11L28 12L25 12L25 9L26 9L26 8L25 8L25 9L24 9L24 8L23 8L23 9L22 9L22 8L20 8L20 7L21 7L21 5L20 5L20 4L21 4L21 3L20 3L20 4L19 4L19 2L18 2L18 1L17 1L17 2L18 2L18 3L17 3L17 4L16 4L16 3L14 3L14 2L16 2L16 0L15 0L15 1L14 1L14 0ZM19 0L19 1L20 1L20 0ZM8 1L8 2L9 2L9 1ZM16 5L16 6L15 6L15 8L16 8L16 9L15 9L15 10L16 10L16 12L18 12L18 13L21 13L21 10L22 10L22 11L24 11L24 9L23 9L23 10L22 10L22 9L20 9L20 8L19 8L19 7L20 7L20 5ZM9 6L9 7L10 7L10 6ZM11 6L11 7L12 7L12 6ZM16 6L16 8L17 8L17 9L16 9L16 10L17 10L17 11L18 11L18 10L17 10L17 9L19 9L19 10L20 10L20 9L19 9L19 8L17 8L17 6ZM18 6L18 7L19 7L19 6ZM0 8L0 9L3 9L3 10L1 10L1 11L0 11L0 14L1 14L1 15L3 15L3 16L2 16L2 21L4 21L4 20L5 20L5 21L7 21L7 20L6 20L6 19L7 19L7 18L8 18L8 19L9 19L9 17L8 17L8 14L10 14L10 13L11 13L11 12L9 12L9 11L8 11L8 13L7 13L7 12L3 12L3 10L4 10L4 11L5 11L5 8ZM10 8L10 9L11 9L11 8ZM27 8L27 10L26 10L26 11L27 11L27 10L29 10L29 9L28 9L28 8ZM6 10L6 11L7 11L7 10ZM14 11L14 12L15 12L15 11ZM19 11L19 12L20 12L20 11ZM1 12L1 13L2 13L2 14L4 14L4 15L5 15L5 17L4 17L4 19L6 19L6 18L7 18L7 17L6 17L6 16L7 16L7 15L5 15L5 14L7 14L7 13L2 13L2 12ZM22 12L22 13L25 13L25 12ZM26 13L26 14L23 14L23 15L22 15L22 14L21 14L21 16L20 16L20 18L19 18L19 17L18 17L18 18L17 18L17 17L15 17L15 18L16 18L16 19L14 19L14 20L16 20L16 21L17 21L17 22L16 22L16 24L18 24L18 23L17 23L17 22L19 22L19 21L20 21L20 18L21 18L21 19L22 19L22 20L23 20L23 19L25 19L25 18L22 18L22 17L25 17L25 16L28 16L28 15L27 15L27 14L28 14L28 13ZM24 15L24 16L25 16L25 15ZM21 16L21 17L22 17L22 16ZM0 17L0 21L1 21L1 17ZM26 17L26 18L28 18L28 17ZM18 18L18 19L19 19L19 18ZM16 19L16 20L17 20L17 21L19 21L19 20L17 20L17 19ZM21 21L21 24L24 24L24 21ZM25 21L25 22L26 22L26 21ZM10 22L10 23L11 23L11 22ZM22 22L22 23L23 23L23 22ZM19 23L19 25L15 25L15 26L18 26L18 27L17 27L17 28L19 28L19 27L20 27L20 26L21 26L21 25L20 25L20 23ZM22 25L22 26L23 26L23 27L24 27L24 26L27 26L27 25L24 25L24 26L23 26L23 25ZM9 26L9 27L10 27L10 26ZM14 27L14 28L16 28L16 27ZM0 0L0 7L7 7L7 0ZM1 1L1 6L6 6L6 1ZM2 2L2 5L5 5L5 2ZM22 0L22 7L29 7L29 0ZM23 1L23 6L28 6L28 1ZM24 2L24 5L27 5L27 2ZM0 22L0 29L7 29L7 22ZM1 23L1 28L6 28L6 23ZM2 24L2 27L5 27L5 24Z" fill="#000000"/></g></g></svg>
+
+                        </div>
+                        <p class="text-xs font-bold text-slate-700">สแกนเพื่อเข้าชม</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5 max-w-[180px] break-all font-mono">
+                            Ref: e33b4793-6bd2...
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Ticket Instructions Footer -->
+                <div class="bg-slate-50/90 px-6 sm:px-8 py-3.5 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-2">
+                    <p>กรุณาแสดงหน้านี้หรือตั๋วที่พิมพ์แก่เจ้าหน้าที่ ณ ประตูทางเข้าก่อนรอบฉาย 15 นาที</p>
+                    <p class="font-mono text-slate-400">Issued: 23/08/2026 05:55</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons (Print / Home) -->
+            <div class="no-print mt-8 flex flex-wrap justify-center gap-4">
+                <button onclick="window.print()"
+                    class="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 font-semibold py-3 px-6 rounded-xl border border-slate-300 shadow-sm transition text-sm">
+                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    <span>พิมพ์ตั๋ว / บันทึก PDF</span>
+                </button>
+
+                <a href="http://localhost"
+                    class="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3 px-8 rounded-xl shadow-md transition text-sm font-display">
+                    <span>กลับสู่หน้าหลัก</span>
+                    <span>→</span>
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="no-print bg-white text-slate-600 py-6 border-t border-slate-200 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 text-center text-xs text-slate-400 space-y-1">
+            <p>ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต (ท้องฟ้าจำลองรังสิต) &bull; โทร 02 577 5456 – 9 ต่อ 304</p>
+            <p>© 2026 ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

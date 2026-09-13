@@ -10,6 +10,7 @@ use App\Http\Controllers\PosController;
 
 // --- 1. หน้าแรกและระบบจองฝั่งลูกค้า ---
 Route::get('/', [ShowtimeController::class, 'index'])->name('showtimes.index');
+Route::get('/bookings/search', [BookingController::class, 'search'])->name('bookings.search');
 
 Route::get('/bookings/create/{showtime?}', [BookingController::class, 'create'])->name('bookings.create');
 Route::post('/bookings/seats', [BookingController::class, 'seats'])->name('bookings.seats');
@@ -63,5 +64,16 @@ Route::middleware(['auth'])->group(function () {
     // หน้า POS 
     Route::prefix('pos')->name('pos.')->group(function () {
         Route::get('/', [PosController::class, 'index'])->name('index');
+        Route::post('/quick-sell', [PosController::class, 'quickSell'])->name('quick-sell');
+        Route::get('/receipt/{booking}', [PosController::class, 'receipt'])->name('receipt');
+        
+        Route::get('/scan', [PosController::class, 'scan'])->name('scan');
+        Route::post('/verify', [PosController::class, 'verifyBooking'])->name('verify');
+        Route::post('/confirm-checkin/{booking}', [PosController::class, 'confirmCheckin'])->name('confirm-checkin');
+        
+        Route::get('/orders', [PosController::class, 'orders'])->name('orders');
+        Route::get('/reports', [PosController::class, 'reports'])->name('reports');
+        Route::get('/reports/pdf', [PosController::class, 'exportPdf'])->name('reports.pdf');
+        Route::get('/reports/csv', [PosController::class, 'exportCsv'])->name('reports.csv');
     });
 });

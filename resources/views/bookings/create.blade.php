@@ -1,49 +1,9 @@
-<!DOCTYPE html>
-<html lang="th">
+@extends('layouts.client')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>กรอกข้อมูลการจองตั๋ว - ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+@section('title', 'กรอกข้อมูลการจองตั๋ว')
 
-<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-between">
-
-    <!-- แถบประกาศด้านบน -->
-    <div
-        class="bg-gradient-to-r from-cyan-500 via-sky-500 to-violet-600 text-white text-sm font-medium py-2.5 px-4 text-center shadow-sm">
-        <a href="https://sci-rangsit.dole.go.th" target="_blank"
-            class="hover:opacity-90 transition inline-flex items-center justify-center gap-2 font-display tracking-wide">
-            <span aria-hidden="true">✦</span>
-            <span>คลิก <strong class="text-yellow-300 underline underline-offset-2 font-bold">ที่นี่</strong>
-                เพื่อเข้าสู่เว็บไซต์ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต</span>
-            <span aria-hidden="true">✦</span>
-        </a>
-    </div>
-
-    <!-- Header / Navbar สีขาวทึบ -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-7xl mx-auto px-6 py-3.5 flex justify-between items-center">
-            <div class="flex items-center">
-                <a href="{{ route('showtimes.index') }}" class="flex items-center">
-                    <img src="{{ asset('images/logo.jpg') }}" alt="โลโก้ท้องฟ้าจำลองรังสิต"
-                        class="h-11 w-auto object-contain">
-                </a>
-            </div>
-            <a href="/admin" title="เข้าสู่ระบบเจ้าหน้าที่"
-                class="text-slate-400 hover:text-slate-700 p-2 rounded-lg transition-colors inline-flex items-center justify-center">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <rect x="5" y="11" width="14" height="10" rx="2" ry="2"></rect>
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0v4"></path>
-                </svg>
-            </a>
-        </div>
-    </header>
-
-    <!-- เนื้อหาหลัก (Main Content) -->
-    <main class="flex-1 flex items-center justify-center p-6 my-6">
+@section('content')
+<div class="flex-1 flex items-center justify-center p-6 my-6">
         <div class="max-w-3xl w-full bg-white p-8 sm:p-10 rounded-2xl shadow-sm border border-slate-200/80">
             <h1 class="text-2xl sm:text-3xl font-bold mb-8 text-center text-slate-900 tracking-tight">
                 กรอกข้อมูลการจองตั๋ว
@@ -148,7 +108,9 @@
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-1.5">เบอร์โทรศัพท์</label>
                         <input type="text" name="booker_phone" value="{{ old('booker_phone') }}"
-                            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-white transition">
+                              maxlength="10" required
+                              oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"
+                              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-white transition">
                     </div>
                 </div>
 
@@ -272,30 +234,12 @@
                 </button>
             </form>
         </div>
-    </main>
+    </div>
+@endsection
 
-    <!-- Footer พื้นหลังสีขาว -->
-    <footer class="bg-white text-slate-600 py-10 border-t border-slate-200 mt-auto">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="flex items-center gap-4">
-                <img src="{{ asset('images/logo.jpg') }}" alt="โลโก้ท้องฟ้าจำลองรังสิต"
-                    class="h-10 w-auto object-contain bg-white p-1 rounded-md shadow-sm border border-slate-100">
-                <div>
-                    <p class="text-slate-900 font-display font-semibold text-sm">ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต
-                    </p>
-                    <p class="text-xs text-slate-500">RANGSIT SCIENCE CENTRE FOR EDUCATION</p>
-                </div>
-            </div>
+@push('scripts')
+<script>
 
-            <div class="text-center md:text-right text-xs space-y-1">
-                <p class="text-slate-500">Copyright © 2026 ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต. All rights reserved</p>
-                <p class="text-slate-800 font-medium">โทร 02 577 5456 – 9 ต่อ 304</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Script ควบคุมการแสดงผลฟอร์มแยกประเภทและจำนวนที่นั่ง -->
-    <script>
         document.addEventListener('DOMContentLoaded', function() {
             const visitorTypeSelect = document.getElementById('visitor_type');
             const quantityInput = document.getElementById('quantity');
@@ -336,7 +280,6 @@
             visitorTypeSelect.addEventListener('change', updateSeatLimit);
             updateSeatLimit();
         });
-    </script>
-</body>
-
-</html>
+    
+</script>
+@endpush

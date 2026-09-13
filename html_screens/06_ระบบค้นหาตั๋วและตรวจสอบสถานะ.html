@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ค้นหาตั๋วและตรวจสอบสถานะการจอง - ท้องฟ้าจำลองรังสิต</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="preload" as="style" href="http://localhost/build/assets/app-CNRoyAwL.css" /><link rel="modulepreload" as="script" href="http://localhost/build/assets/app-BvRk9kiK.js" />    <style>
+        body {
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+        }
+
+        .font-display {
+            font-family: 'Chakra Petch', 'IBM Plex Sans Thai', sans-serif;
+        }
+    </style>
+<script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Top Announcement -->
+    <div class="bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 text-white text-xs sm:text-sm font-medium py-2 px-4 text-center shadow-sm">
+        <a href="https://sci-rangsit.dole.go.th" target="_blank"
+            class="hover:underline transition inline-flex items-center justify-center gap-1.5 font-display tracking-wide">
+            <span>ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต (ท้องฟ้าจำลองรังสิต)</span>
+            <svg class="w-3.5 h-3.5 text-cyan-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+        </a>
+    </div>
+
+    <!-- Header Navbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex justify-between items-center">
+            <a href="http://localhost" class="flex items-center gap-3">
+                <img src="images/logo.jpg" alt="โลโก้ท้องฟ้าจำลองรังสิต"
+                    class="h-10 w-auto object-contain">
+                <div class="hidden sm:block">
+                    <p class="font-display font-bold text-slate-900 text-sm leading-tight">ท้องฟ้าจำลองรังสิต</p>
+                    <p class="text-[11px] text-slate-500">ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต</p>
+                </div>
+            </a>
+
+            <a href="http://localhost"
+                class="text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3.5 py-2 rounded-xl transition">
+                ← กลับหน้าหลัก
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 py-10 flex-1 w-full">
+        
+        <!-- Page Title & Search Card -->
+        <div class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-10 shadow-sm mb-8 text-center">
+            <div class="w-14 h-14 rounded-2xl bg-cyan-50 border border-cyan-200 text-cyan-600 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-7 h-7 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+            
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 font-display mb-2">
+                ค้นหาตั๋วและตรวจสอบสถานะการจอง
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto mb-6">
+                กรอกเบอร์โทรศัพท์, รหัสการจอง (#123) หรืออีเมลที่ใช้ทำการจอง เพื่อดึงตั๋วเข้าชม E-Ticket และ QR Code
+            </p>
+
+            <form action="http://localhost/bookings/search" method="GET" class="max-w-xl mx-auto flex flex-col sm:flex-row gap-3">
+                <div class="relative flex-1">
+                    <input type="text" name="q" value="08" required autofocus
+                        placeholder="กรอกเบอร์โทรศัพท์ / รหัสการจอง / อีเมล"
+                        class="w-full bg-slate-50 border border-slate-300 rounded-2xl px-5 py-3.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-white transition font-medium">
+                </div>
+                <button type="submit"
+                    class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold py-3.5 px-8 rounded-2xl shadow-md transition text-sm font-display shrink-0 inline-flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <span>ค้นหาตั๋ว</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Search Results Section -->
+                    <div class="space-y-4">
+                <div class="flex items-center justify-between px-2">
+                    <h2 class="text-sm font-bold text-slate-700 font-display">
+                        ผลการค้นหาสำหรับ: "<span class="text-cyan-700">08</span>"
+                    </h2>
+                    <span class="text-xs text-slate-500">พบ 0 รายการ</span>
+                </div>
+
+                                    <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+                        <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="font-display font-bold text-base text-slate-700">ไม่พบข้อมูลการจอง</h3>
+                        <p class="text-xs text-slate-400 mt-1">กรุณาตรวจสอบเบอร์โทรศัพท์ หรือรหัสการจองอีกครั้ง</p>
+                    </div>
+                            </div>
+        
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white text-slate-600 py-6 border-t border-slate-200 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 text-center text-xs text-slate-400 space-y-1">
+            <p>ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต (ท้องฟ้าจำลองรังสิต) &bull; โทร 02 577 5456 – 9 ต่อ 304</p>
+            <p>© 2026 ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>
+

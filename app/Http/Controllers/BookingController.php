@@ -13,23 +13,23 @@ use App\Models\WeeklySchedule;
 
 class BookingController extends Controller
 {
-    // ราคาต่อที่นั่ง (ใช้ร่วมกันทั้งหน้าเลือกที่นั่งและตอนสร้าง booking จริง)
-    protected int $pricePerSeat = 110;
+    // à¸£à¸²à¸„à¸²à¸•à¹ˆà¸­à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡ (à¹ƒà¸Šà¹‰à¸£à¹ˆà¸§à¸¡à¸à¸±à¸™à¸—à¸±à¹‰à¸‡à¸«à¸™à¹‰à¸²à¹€à¸¥à¸·à¸­à¸à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡à¹à¸¥à¸°à¸•à¸­à¸™à¸ªà¸£à¹‰à¸²à¸‡ booking à¸ˆà¸£à¸´à¸‡)
+    protected int $pricePerSeat = 50;
 
     public function create(Request $request, $id = null)
     {
-        // ถ้าส่งมาแบบ Showtime ปกติ
+        // à¸–à¹‰à¸²à¸ªà¹ˆà¸‡à¸¡à¸²à¹à¸šà¸š Showtime à¸›à¸à¸•à¸´
         if ($id) {
             $showtime = Showtime::with('movie')->findOrFail($id);
         } else {
-            // กรณีมาจาก Weekly Schedule (รับค่า day และ time ทาง Query String)
+            // à¸à¸£à¸“à¸µà¸¡à¸²à¸ˆà¸²à¸ Weekly Schedule (à¸£à¸±à¸šà¸„à¹ˆà¸² day à¹à¸¥à¸° time à¸—à¸²à¸‡ Query String)
             $date = $request->query('date');
             $time = $request->query('time');
             $weeklyScheduleId = $request->query('weekly_id');
 
             $weeklySchedule = WeeklySchedule::with('movie')->findOrFail($weeklyScheduleId);
 
-            // ค้นหาหรือสร้าง Showtime จริงขึ้นมาในฐานข้อมูลทันที เพื่อให้อ้างอิง ID ได้
+            // à¸„à¹‰à¸™à¸«à¸²à¸«à¸£à¸·à¸­à¸ªà¸£à¹‰à¸²à¸‡ Showtime à¸ˆà¸£à¸´à¸‡à¸‚à¸¶à¹‰à¸™à¸¡à¸²à¹ƒà¸™à¸à¸²à¸™à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸—à¸±à¸™à¸—à¸µ à¹€à¸žà¸·à¹ˆà¸­à¹ƒà¸«à¹‰à¸­à¹‰à¸²à¸‡à¸­à¸´à¸‡ ID à¹„à¸”à¹‰
             $showtime = Showtime::firstOrCreate(
                 [
                     'show_date' => $date,
@@ -47,31 +47,35 @@ class BookingController extends Controller
     }
 
     /**
-     * STEP ใหม่: รับข้อมูลผู้จอง + จำนวนที่นั่งจากฟอร์ม create แล้วแสดงหน้าเลือกที่นั่ง
-     * ยังไม่สร้าง Booking จริง แค่ส่งข้อมูลต่อผ่าน hidden field ในหน้าเลือกที่นั่ง
+     * STEP à¹ƒà¸«à¸¡à¹ˆ: à¸£à¸±à¸šà¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸œà¸¹à¹‰à¸ˆà¸­à¸‡ + à¸ˆà¸³à¸™à¸§à¸™à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡à¸ˆà¸²à¸à¸Ÿà¸­à¸£à¹Œà¸¡ create à¹à¸¥à¹‰à¸§à¹à¸ªà¸”à¸‡à¸«à¸™à¹‰à¸²à¹€à¸¥à¸·à¸­à¸à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡
+     * à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸ªà¸£à¹‰à¸²à¸‡ Booking à¸ˆà¸£à¸´à¸‡ à¹à¸„à¹ˆà¸ªà¹ˆà¸‡à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸•à¹ˆà¸­à¸œà¹ˆà¸²à¸™ hidden field à¹ƒà¸™à¸«à¸™à¹‰à¸²à¹€à¸¥à¸·à¸­à¸à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡
      */
     public function seats(Request $request)
     {
-        // 📌 ปรับ max จาก 10 เป็น 160 เพื่อรองรับบริษัท/ราชการ
+        // ðŸ“Œ à¸›à¸£à¸±à¸š max à¸ˆà¸²à¸ 10 à¹€à¸›à¹‡à¸™ 160 à¹€à¸žà¸·à¹ˆà¸­à¸£à¸­à¸‡à¸£à¸±à¸šà¹‚à¸£à¸‡à¹€à¸£à¸µà¸¢à¸™/à¸šà¸£à¸´à¸©à¸±à¸—/à¸£à¸²à¸Šà¸à¸²à¸£
         $validated = $request->validate([
             'showtime_id' => 'required|exists:showtimes,id',
             'booker_name' => 'required|string|max:255',
             'booker_email' => 'required|email',
-            'booker_phone' => 'nullable|string|max:20',
-            'visitor_type' => 'required|in:individual,company,government',
+            'booker_phone' => 'required|string|regex:/^[0-9]{10}$/',
+            'visitor_type' => 'required|in:individual,school,company,government',
             'quantity' => 'required|integer|min:1|max:160',
         ]);
 
         $showtime = Showtime::with('movie')->findOrFail($validated['showtime_id']);
 
-        // 📌 เช็คเพิ่มเติมว่าถ้าเลือกประเภทบุคคลทั่วไป ต้องไม่เกิน 10 ที่นั่ง
+        // à¸—à¸³à¸„à¸§à¸²à¸¡à¸ªà¸°à¸­à¸²à¸”à¸à¸²à¸£à¸ˆà¸­à¸‡à¸—à¸µà¹ˆà¸«à¸¡à¸”à¹€à¸§à¸¥à¸²à¹à¸¥à¸°à¸„à¸·à¸™à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡
+        $this->cleanupExpiredBookings($showtime->id);
+        $showtime->refresh();
+
+        // ðŸ“Œ à¹€à¸Šà¹‡à¸„à¹€à¸žà¸´à¹ˆà¸¡à¹€à¸•à¸´à¸¡à¸§à¹ˆà¸²à¸–à¹‰à¸²à¹€à¸¥à¸·à¸­à¸à¸›à¸£à¸°à¹€à¸ à¸—à¸šà¸¸à¸„à¸„à¸¥à¸—à¸±à¹ˆà¸§à¹„à¸› à¸•à¹‰à¸­à¸‡à¹„à¸¡à¹ˆà¹€à¸à¸´à¸™ 10 à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡
         if ($validated['visitor_type'] === 'individual' && $validated['quantity'] > 10) {
-            return back()->withErrors(['quantity' => 'บุคคลทั่วไปสามารถจองได้สูงสุด 10 ที่นั่งเท่านั้น']);
+            return back()->withErrors(['quantity' => 'à¸šà¸¸à¸„à¸„à¸¥à¸—à¸±à¹ˆà¸§à¹„à¸›à¸ªà¸²à¸¡à¸²à¸£à¸–à¸ˆà¸­à¸‡à¹„à¸”à¹‰à¸ªà¸¹à¸‡à¸ªà¸¸à¸” 10 à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡à¹€à¸—à¹ˆà¸²à¸™à¸±à¹‰à¸™']);
         }
 
         if ($showtime->available_seats < $validated['quantity']) {
             return back()->withErrors([
-                'quantity' => 'ที่นั่งไม่พอ เหลือ ' . $showtime->available_seats . ' ที่นั่ง',
+                'quantity' => 'à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡à¹„à¸¡à¹ˆà¸žà¸­ à¹€à¸«à¸¥à¸·à¸­ ' . $showtime->available_seats . ' à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡',
             ]);
         }
 
@@ -91,54 +95,84 @@ class BookingController extends Controller
 
     public function store(Request $request)
     {
-        // 📌 ปรับ max จาก 10 เป็น 160 เช่นกัน
+        // ðŸ“Œ à¸›à¸£à¸±à¸š max à¸ˆà¸²à¸ 10 à¹€à¸›à¹‡à¸™ 160 à¹€à¸Šà¹ˆà¸™à¸à¸±à¸™
         $validated = $request->validate([
             'showtime_id' => 'required|exists:showtimes,id',
             'booker_name' => 'required|string|max:255',
             'booker_email' => 'required|email',
-            'booker_phone' => 'nullable|string|max:20',
-            'visitor_type' => 'required|in:individual,company,government',
+            'booker_phone' => 'required|string|regex:/^[0-9]{10}$/',
+            'visitor_type' => 'required|in:individual,school,company,government',
             'quantity' => 'required|integer|min:1|max:160',
             'seats' => 'required|array|min:1',
             'seats.*' => 'string|max:10',
+            'school_name' => 'nullable|string|max:255',
+            'school_type' => 'nullable|string|max:255',
+            'education_level' => 'nullable|string|max:255',
+            'teachers_count' => 'nullable|integer|min:0',
+            'students_count' => 'nullable|integer|min:0',
+            'parents_count' => 'nullable|integer|min:0',
+            'gov_agency_name' => 'nullable|string|max:255',
+            'gov_department' => 'nullable|string|max:255',
+            'gov_officers_count' => 'nullable|integer|min:0',
         ]);
 
         if ($validated['visitor_type'] === 'individual' && $validated['quantity'] > 10) {
-            return back()->withErrors(['quantity' => 'บุคคลทั่วไปสามารถจองได้สูงสุด 10 ที่นั่งเท่านั้น']);
+            return back()->withErrors(['quantity' => 'à¹à¸šà¸šà¸šà¸¸à¸„à¸„à¸¥à¸—à¸±à¹ˆà¸§à¹„à¸›à¸ˆà¸­à¸‡à¹„à¸”à¹‰à¸ªà¸¹à¸‡à¸ªà¸¸à¸” 10 à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡à¸•à¹ˆà¸­à¸à¸²à¸£à¸—à¸³à¸£à¸²à¸¢à¸à¸²à¸£']);
         }
 
         if (count($validated['seats']) !== (int) $validated['quantity']) {
-            return back()->withErrors(['seats' => 'จำนวนที่นั่งที่เลือกไม่ตรงกับจำนวนที่ระบุไว้']);
+            return back()->withErrors(['seats' => 'à¸ˆà¸³à¸™à¸§à¸™à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡à¸—à¸µà¹ˆà¹€à¸¥à¸·à¸­à¸à¹„à¸¡à¹ˆà¸•à¸£à¸‡à¸à¸±à¸šà¸ˆà¸³à¸™à¸§à¸™à¸—à¸µà¹ˆà¸£à¸°à¸šà¸¸à¹„à¸§à¹‰']);
         }
 
-        return DB::transaction(function () use ($validated) {
-            // ล็อก row ของ showtime นี้ไว้ก่อน กันคนอื่นจองพร้อมกัน
+        $visitorDetails = [];
+        if ($validated['visitor_type'] === 'school') {
+            $visitorDetails = [
+                'school_name' => $validated['school_name'] ?? null,
+                'school_type' => $validated['school_type'] ?? null,
+                'education_level' => $validated['education_level'] ?? null,
+                'teachers_count' => $validated['teachers_count'] ?? 0,
+                'students_count' => $validated['students_count'] ?? 0,
+                'parents_count' => $validated['parents_count'] ?? 0,
+            ];
+        } elseif ($validated['visitor_type'] === 'government') {
+            $visitorDetails = [
+                'gov_agency_name' => $validated['gov_agency_name'] ?? null,
+                'gov_department' => $validated['gov_department'] ?? null,
+                'gov_officers_count' => $validated['gov_officers_count'] ?? 0,
+            ];
+        }
+
+        $this->cleanupExpiredBookings($validated['showtime_id']);
+
+        return DB::transaction(function () use ($validated, $visitorDetails) {
+            // à¸¥à¹‡à¸­à¸ row à¸‚à¸­à¸‡ showtime à¸™à¸µà¹‰à¹„à¸§à¹‰à¸à¹ˆà¸­à¸™ à¸à¸±à¸™à¸„à¸™à¸­à¸·à¹ˆà¸™à¸ˆà¸­à¸‡à¸žà¸£à¹‰à¸­à¸¡à¸à¸±à¸™
             $showtime = Showtime::where('id', $validated['showtime_id'])
                 ->lockForUpdate()
                 ->firstOrFail();
 
             if ($showtime->available_seats < $validated['quantity']) {
-                return back()->withErrors(['quantity' => 'ที่นั่งไม่พอ เหลือ ' . $showtime->available_seats . ' ที่นั่ง']);
+                return back()->withErrors(['quantity' => 'à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡à¹„à¸¡à¹ˆà¸žà¸­ à¹€à¸«à¸¥à¸·à¸­ ' . $showtime->available_seats . ' à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡']);
             }
 
-            // เช็คซ้ำว่าที่นั่งที่เลือกยังว่างจริง ป้องกันกรณีมีคนจองซ้อนระหว่างที่กำลังเลือกที่นั่ง
+            // à¹€à¸Šà¹‡à¸„à¸‹à¹‰à¸³à¸§à¹ˆà¸²à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡à¸—à¸µà¹ˆà¹€à¸¥à¸·à¸­à¸à¸¢à¸±à¸‡à¸§à¹ˆà¸²à¸‡à¸ˆà¸£à¸´à¸‡ à¸›à¹‰à¸­à¸‡à¸à¸±à¸™à¸à¸£à¸“à¸µà¸¡à¸µà¸„à¸™à¸ˆà¸­à¸‡à¸‹à¹‰à¸­à¸™à¸£à¸°à¸«à¸§à¹ˆà¸²à¸‡à¸—à¸µà¹ˆà¸à¸³à¸¥à¸±à¸‡à¹€à¸¥à¸·à¸­à¸à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡
             $takenSeats = $this->bookedSeatsFor($showtime->id, lock: true);
             $conflict = array_intersect($validated['seats'], $takenSeats);
 
             if (!empty($conflict)) {
                 return back()->withErrors([
-                    'seats' => 'ที่นั่ง ' . implode(', ', $conflict) . ' เพิ่งถูกจองไปแล้ว กรุณาเลือกที่นั่งใหม่',
+                    'seats' => 'à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡ ' . implode(', ', $conflict) . ' à¹€à¸žà¸´à¹ˆà¸‡à¸–à¸¹à¸à¸ˆà¸­à¸‡à¹„à¸›à¹à¸¥à¹‰à¸§ à¸à¸£à¸¸à¸“à¸²à¹€à¸¥à¸·à¸­à¸à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡à¹ƒà¸«à¸¡à¹ˆ',
                 ]);
             }
 
-            // ตัดที่นั่งทันที (ล็อกไว้ก่อน)
+            // à¸•à¸±à¸”à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡à¸—à¸±à¸™à¸—à¸µ (à¸¥à¹‡à¸­à¸à¹„à¸§à¹‰à¸à¹ˆà¸­à¸™)
             $showtime->decrement('available_seats', $validated['quantity']);
 
             $booking = Booking::create([
                 ...$validated,
+                'visitor_details' => $visitorDetails,
                 'total_amount' => $this->pricePerSeat * $validated['quantity'],
                 'status' => 'pending',
-                'qr_ticket_ref' => Str::uuid(),
+                'qr_ticket_ref' => (string) Str::uuid(),
                 'expires_at' => now()->addMinutes(30),
             ]);
 
@@ -149,11 +183,19 @@ class BookingController extends Controller
     public function payment(Booking $booking)
     {
         if ($booking->status !== 'pending' && $booking->status !== 'awaiting_payment') {
-            abort(404);
+            return redirect()->route('bookings.confirmed', $booking->id);
+        }
+
+        if ($booking->expires_at && $booking->expires_at->isPast()) {
+            $booking->update(['status' => 'expired']);
+            if ($booking->showtime) {
+                $booking->showtime->increment('available_seats', $booking->quantity);
+            }
+            return redirect()->route('showtimes.index')->with('error', 'à¸à¸²à¸£à¸ˆà¸­à¸‡à¸«à¸¡à¸”à¸­à¸²à¸¢à¸¸à¹à¸¥à¹‰à¸§ à¸à¸£à¸¸à¸“à¸²à¸—à¸³à¸£à¸²à¸¢à¸à¸²à¸£à¹ƒà¸«à¸¡à¹ˆ');
         }
 
         $qrPayload = PromptPayQr::generatePayload(
-            env('PROMPTPAY_TARGET'),
+            env('PROMPTPAY_TARGET', '0800000000'),
             (float) $booking->total_amount
         );
 
@@ -166,16 +208,17 @@ class BookingController extends Controller
             'payment_method' => 'required|in:qr_code,counter',
         ]);
 
-        if ($booking->expires_at->isPast()) {
+        if ($booking->expires_at && $booking->expires_at->isPast()) {
             $booking->update(['status' => 'expired']);
-            return back()->withErrors(['expired' => 'หมดเวลาการจองแล้ว กรุณาจองใหม่']);
+            if ($booking->showtime) {
+                $booking->showtime->increment('available_seats', $booking->quantity);
+            }
+            return back()->withErrors(['expired' => 'à¸«à¸¡à¸”à¹€à¸§à¸¥à¸²à¸à¸²à¸£à¸ˆà¸­à¸‡à¹à¸¥à¹‰à¸§ à¸à¸£à¸¸à¸“à¸²à¸ˆà¸­à¸‡à¹ƒà¸«à¸¡à¹ˆ']);
         }
 
-        // MVP: ยืนยันเองก่อน (ยังไม่ได้ต่อ API ธนาคารจริง)
-        // ของจริงต้องรอเจ้าหน้าที่ตรวจสลิป หรือ webhook จากธนาคาร
         $booking->update([
             'payment_method' => $request->payment_method,
-            'status' => 'paid',
+            'status' => 'awaiting_payment',
             'qr_payment_ref' => (string) Str::uuid(),
         ]);
 
@@ -184,16 +227,38 @@ class BookingController extends Controller
 
     public function confirmed(Booking $booking)
     {
+        $booking->load(['showtime.movie']);
         return view('bookings.confirmed', compact('booking'));
     }
 
     /**
-     * รวมรหัสที่นั่งที่ถูกจองไปแล้วของ showtime นี้ (นับเฉพาะ booking ที่ยังไม่หมดอายุ/ยังไม่ถูกยกเลิก)
+     * à¸„à¸·à¸™à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡à¸­à¸±à¸•à¹‚à¸™à¸¡à¸±à¸•à¸´à¸ªà¸³à¸«à¸£à¸±à¸šà¸£à¸²à¸¢à¸à¸²à¸£à¸—à¸µà¹ˆà¸«à¸¡à¸”à¹€à¸§à¸¥à¸²
+     */
+    protected function cleanupExpiredBookings(?int $showtimeId = null): void
+    {
+        $query = Booking::whereIn('status', ['pending', 'awaiting_payment'])
+            ->where('expires_at', '<', now());
+
+        if ($showtimeId) {
+            $query->where('showtime_id', $showtimeId);
+        }
+
+        $expiredBookings = $query->get();
+        foreach ($expiredBookings as $expired) {
+            if ($expired->showtime) {
+                $expired->showtime->increment('available_seats', $expired->quantity);
+            }
+            $expired->update(['status' => 'expired']);
+        }
+    }
+
+    /**
+     * à¸£à¸§à¸¡à¸£à¸«à¸±à¸ªà¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡à¸—à¸µà¹ˆà¸–à¸¹à¸à¸ˆà¸­à¸‡à¹„à¸›à¹à¸¥à¹‰à¸§à¸‚à¸­à¸‡ showtime à¸™à¸µà¹‰ (à¸™à¸±à¸šà¹€à¸‰à¸žà¸²à¸° booking à¸—à¸µà¹ˆà¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸«à¸¡à¸”à¸­à¸²à¸¢à¸¸/à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸¢à¸à¹€à¸¥à¸´à¸)
      */
     protected function bookedSeatsFor(int $showtimeId, bool $lock = false): array
     {
         $query = Booking::where('showtime_id', $showtimeId)
-            ->whereIn('status', ['pending', 'awaiting_payment', 'paid'])
+            ->whereIn('status', ['pending', 'awaiting_payment', 'paid', 'redeemed'])
             ->where(function ($q) {
                 $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
             });
@@ -209,18 +274,39 @@ class BookingController extends Controller
             ->all();
     }
 
+    public function search(Request $request)
+    {
+        $query = trim($request->input('q', ''));
+        $bookings = collect();
+
+        if ($query !== '') {
+            $cleanId = ltrim($query, '#');
+            $bookings = Booking::where('booker_phone', 'like', "%{$query}%")
+                ->orWhere('booker_email', 'like', "%{$query}%")
+                ->orWhere('id', is_numeric($cleanId) ? (int)$cleanId : 0)
+                ->orWhere('qr_ticket_ref', $query)
+                ->with(['showtime.movie'])
+                ->orderBy('id', 'desc')
+                ->take(20)
+                ->get();
+        }
+
+        return view('bookings.search', compact('bookings', 'query'));
+    }
+
     public function destroy($id)
     {
         $booking = Booking::findOrFail($id);
 
-        // 1. คืนที่นั่งก่อนลบ
-        if ($booking->showtime) {
+        // 1. à¸„à¸·à¸™à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡à¸à¹ˆà¸­à¸™à¸¥à¸š
+        if ($booking->showtime && in_array($booking->status, ['pending', 'awaiting_payment', 'paid'])) {
             $booking->showtime->increment('available_seats', $booking->quantity);
         }
 
-        // 2. ลบข้อมูลการจอง
+        // 2. à¸¥à¸šà¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸à¸²à¸£à¸ˆà¸­à¸‡
         $booking->delete();
 
-        return back()->with('success', 'ลบข้อมูลสำเร็จ และคืนที่นั่งเรียบร้อยแล้ว');
+        return back()->with('success', 'à¸¥à¸šà¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸ªà¸³à¹€à¸£à¹‡à¸ˆ à¹à¸¥à¸°à¸„à¸·à¸™à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡à¹€à¸£à¸µà¸¢à¸šà¸£à¹‰à¸­à¸¢à¹à¸¥à¹‰à¸§');
     }
 }
+
