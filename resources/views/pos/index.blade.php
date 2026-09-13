@@ -204,7 +204,8 @@
         </div>
     </main>
 
-    <!-- Quick Sell Modal Dialog -->
+    @if(false)
+    <!-- Legacy Quick Sell markup retained for reference; the active POS flow uses seat selection. -->
     <div id="quickSellModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -344,5 +345,7 @@
         }
     </script>
 
+
+    @endif
 
 @endsection
