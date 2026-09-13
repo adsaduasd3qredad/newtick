@@ -176,14 +176,14 @@ class BookingController extends Controller
                 'expires_at' => now()->addMinutes(30),
             ]);
 
-            return redirect()->route('bookings.payment', $booking->id);
+            return redirect()->route('bookings.payment', $booking->qr_ticket_ref);
         });
     }
 
     public function payment(Booking $booking)
     {
         if ($booking->status !== 'pending' && $booking->status !== 'awaiting_payment') {
-            return redirect()->route('bookings.confirmed', $booking->id);
+            return redirect()->route('bookings.confirmed', $booking->qr_ticket_ref);
         }
 
         if ($booking->expires_at && $booking->expires_at->isPast()) {
@@ -222,7 +222,7 @@ class BookingController extends Controller
             'qr_payment_ref' => (string) Str::uuid(),
         ]);
 
-        return redirect()->route('bookings.confirmed', $booking->id);
+        return redirect()->route('bookings.confirmed', $booking->qr_ticket_ref);
     }
 
     public function confirmed(Booking $booking)
@@ -276,22 +276,23 @@ class BookingController extends Controller
 
     public function search(Request $request)
     {
-        $query = trim($request->input('q', ''));
+        $reference = trim($request->input('reference', ''));
+        $phone = trim($request->input('phone', ''));
         $bookings = collect();
 
-        if ($query !== '') {
-            $cleanId = ltrim($query, '#');
-            $bookings = Booking::where('booker_phone', 'like', "%{$query}%")
-                ->orWhere('booker_email', 'like', "%{$query}%")
-                ->orWhere('id', is_numeric($cleanId) ? (int)$cleanId : 0)
-                ->orWhere('qr_ticket_ref', $query)
+        if ($reference !== '' || $phone !== '') {
+            $validated = $request->validate([
+                'reference' => ['required', 'uuid'],
+                'phone' => ['required', 'string', 'regex:/^[0-9]{10}$/'],
+            ]);
+
+            $bookings = Booking::where('qr_ticket_ref', $validated['reference'])
+                ->where('booker_phone', $validated['phone'])
                 ->with(['showtime.movie'])
-                ->orderBy('id', 'desc')
-                ->take(20)
                 ->get();
         }
 
-        return view('bookings.search', compact('bookings', 'query'));
+        return view('bookings.search', compact('bookings', 'reference', 'phone'));
     }
 
     public function destroy($id)
@@ -309,4 +310,3 @@ class BookingController extends Controller
         return back()->with('success', 'à¸¥à¸šà¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸ªà¸³à¹€à¸£à¹‡à¸ˆ à¹à¸¥à¸°à¸„à¸·à¸™à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡à¹€à¸£à¸µà¸¢à¸šà¸£à¹‰à¸­à¸¢à¹à¸¥à¹‰à¸§');
     }
 }
-

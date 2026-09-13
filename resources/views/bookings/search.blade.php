@@ -69,13 +69,15 @@
                 ค้นหาตั๋วและตรวจสอบสถานะการจอง
             </h1>
             <p class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto mb-6">
-                กรอกเบอร์โทรศัพท์, รหัสการจอง (#123) หรืออีเมลที่ใช้ทำการจอง เพื่อดึงตั๋วเข้าชม E-Ticket และ QR Code
+                กรอกรหัส QR Ticket และเบอร์โทรศัพท์ที่ใช้จอง เพื่อยืนยันตัวตนและดึง E-Ticket
             </p>
-
             <form action="{{ route('bookings.search') }}" method="GET" class="max-w-xl mx-auto flex flex-col sm:flex-row gap-3">
-                <div class="relative flex-1">
-                    <input type="text" name="q" value="{{ $query }}" required autofocus
-                        placeholder="กรอกเบอร์โทรศัพท์ / รหัสการจอง / อีเมล"
+                <div class="relative flex-1 space-y-3">
+                    <input type="text" name="reference" value="{{ $reference }}" required autofocus
+                        placeholder="QR Ticket Reference (UUID)"
+                        class="w-full bg-slate-50 border border-slate-300 rounded-2xl px-5 py-3.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-white transition font-medium">
+                    <input type="text" name="phone" value="{{ $phone }}" required inputmode="numeric" pattern="[0-9]{10}"
+                        placeholder="เบอร์โทรศัพท์ 10 หลัก"
                         class="w-full bg-slate-50 border border-slate-300 rounded-2xl px-5 py-3.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-white transition font-medium">
                 </div>
                 <button type="submit"
@@ -89,11 +91,11 @@
         </div>
 
         <!-- Search Results Section -->
-        @if ($query !== '')
+        @if ($reference !== '' || $phone !== '')
             <div class="space-y-4">
                 <div class="flex items-center justify-between px-2">
                     <h2 class="text-sm font-bold text-slate-700 font-display">
-                        ผลการค้นหาสำหรับ: "<span class="text-cyan-700">{{ $query }}</span>"
+                        ผลการค้นหาสำหรับรหัส: "<span class="text-cyan-700">{{ $reference }}</span>"
                     </h2>
                     <span class="text-xs text-slate-500">พบ {{ $bookings->count() }} รายการ</span>
                 </div>
@@ -173,7 +175,7 @@
                             </span>
 
                             @if (in_array($booking->status, ['paid', 'redeemed']))
-                                <a href="{{ route('bookings.confirmed', $booking->id) }}"
+                                <a href="{{ route('bookings.confirmed', $booking->qr_ticket_ref) }}"
                                     class="inline-flex items-center gap-1.5 bg-cyan-50 hover:bg-cyan-100 text-cyan-800 font-semibold px-4 py-2 rounded-xl text-xs transition border border-cyan-200">
                                     <svg class="w-3.5 h-3.5 text-cyan-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
@@ -181,7 +183,7 @@
                                     <span>ดูตั๋ว E-Ticket</span>
                                 </a>
                             @elseif (in_array($booking->status, ['pending', 'awaiting_payment']))
-                                <a href="{{ route('bookings.payment', $booking->id) }}"
+                                <a href="{{ route('bookings.payment', $booking->qr_ticket_ref) }}"
                                     class="inline-flex items-center gap-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold px-4 py-2 rounded-xl text-xs transition shadow-xs">
                                     <span>ชำระเงินต่อ →</span>
                                 </a>
@@ -215,4 +217,3 @@
 </body>
 
 </html>
-

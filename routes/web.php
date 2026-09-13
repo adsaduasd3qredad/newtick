@@ -10,19 +10,21 @@ use App\Http\Controllers\PosController;
 
 // --- 1. หน้าแรกและระบบจองฝั่งลูกค้า ---
 Route::get('/', [ShowtimeController::class, 'index'])->name('showtimes.index');
-Route::get('/bookings/search', [BookingController::class, 'search'])->name('bookings.search');
+Route::get('/bookings/search', [BookingController::class, 'search'])
+    ->middleware('throttle:10,1')
+    ->name('bookings.search');
 
 Route::get('/bookings/create/{showtime?}', [BookingController::class, 'create'])->name('bookings.create');
 Route::post('/bookings/seats', [BookingController::class, 'seats'])->name('bookings.seats');
 Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
-Route::get('/bookings/{booking}/payment', [BookingController::class, 'payment'])->name('bookings.payment');
-Route::post('/bookings/{booking}/confirm', [BookingController::class, 'confirmPayment'])->name('bookings.confirm');
-Route::get('/bookings/{booking}/confirmed', [BookingController::class, 'confirmed'])->name('bookings.confirmed');
+Route::get('/bookings/{booking:qr_ticket_ref}/payment', [BookingController::class, 'payment'])->name('bookings.payment');
+Route::post('/bookings/{booking:qr_ticket_ref}/confirm', [BookingController::class, 'confirmPayment'])->name('bookings.confirm');
+Route::get('/bookings/{booking:qr_ticket_ref}/confirmed', [BookingController::class, 'confirmed'])->name('bookings.confirmed');
 
 // --- 2. ระบบ Login / Logout กลางสำหรับพนักงาน (Staff) ---
 Route::get('/login', function () {
     return view('auth.login');
-})->name('login');
+})->middleware('throttle:6,1')->name('login');
 
 Route::post('/login', function (Request $request) {
     $credentials = $request->validate([
@@ -33,12 +35,21 @@ Route::post('/login', function (Request $request) {
     if (Auth::attempt($credentials)) {
         $request->session()->regenerate();
 
-        // ถ้าบังเอิญเอาไอดีแอดมินมาล็อกอินหน้าพนักงาน ให้ดีดไปหลังบ้านทันที
         if (Auth::user()->role === 'admin') {
             return redirect('/admin');
         }
 
-        return redirect()->intended('/pos'); // พนักงานเข้าหน้า POS
+        if (Auth::user()->role === 'staff') {
+            return redirect()->intended('/pos');
+        }
+
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return back()->withErrors([
+            'email' => 'บัญชีนี้ไม่มีสิทธิ์เข้าสู่ระบบเจ้าหน้าที่',
+        ]);
     }
 
     return back()->withErrors([
@@ -55,7 +66,7 @@ Route::post('/logout', function (Request $request) {
 
 
 // --- 3. กลุ่มเส้นทางพนักงาน (POS & Checkin) ---
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'role:admin,staff'])->group(function () {
     
     // ตรวจตั๋ว
     Route::get('/checkin', [CheckinController::class, 'form'])->name('checkin.form');

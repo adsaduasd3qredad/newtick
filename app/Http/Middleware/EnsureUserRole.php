@@ -15,8 +15,8 @@ class EnsureUserRole
      */
     public function handle(Request $request, Closure $next, ...$roles)
     {
-        if (!in_array($request->user()->role, $roles)) {
-            return redirect('/'); // ถ้าไม่ใช่ Admin หรือ Staff ให้เด้งกลับหน้าแรก
+        if (! $request->user() || ! in_array($request->user()->role, $roles, true)) {
+            abort(403);
         }
         return $next($request);
     }

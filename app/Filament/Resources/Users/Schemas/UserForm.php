@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Users\Schemas;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use Illuminate\Validation\Rules\Password;
 
 class UserForm
 {
@@ -22,6 +23,7 @@ class UserForm
                 TextInput::make('password')
                     ->label('รหัสผ่าน')
                     ->password()
+                    ->rule(Password::min(8)->mixedCase()->numbers())
                     ->dehydrated(fn ($state) => filled($state))
                     ->required(fn (string $context): bool => $context === 'create'),
                 \Filament\Forms\Components\Select::make('role')

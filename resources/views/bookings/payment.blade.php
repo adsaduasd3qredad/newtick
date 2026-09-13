@@ -92,7 +92,7 @@
             </div>
 
             <div class="flex justify-center max-w-md mx-auto">
-                <form method="POST" action="{{ route('bookings.confirm', $booking->id) }}" class="w-full">
+                <form method="POST" action="{{ route('bookings.confirm', $booking->qr_ticket_ref) }}" class="w-full">
                     @csrf
                     <input type="hidden" name="payment_method" value="counter">
                     <button type="submit"
