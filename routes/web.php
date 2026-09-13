@@ -15,9 +15,9 @@ Route::get('/bookings/search', [BookingController::class, 'search'])->name('book
 Route::get('/bookings/create/{showtime?}', [BookingController::class, 'create'])->name('bookings.create');
 Route::post('/bookings/seats', [BookingController::class, 'seats'])->name('bookings.seats');
 Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
-Route::get('/bookings/{booking}/payment', [BookingController::class, 'payment'])->name('bookings.payment');
-Route::post('/bookings/{booking}/confirm', [BookingController::class, 'confirmPayment'])->name('bookings.confirm');
-Route::get('/bookings/{booking}/confirmed', [BookingController::class, 'confirmed'])->name('bookings.confirmed');
+Route::get('/bookings/{booking:qr_ticket_ref}/payment', [BookingController::class, 'payment'])->name('bookings.payment');
+Route::post('/bookings/{booking:qr_ticket_ref}/confirm', [BookingController::class, 'confirmPayment'])->name('bookings.confirm');
+Route::get('/bookings/{booking:qr_ticket_ref}/confirmed', [BookingController::class, 'confirmed'])->name('bookings.confirmed');
 
 // --- 2. ระบบ Login / Logout กลางสำหรับพนักงาน (Staff) ---
 Route::get('/login', function () {

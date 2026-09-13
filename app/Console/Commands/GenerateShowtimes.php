@@ -15,11 +15,11 @@ class GenerateShowtimes extends Command
 
     public function handle(): void
     {
-        $schedules = WeeklySchedule::all();
+        $schedules = WeeklySchedule::with('movie')->get();
         $created = 0;
 
         $startDate = Carbon::today();
-        $endOfMonth = Carbon::today()->addMonth()->endOfMonth(); // Create up to next month too so they can test
+        $endOfMonth = Carbon::today()->endOfMonth();
 
         $period = CarbonPeriod::create($startDate, $endOfMonth);
 
@@ -28,6 +28,20 @@ class GenerateShowtimes extends Command
 
             foreach ($schedules as $schedule) {
                 if ((int) $schedule->day_of_week === $dayOfWeek) {
+                    $movie = $schedule->movie;
+
+                    if (! $movie || ! $movie->is_active) {
+                        continue;
+                    }
+
+                    if ($movie->start_date && $date->lt(Carbon::parse($movie->start_date)->startOfDay())) {
+                        continue;
+                    }
+
+                    if ($movie->end_date && $date->gt(Carbon::parse($movie->end_date)->endOfDay())) {
+                        continue;
+                    }
+
                     $exists = Showtime::where('weekly_schedule_id', $schedule->id)
                         ->whereDate('show_date', $date->toDateString())
                         ->exists();

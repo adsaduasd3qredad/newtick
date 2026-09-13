@@ -34,10 +34,12 @@ class BookingController extends Controller
                 [
                     'show_date' => $date,
                     'show_time' => $time,
+                    'movie_id' => $weeklySchedule->movie_id,
                 ],
                 [
-                    'movie_id' => $weeklySchedule->movie_id,
+                    'weekly_schedule_id' => $weeklySchedule->id,
                     'available_seats' => $weeklySchedule->total_seats,
+                    'total_seats' => $weeklySchedule->total_seats,
                 ]
             );
             $showtime->load('movie');
@@ -176,21 +178,18 @@ class BookingController extends Controller
                 'expires_at' => now()->addMinutes(30),
             ]);
 
-            return redirect()->route('bookings.payment', $booking->id);
+            return redirect()->route('bookings.payment', $booking->qr_ticket_ref);
         });
     }
 
     public function payment(Booking $booking)
     {
         if ($booking->status !== 'pending' && $booking->status !== 'awaiting_payment') {
-            return redirect()->route('bookings.confirmed', $booking->id);
+            return redirect()->route('bookings.confirmed', $booking->qr_ticket_ref);
         }
 
         if ($booking->expires_at && $booking->expires_at->isPast()) {
-            $booking->update(['status' => 'expired']);
-            if ($booking->showtime) {
-                $booking->showtime->increment('available_seats', $booking->quantity);
-            }
+            $this->expireBooking($booking);
             return redirect()->route('showtimes.index')->with('error', 'à¸à¸²à¸£à¸ˆà¸­à¸‡à¸«à¸¡à¸”à¸­à¸²à¸¢à¸¸à¹à¸¥à¹‰à¸§ à¸à¸£à¸¸à¸“à¸²à¸—à¸³à¸£à¸²à¸¢à¸à¸²à¸£à¹ƒà¸«à¸¡à¹ˆ');
         }
 
@@ -208,11 +207,12 @@ class BookingController extends Controller
             'payment_method' => 'required|in:qr_code,counter',
         ]);
 
+        if (! in_array($booking->status, ['pending', 'awaiting_payment'], true)) {
+            return redirect()->route('bookings.confirmed', $booking->qr_ticket_ref);
+        }
+
         if ($booking->expires_at && $booking->expires_at->isPast()) {
-            $booking->update(['status' => 'expired']);
-            if ($booking->showtime) {
-                $booking->showtime->increment('available_seats', $booking->quantity);
-            }
+            $this->expireBooking($booking);
             return back()->withErrors(['expired' => 'à¸«à¸¡à¸”à¹€à¸§à¸¥à¸²à¸à¸²à¸£à¸ˆà¸­à¸‡à¹à¸¥à¹‰à¸§ à¸à¸£à¸¸à¸“à¸²à¸ˆà¸­à¸‡à¹ƒà¸«à¸¡à¹ˆ']);
         }
 
@@ -222,7 +222,7 @@ class BookingController extends Controller
             'qr_payment_ref' => (string) Str::uuid(),
         ]);
 
-        return redirect()->route('bookings.confirmed', $booking->id);
+        return redirect()->route('bookings.confirmed', $booking->qr_ticket_ref);
     }
 
     public function confirmed(Booking $booking)
@@ -243,13 +243,45 @@ class BookingController extends Controller
             $query->where('showtime_id', $showtimeId);
         }
 
-        $expiredBookings = $query->get();
-        foreach ($expiredBookings as $expired) {
-            if ($expired->showtime) {
-                $expired->showtime->increment('available_seats', $expired->quantity);
-            }
-            $expired->update(['status' => 'expired']);
+        $expiredBookings = $query->pluck('id');
+        foreach ($expiredBookings as $bookingId) {
+            DB::transaction(function () use ($bookingId) {
+                $expired = Booking::whereKey($bookingId)
+                    ->whereIn('status', ['pending', 'awaiting_payment'])
+                    ->where('expires_at', '<', now())
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($expired) {
+                    $this->expireBooking($expired);
+                }
+            });
         }
+    }
+
+    protected function expireBooking(Booking $booking): void
+    {
+        DB::transaction(function () use ($booking) {
+            $expired = Booking::whereKey($booking->getKey())
+                ->whereIn('status', ['pending', 'awaiting_payment'])
+                ->where('expires_at', '<', now())
+                ->lockForUpdate()
+                ->first();
+
+            if (! $expired) {
+                return;
+            }
+
+            $showtime = Showtime::whereKey($expired->showtime_id)
+                ->lockForUpdate()
+                ->first();
+
+            if ($showtime) {
+                $showtime->increment('available_seats', $expired->quantity);
+            }
+
+            $expired->update(['status' => 'expired']);
+        });
     }
 
     /**
@@ -299,9 +331,7 @@ class BookingController extends Controller
         $booking = Booking::findOrFail($id);
 
         // 1. à¸„à¸·à¸™à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡à¸à¹ˆà¸­à¸™à¸¥à¸š
-        if ($booking->showtime && in_array($booking->status, ['pending', 'awaiting_payment', 'paid'])) {
-            $booking->showtime->increment('available_seats', $booking->quantity);
-        }
+
 
         // 2. à¸¥à¸šà¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸à¸²à¸£à¸ˆà¸­à¸‡
         $booking->delete();
@@ -309,4 +339,3 @@ class BookingController extends Controller
         return back()->with('success', 'à¸¥à¸šà¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸ªà¸³à¹€à¸£à¹‡à¸ˆ à¹à¸¥à¸°à¸„à¸·à¸™à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡à¹€à¸£à¸µà¸¢à¸šà¸£à¹‰à¸­à¸¢à¹à¸¥à¹‰à¸§');
     }
 }
-

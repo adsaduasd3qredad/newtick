@@ -20,10 +20,22 @@ class CancelExpiredBookings extends Command
         foreach ($expiredBookings as $booking) {
             DB::transaction(function () use ($booking) {
                 // ล็อกป้องกันชนกับ booking ใหม่ที่กำลังตัดที่นั่งพร้อมกัน
-                $showtime = $booking->showtime()->lockForUpdate()->first();
-                $showtime->increment('available_seats', $booking->quantity);
+                $lockedBooking = Booking::whereKey($booking->id)
+                    ->whereIn('status', ['pending', 'awaiting_payment'])
+                    ->where('expires_at', '<', now())
+                    ->lockForUpdate()
+                    ->first();
 
-                $booking->update(['status' => 'expired']);
+                if (! $lockedBooking) {
+                    return;
+                }
+
+                $showtime = $lockedBooking->showtime()->lockForUpdate()->first();
+                if ($showtime) {
+                    $showtime->increment('available_seats', $lockedBooking->quantity);
+                }
+
+                $lockedBooking->update(['status' => 'expired']);
             });
 
             $this->info("ยกเลิกการจอง #{$booking->id} คืนที่นั่ง {$booking->quantity} ที่");

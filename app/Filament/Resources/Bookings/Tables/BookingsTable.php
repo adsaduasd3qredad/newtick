@@ -127,7 +127,7 @@ class BookingsTable
                     ->label('ดูตั๋ว')
                     ->icon('heroicon-m-ticket')
                     ->color('info')
-                    ->url(fn (Booking $record): string => route('bookings.confirmed', $record->id))
+                    ->url(fn (Booking $record): string => route('bookings.confirmed', $record->qr_ticket_ref))
                     ->openUrlInNewTab(),
 
                 Action::make('mark_paid')
@@ -148,4 +148,3 @@ class BookingsTable
             ]);
     }
 }
-

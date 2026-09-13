@@ -52,7 +52,7 @@ class Booking extends Model
     {
         static::deleting(function ($booking) {
             // เมื่อมีการลบ booking ให้บวกที่นั่งคืนในรอบฉายนั้นๆ
-            if ($booking->showtime) {
+            if ($booking->showtime && in_array($booking->status, ['pending', 'awaiting_payment', 'paid'], true)) {
                 $booking->showtime->increment('available_seats', $booking->quantity);
             }
         });

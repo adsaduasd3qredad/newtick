@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('booker_name');
             $table->string('booker_email');
             $table->string('booker_phone')->nullable();
-            $table->enum('visitor_type', ['individual', 'company', 'government'])->default('individual');
+            $table->enum('visitor_type', ['individual', 'school', 'company', 'government'])->default('individual');
             $table->integer('quantity');
             $table->decimal('total_amount', 10, 2);
             $table->string('discount_code')->nullable();
