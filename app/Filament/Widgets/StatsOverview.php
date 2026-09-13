@@ -5,8 +5,8 @@ namespace App\Filament\Widgets;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use App\Models\Booking;
-use App\Models\Movie;
 use App\Models\Showtime;
+use Illuminate\Support\Carbon;
 
 class StatsOverview extends BaseWidget
 {
@@ -15,20 +15,30 @@ class StatsOverview extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('การจองทั้งหมด', Booking::count())
-                ->description('รายการจองตั๋วในระบบ')
+            Stat::make('รอตรวจสอบ/รับเงิน', Booking::whereIn('status', ['pending', 'awaiting_payment'])->count())
+                ->description('รายการที่ต้องดำเนินการ')
                 ->descriptionIcon('heroicon-m-ticket')
-                ->color('success'),
+                ->color('danger')
+                ->url('/admin/bookings?tableFilters[status][value]=awaiting_payment'),
 
-            Stat::make('ภาพยนตร์ในระบบ', Movie::count())
-                ->description('จำนวนเรื่องทั้งหมด')
-                ->descriptionIcon('heroicon-m-film')
-                ->color('primary'),
+            Stat::make('รายได้วันนี้', Booking::whereIn('status', ['paid', 'redeemed'])
+                ->whereDate('created_at', Carbon::today())
+                ->sum('total_amount'))
+                ->description('เฉพาะรายการที่ชำระแล้ว')
+                ->descriptionIcon('heroicon-m-banknotes')
+                ->color('success')
+                ->money('THB'),
 
-            Stat::make('รอบฉายทั้งหมด', Showtime::count())
-                ->description('รอบฉายที่เปิดให้บริการ')
+            Stat::make('รอบฉายวันนี้', Showtime::whereDate('show_date', Carbon::today())->count())
+                ->description('รอบฉายของวันที่ ' . Carbon::today()->format('d/m/Y'))
                 ->descriptionIcon('heroicon-m-clock')
-                ->color('warning'),
+                ->color('warning')
+                ->url('/admin/showtimes'),
+
+            Stat::make('การจองทั้งหมด', Booking::count())
+                ->description('รายการจองสะสมในระบบ')
+                ->descriptionIcon('heroicon-m-chart-bar')
+                ->color('primary'),
         ];
     }
 }
