@@ -7,3 +7,4 @@ $content = preg_replace($searchPattern, '', $content);
 
 file_put_contents($file, $content);
 echo "Removed Tabs Navigation\n";
+

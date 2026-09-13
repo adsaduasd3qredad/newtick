@@ -61,7 +61,7 @@
         <div class="p-6">
             <!-- Close button -->
             <div class="flex justify-end mb-8">
-                <button id="close-menu-btn" class="text-white/80 hover:text-yellow-200 focus:outline-none">
+                <button id="close-menu-btn" class="text-gray-500 hover:text-cyan-500 focus:outline-none">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
@@ -123,7 +123,7 @@
                     <span class="font-medium text-gray-700">ท้องฟ้าจำลองรังสิต</span>
                 </div>
                 
-                <a href="https://www.google.com/maps/search/?api=1&query=ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต" target="_blank" class="inline-block bg-cyan-500 hover:bg-cyan-600 text-white font-medium py-3 px-10 rounded-xl shadow transition">
+                <a href="https://www.google.com/maps/search/?api=1&query=ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต" target="_blank" class="inline-block bg-cyan-500 hover:bg-cyan-600 text-gray-900 font-medium py-3 px-10 rounded-xl shadow transition">
                     แผนที่การเดินทาง
                 </a>
             </div>
@@ -134,8 +134,8 @@
         </div>
     </div>
 
-    <!-- Black Footer -->
-    <footer class="bg-gradient-to-r from-[#d94a11] to-[#f47e20] text-white/90 py-10">
+    <!-- White Footer -->
+    <footer class="bg-white border-t border-gray-200 text-gray-600 py-10">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex flex-col md:flex-row justify-between items-center gap-6">
                 <!-- Footer Logo & Copyright -->
@@ -144,22 +144,22 @@
                         <img src="{{ asset('images/logo.jpg') }}" alt="Logo" class="h-10 rounded">
                     </div>
                     <div>
-                        <p class="text-white font-medium text-sm">ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต</p>
+                        <p class="text-gray-900 font-medium text-sm">ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต</p>
                         <p class="text-[10px] uppercase tracking-wider">RANGSIT SCIENCE CENTRE FOR EDUCATION</p>
                         <p class="text-[11px] mt-2">Copyright &copy; {{ date('Y') }} ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต. All rights reserved</p>
                     </div>
                 </div>
                 
                 <!-- Footer Links -->
-                <div class="text-[12px] flex flex-wrap justify-center gap-4 text-white/80">
-                    <a href="/" class="hover:text-yellow-200 transition">หน้าแรก</a>
+                <div class="text-[12px] flex flex-wrap justify-center gap-4 text-gray-500">
+                    <a href="/" class="hover:text-cyan-500 transition">หน้าแรก</a>
                     <span>|</span>
-                    <a href="/#movies" class="hover:text-yellow-200 transition">โปรแกรมภาพยนตร์</a>
+                    <a href="/#movies" class="hover:text-cyan-500 transition">โปรแกรมภาพยนตร์</a>
                     <span>|</span>
-                    <a href="#" class="hover:text-yellow-200 transition">โปรโมชั่น</a>
+                    <a href="#" class="hover:text-cyan-500 transition">โปรโมชั่น</a>
                     <span>|</span>
-                    <a href="#" class="hover:text-yellow-200 transition">ข่าวสารและกิจกรรม</a>
-                    <span class="text-white ml-2">โทร 02 577 5456 - 9 ต่อ 304</span>
+                    <a href="#" class="hover:text-cyan-500 transition">ข่าวสารและกิจกรรม</a>
+                    <span class="text-gray-600 ml-2">โทร 02 577 5456 - 9 ต่อ 304</span>
                 </div>
             </div>
         </div>

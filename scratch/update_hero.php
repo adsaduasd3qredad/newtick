@@ -35,7 +35,7 @@ $replacePattern = <<<HTML
             
             <!-- Right: Image Decoration -->
             <div class="w-full md:w-1/3 flex justify-center md:justify-end p-8 hidden md:flex">
-                <div class="relative w-64 h-64 animate-pulse">
+                <div class="relative w-64 h-64 animate-spin-slow">
                     <!-- Just a decorative element, maybe the star.png if it looks good, or just rely on background -->
                     <img src="/images/star.png" alt="Star" class="w-full h-full object-contain opacity-80 drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]">
                 </div>
@@ -47,3 +47,4 @@ HTML;
 $content = preg_replace($searchPattern, $replacePattern, $content);
 file_put_contents($file, $content);
 echo "Updated Hero Section\n";
+
