@@ -95,6 +95,9 @@
                 <form method="POST" action="{{ route('bookings.confirm', $booking->qr_ticket_ref) }}" class="w-full">
                     @csrf
                     <input type="hidden" name="payment_method" value="counter">
+                    @if ($returnToPos)
+                        <input type="hidden" name="return_to_pos" value="1">
+                    @endif
                     <button type="submit"
                         class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 flex items-center justify-center gap-2 text-lg">
                         <span>ยืนยันรับรหัสตั๋ว (E-Ticket)</span>

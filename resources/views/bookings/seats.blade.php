@@ -252,6 +252,9 @@
         <input type="hidden" name="booker_phone" value="{{ $booker_phone }}">
         <input type="hidden" name="visitor_type" value="{{ $visitor_type }}">
         <input type="hidden" name="quantity" value="{{ $quantity }}">
+        @if ($returnToPos)
+            <input type="hidden" name="return_to_pos" value="1">
+        @endif
         <div id="seatInputs"></div>
 
         <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-4">

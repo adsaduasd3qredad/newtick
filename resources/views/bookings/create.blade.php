@@ -96,6 +96,9 @@
             <form action="{{ route('bookings.seats') }}" method="POST" class="space-y-5">
                 @csrf
                 <input type="hidden" name="showtime_id" value="{{ $showtime->id }}">
+                @if ($returnToPos)
+                    <input type="hidden" name="return_to_pos" value="1">
+                @endif
 
                 <!-- ข้อมูลผู้จองพื้นฐาน -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">

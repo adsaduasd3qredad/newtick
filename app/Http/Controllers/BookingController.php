@@ -43,7 +43,10 @@ class BookingController extends Controller
             $showtime->load('movie');
         }
 
-        return view('bookings.create', compact('showtime'));
+        return view('bookings.create', [
+            'showtime' => $showtime,
+            'returnToPos' => $request->boolean('staff'),
+        ]);
     }
 
     /**
@@ -60,6 +63,7 @@ class BookingController extends Controller
             'booker_phone' => 'required|string|regex:/^[0-9]{10}$/',
             'visitor_type' => 'required|in:individual,school,company,government',
             'quantity' => 'required|integer|min:1|max:160',
+            'return_to_pos' => 'nullable|boolean',
         ]);
 
         $showtime = Showtime::with('movie')->findOrFail($validated['showtime_id']);
@@ -90,6 +94,7 @@ class BookingController extends Controller
             'booker_phone' => $validated['booker_phone'],
             'visitor_type' => $validated['visitor_type'],
             'quantity' => $validated['quantity'],
+            'returnToPos' => $request->boolean('return_to_pos'),
         ]);
     }
 
@@ -103,6 +108,7 @@ class BookingController extends Controller
             'booker_phone' => 'required|string|regex:/^[0-9]{10}$/',
             'visitor_type' => 'required|in:individual,school,company,government',
             'quantity' => 'required|integer|min:1|max:160',
+            'return_to_pos' => 'nullable|boolean',
             'seats' => 'required|array|min:1',
             'seats.*' => 'string|max:10',
             'school_name' => 'nullable|string|max:255',
@@ -142,9 +148,12 @@ class BookingController extends Controller
             ];
         }
 
+        $returnToPos = $request->boolean('return_to_pos');
+        unset($validated['return_to_pos']);
+
         $this->cleanupExpiredBookings($validated['showtime_id']);
 
-        return DB::transaction(function () use ($validated, $visitorDetails) {
+        return DB::transaction(function () use ($validated, $visitorDetails, $returnToPos) {
             // à¸¥à¹‡à¸­à¸ row à¸‚à¸­à¸‡ showtime à¸™à¸µà¹‰à¹„à¸§à¹‰à¸à¹ˆà¸­à¸™ à¸à¸±à¸™à¸„à¸™à¸­à¸·à¹ˆà¸™à¸ˆà¸­à¸‡à¸žà¸£à¹‰à¸­à¸¡à¸à¸±à¸™
             $showtime = Showtime::where('id', $validated['showtime_id'])
                 ->lockForUpdate()
@@ -176,11 +185,14 @@ class BookingController extends Controller
                 'expires_at' => now()->addMinutes(30),
             ]);
 
-            return redirect()->route('bookings.payment', $booking->qr_ticket_ref);
+            return redirect()->route('bookings.payment', [
+                'booking' => $booking->qr_ticket_ref,
+                'staff' => $returnToPos ? 1 : null,
+            ]);
         });
     }
 
-    public function payment(Booking $booking)
+    public function payment(Request $request, Booking $booking)
     {
         if ($booking->status !== 'pending' && $booking->status !== 'awaiting_payment') {
             return redirect()->route('bookings.confirmed', $booking->qr_ticket_ref);
@@ -199,13 +211,18 @@ class BookingController extends Controller
             (float) $booking->total_amount
         );
 
-        return view('bookings.payment', compact('booking', 'qrPayload'));
+        return view('bookings.payment', [
+            'booking' => $booking,
+            'qrPayload' => $qrPayload,
+            'returnToPos' => $request->boolean('staff'),
+        ]);
     }
 
     public function confirmPayment(Request $request, Booking $booking)
     {
         $request->validate([
             'payment_method' => 'required|in:qr_code,counter',
+            'return_to_pos' => 'nullable|boolean',
         ]);
 
         if ($booking->expires_at && $booking->expires_at->isPast()) {
@@ -216,11 +233,17 @@ class BookingController extends Controller
             return back()->withErrors(['expired' => 'à¸«à¸¡à¸”à¹€à¸§à¸¥à¸²à¸à¸²à¸£à¸ˆà¸­à¸‡à¹à¸¥à¹‰à¸§ à¸à¸£à¸¸à¸“à¸²à¸ˆà¸­à¸‡à¹ƒà¸«à¸¡à¹ˆ']);
         }
 
+        $returnToPos = $request->boolean('return_to_pos');
+
         $booking->update([
             'payment_method' => $request->payment_method,
-            'status' => 'awaiting_payment',
+            'status' => $returnToPos ? 'paid' : 'awaiting_payment',
             'qr_payment_ref' => (string) Str::uuid(),
         ]);
+
+        if ($returnToPos) {
+            return redirect()->route('pos.index')->with('success', 'ชำระเงินและออกตั๋วเรียบร้อยแล้ว');
+        }
 
         return redirect()->route('bookings.confirmed', $booking->qr_ticket_ref);
     }

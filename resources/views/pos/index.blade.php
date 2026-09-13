@@ -166,7 +166,7 @@
                                 ที่นั่งเต็มแล้ว
                             </button>
                         @else
-                            <a href="{{ route('bookings.create', $showtime->id) }}"
+                            <a href="{{ route('bookings.create', [$showtime->id, 'staff' => 1]) }}"
                                 title="เลือกที่นั่งในโดมเอง"
                                 class="inline-flex items-center gap-1.5 bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-xs transition">
                                 <span>เลือกที่นั่งและขายตั๋ว</span>
