@@ -61,7 +61,7 @@
         <div class="p-6">
             <!-- Close button -->
             <div class="flex justify-end mb-8">
-                <button id="close-menu-btn" class="text-gray-400 hover:text-white focus:outline-none">
+                <button id="close-menu-btn" class="text-white/80 hover:text-yellow-200 focus:outline-none">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
@@ -135,7 +135,7 @@
     </div>
 
     <!-- Black Footer -->
-    <footer class="bg-[#141414] text-gray-400 py-10">
+    <footer class="bg-gradient-to-r from-[#d94a11] to-[#f47e20] text-white/90 py-10">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex flex-col md:flex-row justify-between items-center gap-6">
                 <!-- Footer Logo & Copyright -->
@@ -151,14 +151,14 @@
                 </div>
                 
                 <!-- Footer Links -->
-                <div class="text-[12px] flex flex-wrap justify-center gap-4 text-gray-400">
-                    <a href="/" class="hover:text-white transition">หน้าแรก</a>
+                <div class="text-[12px] flex flex-wrap justify-center gap-4 text-white/80">
+                    <a href="/" class="hover:text-yellow-200 transition">หน้าแรก</a>
                     <span>|</span>
-                    <a href="/#movies" class="hover:text-white transition">โปรแกรมภาพยนตร์</a>
+                    <a href="/#movies" class="hover:text-yellow-200 transition">โปรแกรมภาพยนตร์</a>
                     <span>|</span>
-                    <a href="#" class="hover:text-white transition">โปรโมชั่น</a>
+                    <a href="#" class="hover:text-yellow-200 transition">โปรโมชั่น</a>
                     <span>|</span>
-                    <a href="#" class="hover:text-white transition">ข่าวสารและกิจกรรม</a>
+                    <a href="#" class="hover:text-yellow-200 transition">ข่าวสารและกิจกรรม</a>
                     <span class="text-white ml-2">โทร 02 577 5456 - 9 ต่อ 304</span>
                 </div>
             </div>

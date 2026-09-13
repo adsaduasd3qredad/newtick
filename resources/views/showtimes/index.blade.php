@@ -5,41 +5,44 @@
 @section('content')
 
     <!-- Hero Section (Promotional Banner) -->
-    <section class="bg-[#f0f0f0] border-b border-gray-200">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between min-h-[400px]">
+    <section class="relative bg-black overflow-hidden border-b border-gray-800">
+        <!-- Astronomy Background Image -->
+        <div class="absolute inset-0 z-0">
+            <img src="/images/cosmos.jpg" alt="Space Background" class="w-full h-full object-cover opacity-60 mix-blend-screen">
+            <div class="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between min-h-[400px] relative z-10">
             <!-- Left: Graphic / Cards illustration -->
-            <div class="w-full md:w-1/2 p-8 md:p-12 relative overflow-hidden flex justify-center items-center">
-                <!-- Using a simple elegant text or graphic to match the reference -->
-                <div class="space-y-4 text-center md:text-left z-10">
-                    <h1 class="text-4xl md:text-5xl font-bold text-[#1c1c1c] leading-tight">
+            <div class="w-full md:w-2/3 p-8 md:p-12">
+                <div class="space-y-6 text-center md:text-left">
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight drop-shadow-lg">
                         เปิดประสบการณ์การเรียนรู้<br>
-                        <span class="text-blue-600 font-light">ผ่านโดมท้องฟ้าจำลอง</span>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 font-extrabold">ผ่านโดมท้องฟ้าจำลอง</span>
                     </h1>
-                    <p class="text-gray-600 text-lg mt-4">ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต แหล่งเรียนรู้ดาราศาสตร์และอวกาศสำหรับทุกคน</p>
+                    <p class="text-gray-300 text-lg md:text-xl mt-4 max-w-2xl drop-shadow">
+                        ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต แหล่งเรียนรู้ดาราศาสตร์และอวกาศสำหรับทุกคน
+                    </p>
+                    
+                    <div class="pt-4">
+                        <a href="#schedule" class="inline-block px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-full shadow-lg hover:shadow-cyan-500/30 transition transform hover:-translate-y-1">
+                            ดูรอบฉายวันนี้
+                        </a>
+                    </div>
                 </div>
-                <!-- Subtle background decoration -->
-                <div class="absolute -right-20 top-0 w-96 h-96 bg-gray-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
-                <div class="absolute -left-20 bottom-0 w-72 h-72 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
             </div>
             
-            <!-- Right: Image -->
-            <div class="w-full md:w-1/2 flex justify-end">
-                <!-- In a real scenario, this would be a high-quality promo image -->
+            <!-- Right: Image Decoration -->
+            <div class="w-full md:w-1/3 flex justify-center md:justify-end p-8 hidden md:flex">
+                <div class="relative w-64 h-64 animate-pulse">
+                    <!-- Just a decorative element, maybe the star.png if it looks good, or just rely on background -->
+                    <img src="/images/star.png" alt="Star" class="w-full h-full object-contain opacity-80 drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]">
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Tabs Navigation (ONGOING / COMING SOON) -->
-    <section class="max-w-7xl mx-auto px-4 mt-8">
-        <div class="flex items-center space-x-8 border-b border-gray-300">
-            <button class="py-3 font-semibold text-[#1c1c1c] border-b-2 border-[#1c1c1c] uppercase tracking-wider text-sm">
-                Ongoing
-            </button>
-            <button class="py-3 font-medium text-gray-400 hover:text-gray-600 uppercase tracking-wider text-sm transition">
-                Coming Soon
-            </button>
-        </div>
-    </section>
+    
 
     <!-- Movies Grid -->
     <section class="max-w-7xl mx-auto px-4 py-8">
