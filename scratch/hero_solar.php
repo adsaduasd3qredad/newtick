@@ -49,3 +49,4 @@ HTML;
 $contentIndex = preg_replace($searchHero, $replaceHero, $contentIndex);
 file_put_contents($fileIndex, $contentIndex);
 echo "Updated Hero Section with solar.jpg\n";
+
