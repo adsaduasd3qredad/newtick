@@ -21,13 +21,15 @@ class StatsOverview extends BaseWidget
                 ->color('danger')
                 ->url('/admin/bookings?tableFilters[status][value]=awaiting_payment'),
 
-            Stat::make('รายได้วันนี้', Booking::whereIn('status', ['paid', 'redeemed'])
-                ->whereDate('created_at', Carbon::today())
-                ->sum('total_amount'))
+            Stat::make('รายได้วันนี้', number_format(
+                Booking::whereIn('status', ['paid', 'redeemed'])
+                    ->whereDate('created_at', Carbon::today())
+                    ->sum('total_amount'),
+                2
+            ) . ' บาท')
                 ->description('เฉพาะรายการที่ชำระแล้ว')
                 ->descriptionIcon('heroicon-m-banknotes')
-                ->color('success')
-                ->money('THB'),
+                ->color('success'),
 
             Stat::make('รอบฉายวันนี้', Showtime::whereDate('show_date', Carbon::today())->count())
                 ->description('รอบฉายของวันที่ ' . Carbon::today()->format('d/m/Y'))
