@@ -151,6 +151,7 @@ class BookingsTable
                     ->visible(fn (Booking $record) => in_array($record->status, ['pending', 'awaiting_payment']))
                     ->action(function (Booking $record) {
                         $record->update(['status' => 'paid']);
+                        $record->payment?->update(['paid_at' => now()]);
                     }),
 
                 EditAction::make(),

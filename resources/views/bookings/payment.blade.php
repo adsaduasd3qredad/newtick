@@ -79,10 +79,7 @@
                 </div>
             @endif
 
-            @if(false)
-            <!-- Legacy payment instructions -->
-                        @endif
-                        <div class="bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-2xl mb-8 max-w-md mx-auto text-center shadow-sm">
+                        <div id="legacy-payment-instructions" class="hidden bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-2xl mb-8 max-w-md mx-auto text-center shadow-sm">
                 <svg class="w-10 h-10 mx-auto text-blue-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
                 </svg>
@@ -93,7 +90,7 @@
                 </p>
             </div>
 
-            <div class="bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-2xl mb-8 max-w-md mx-auto text-center shadow-sm">
+            <div id="promptpay-panel" class="bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-2xl mb-8 max-w-md mx-auto text-center shadow-sm">
                 <h3 class="font-bold text-lg mb-3">สแกนเพื่อชำระเงินผ่าน PromptPay</h3>
                 <div class="bg-white p-3 rounded-2xl inline-block shadow-sm">{!! QrCode::size(220)->generate($qrPayload) !!}</div>
                 <p class="text-sm mt-3">ยอดชำระ {{ number_format($booking->total_amount, 2) }} บาท</p>
@@ -102,16 +99,30 @@
             <div class="flex justify-center max-w-md mx-auto">
                 <form method="POST" enctype="multipart/form-data" action="{{ route('bookings.confirm', $booking->qr_ticket_ref) }}" class="w-full space-y-4">
                     @csrf
-                    <input type="hidden" name="payment_method" value="qr_code">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <label class="payment-option flex items-start gap-3 p-4 rounded-xl border-2 border-cyan-500 bg-cyan-50 cursor-pointer">
+                            <input type="radio" name="payment_method" value="qr_code" checked class="mt-1 payment-method">
+                            <span><strong class="block text-sm">โอนผ่าน PromptPay</strong><small class="text-xs text-slate-500">แนบสลิปเพื่อยืนยัน</small></span>
+                        </label>
+                        <label class="payment-option flex items-start gap-3 p-4 rounded-xl border-2 border-slate-200 bg-white cursor-pointer">
+                            <input type="radio" name="payment_method" value="counter" class="mt-1 payment-method">
+                            <span><strong class="block text-sm">จ่ายที่เคาน์เตอร์</strong><small class="text-xs text-slate-500">นำตั๋วออนไลน์ไปชำระภายหลัง</small></span>
+                        </label>
+                    </div>
                     @if ($returnToPos)
                         <input type="hidden" name="return_to_pos" value="1">
                     @endif
+                    <div id="qr-payment-fields">
                     <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 bg-white cursor-pointer">
                         <input type="checkbox" name="has_slip" value="1" class="h-5 w-5 text-cyan-600">
                         <span class="text-sm font-semibold">ลูกค้ามีสลิปการโอนเงิน</span>
                     </label>
                     <input type="file" name="payment_slip" accept="image/*"
                         class="block w-full text-sm text-slate-600 border border-slate-200 rounded-xl p-3 bg-white">
+                    </div>
+                    <div id="counter-payment-note" class="hidden p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm">
+                        ระบบจะออกตั๋วออนไลน์ให้ แต่สถานะจะเป็น “รอชำระเงิน” ให้นำตั๋วไปชำระที่เคาน์เตอร์
+                    </div>
                     <button type="submit"
                         class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 flex items-center justify-center gap-2 text-lg">
                         <span>ยืนยันการชำระเงิน</span>
@@ -128,6 +139,22 @@
 
 @push('scripts')
 <script>
+        const paymentMethods = document.querySelectorAll('.payment-method');
+        const qrPaymentFields = document.getElementById('qr-payment-fields');
+        const counterPaymentNote = document.getElementById('counter-payment-note');
+        const promptpayPanel = document.getElementById('promptpay-panel');
+        const paymentSlip = document.querySelector('input[name="payment_slip"]');
+
+        function updatePaymentMethod() {
+            const isQr = document.querySelector('.payment-method:checked')?.value === 'qr_code';
+            qrPaymentFields.classList.toggle('hidden', !isQr);
+            counterPaymentNote.classList.toggle('hidden', isQr);
+            promptpayPanel.classList.toggle('hidden', !isQr);
+            paymentSlip.required = isQr;
+        }
+
+        paymentMethods.forEach((method) => method.addEventListener('change', updatePaymentMethod));
+        updatePaymentMethod();
 
         const expiresAt = new Date("{{ $booking->expires_at->toIso8601String() }}").getTime();
         const el = document.getElementById('countdown');
