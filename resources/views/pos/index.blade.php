@@ -166,24 +166,12 @@
                                 ที่นั่งเต็มแล้ว
                             </button>
                         @else
-                            <div class="flex items-center gap-1.5">
-                                <!-- ปุ่มขายด่วน (เปิด Modal) -->
-                                <button type="button"
-                                    onclick="openQuickSellModal({{ $showtime->id }}, '{{ addslashes($movieTitle) }}', '{{ \Carbon\Carbon::parse($showtime->show_time)->format('H:i') }}', {{ $availableSeats }})"
-                                    class="inline-flex items-center gap-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-3.5 py-2 rounded-xl text-xs font-semibold shadow-xs transition">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                    </svg>
-                                    <span>ขายด่วน</span>
-                                </button>
-
-                                <!-- ปุ่มเลือกที่นั่งเอง -->
-                                <a href="{{ route('bookings.create', $showtime->id) }}"
-                                    title="เลือกที่นั่งในโดมเอง"
-                                    class="inline-flex items-center gap-1 bg-white hover:bg-slate-100 text-slate-700 px-3 py-2 rounded-xl text-xs font-medium border border-slate-200 transition">
-                                    <span>เลือกที่นั่ง</span>
-                                </a>
-                            </div>
+                            <a href="{{ route('bookings.create', $showtime->id) }}"
+                                title="เลือกที่นั่งในโดมเอง"
+                                class="inline-flex items-center gap-1.5 bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-xs transition">
+                                <span>เลือกที่นั่งและขายตั๋ว</span>
+                                <span aria-hidden="true">→</span>
+                            </a>
                         @endif
                     </div>
                 </div>
