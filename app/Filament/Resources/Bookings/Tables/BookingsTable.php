@@ -92,6 +92,12 @@ class BookingsTable
                         default => $state ?? 'QR',
                     }),
 
+                TextColumn::make('payment.slip_path')
+                    ->label('สลิป')
+                    ->formatStateUsing(fn (?string $state): string => filled($state) ? 'มีสลิป' : 'ไม่มีสลิป')
+                    ->badge()
+                    ->color(fn (?string $state): string => filled($state) ? 'success' : 'gray'),
+
                 TextColumn::make('checked_in_at')
                     ->label('เวลาตรวจตั๋ว')
                     ->dateTime('d/m/Y H:i')
@@ -130,6 +136,14 @@ class BookingsTable
                     ->url(fn (Booking $record): string => route('bookings.confirmed', $record->id))
                     ->openUrlInNewTab(),
 
+                Action::make('view_slip')
+                    ->label('ดูสลิป')
+                    ->icon('heroicon-m-photo')
+                    ->color('warning')
+                    ->visible(fn (Booking $record): bool => filled($record->payment?->slip_path))
+                    ->url(fn (Booking $record): string => asset('storage/' . $record->payment->slip_path))
+                    ->openUrlInNewTab(),
+
                 Action::make('mark_paid')
                     ->label('ชำระแล้ว')
                     ->icon('heroicon-m-check')
@@ -148,4 +162,3 @@ class BookingsTable
             ]);
     }
 }
-

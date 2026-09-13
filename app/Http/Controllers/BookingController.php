@@ -223,6 +223,8 @@ class BookingController extends Controller
         $request->validate([
             'payment_method' => 'required|in:qr_code,counter',
             'return_to_pos' => 'nullable|boolean',
+            'has_slip' => 'nullable|boolean',
+            'payment_slip' => 'required_if:has_slip,1|nullable|image|max:5120',
         ]);
 
         if ($booking->expires_at && $booking->expires_at->isPast()) {
@@ -234,12 +236,25 @@ class BookingController extends Controller
         }
 
         $returnToPos = $request->boolean('return_to_pos');
+        $hasSlip = $request->boolean('has_slip');
+        $slipPath = $request->file('payment_slip')?->store('payment-slips', 'public');
 
         $booking->update([
-            'payment_method' => $request->payment_method,
+            'payment_method' => $hasSlip ? 'qr_code' : 'counter',
             'status' => $returnToPos ? 'paid' : 'awaiting_payment',
             'qr_payment_ref' => (string) Str::uuid(),
         ]);
+
+        $booking->payment()->updateOrCreate(
+            ['booking_id' => $booking->id],
+            [
+                'ticket_amount' => $booking->total_amount,
+                'transaction_fee' => 0,
+                'method' => $hasSlip ? 'qr_code' : 'counter',
+                'slip_path' => $slipPath,
+                'paid_at' => $returnToPos || $hasSlip ? now() : null,
+            ]
+        );
 
         if ($returnToPos) {
             return redirect()->route('pos.index')->with('success', 'ชำระเงินและออกตั๋วเรียบร้อยแล้ว');

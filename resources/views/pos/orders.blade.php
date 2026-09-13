@@ -44,6 +44,10 @@
                         </td>
                         <td class="px-6 py-4 text-center">
                             <a href="{{ route('pos.receipt', $b->id) }}" target="_blank" class="text-cyan-600 hover:underline text-xs">พิมพ์ตั๋ว</a>
+                            @if($b->payment?->slip_path)
+                                <a href="{{ asset('storage/' . $b->payment->slip_path) }}" target="_blank" rel="noopener"
+                                    class="ml-2 text-amber-600 hover:underline text-xs">ดูสลิป</a>
+                            @endif
                         </td>
                     </tr>
                     @empty
