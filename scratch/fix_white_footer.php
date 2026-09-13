@@ -54,3 +54,4 @@ $contentClient = preg_replace('/<span class="text-white ml-2">/', '<span class="
 
 file_put_contents($fileClient, $contentClient);
 echo "Updated Footer to White\n";
+
