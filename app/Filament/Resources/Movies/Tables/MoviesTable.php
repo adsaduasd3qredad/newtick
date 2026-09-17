@@ -30,9 +30,7 @@ class MoviesTable
                 TextColumn::make('title_en')
                     ->label('ชื่ออังกฤษ')
                     ->searchable(),
-                TextColumn::make('rating')
-                    ->label('เรทติ้ง')
-                    ->badge(),
+                
 
                 // ⚡ 4. เพิ่มสวิตช์เปิด-ปิดสถานะฉายตรงหน้าตาราง
                 ToggleColumn::make('is_active')

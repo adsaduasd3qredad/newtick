@@ -41,18 +41,7 @@ class MovieForm
                     ->label('วันสิ้นสุดการฉาย (End Date)')
                     ->nullable(),
 
-                \Filament\Forms\Components\Select::make('rating')
-                    ->label('เรทติ้ง (Rating)')
-                    ->options([
-                        'G' => 'G (ทั่วไป)',
-                        'PG' => 'PG (ผู้ปกครองควรแนะนำ)',
-                        '13+' => '13+ (สำหรับผู้มีอายุ 13 ปีขึ้นไป)',
-                        '15+' => '15+ (สำหรับผู้มีอายุ 15 ปีขึ้นไป)',
-                        '18+' => '18+ (สำหรับผู้มีอายุ 18 ปีขึ้นไป)',
-                        '20-' => '20- (สำหรับผู้มีอายุไม่เกิน 20 ปี)',
-                    ])
-                    ->nullable(),
-
+                
                 TextInput::make('language')
                     ->label('ภาษา (เสียง/ซับไตเติ้ล)')
                     ->placeholder('เช่น TH/TH, EN/TH')
