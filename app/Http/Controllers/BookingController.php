@@ -43,6 +43,11 @@ class BookingController extends Controller
             $showtime->load('movie');
         }
 
+        if (! $this->canBookShowtime($request, $showtime)) {
+            return redirect()->route('showtimes.index')
+                ->with('error', 'รอบฉายนี้เริ่มไปแล้ว ไม่สามารถจองย้อนหลังได้');
+        }
+
         return view('bookings.create', [
             'showtime' => $showtime,
             'returnToPos' => $request->boolean('staff'),
@@ -67,6 +72,10 @@ class BookingController extends Controller
         ]);
 
         $showtime = Showtime::with('movie')->findOrFail($validated['showtime_id']);
+
+        if (! $this->canBookShowtime($request, $showtime)) {
+            return back()->with('error', 'รอบฉายนี้เริ่มไปแล้ว ไม่สามารถจองย้อนหลังได้');
+        }
 
         // à¸—à¸³à¸„à¸§à¸²à¸¡à¸ªà¸°à¸­à¸²à¸”à¸à¸²à¸£à¸ˆà¸­à¸‡à¸—à¸µà¹ˆà¸«à¸¡à¸”à¹€à¸§à¸¥à¸²à¹à¸¥à¸°à¸„à¸·à¸™à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡
         $this->cleanupExpiredBookings($showtime->id);
@@ -153,11 +162,15 @@ class BookingController extends Controller
 
         $this->cleanupExpiredBookings($validated['showtime_id']);
 
-        return DB::transaction(function () use ($validated, $visitorDetails, $returnToPos) {
+        return DB::transaction(function () use ($validated, $visitorDetails, $returnToPos, $request) {
             // à¸¥à¹‡à¸­à¸ row à¸‚à¸­à¸‡ showtime à¸™à¸µà¹‰à¹„à¸§à¹‰à¸à¹ˆà¸­à¸™ à¸à¸±à¸™à¸„à¸™à¸­à¸·à¹ˆà¸™à¸ˆà¸­à¸‡à¸žà¸£à¹‰à¸­à¸¡à¸à¸±à¸™
             $showtime = Showtime::where('id', $validated['showtime_id'])
                 ->lockForUpdate()
                 ->firstOrFail();
+
+            if (! $this->canBookShowtime($request, $showtime)) {
+                return back()->with('error', 'รอบฉายนี้เริ่มไปแล้ว ไม่สามารถจองย้อนหลังได้');
+            }
 
             if ($showtime->available_seats < $validated['quantity']) {
                 return back()->withErrors(['quantity' => 'à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡à¹„à¸¡à¹ˆà¸žà¸­ à¹€à¸«à¸¥à¸·à¸­ ' . $showtime->available_seats . ' à¸—à¸µà¹ˆà¸™à¸±à¹ˆà¸‡']);
@@ -331,6 +344,15 @@ class BookingController extends Controller
         }
 
         return view('bookings.search', compact('bookings', 'reference', 'phone'));
+    }
+
+    private function canBookShowtime(Request $request, Showtime $showtime): bool
+    {
+        $isStaffRequest = $request->boolean('return_to_pos') || $request->boolean('staff');
+        $isAuthorizedStaff = auth()->check()
+            && in_array(auth()->user()->role, ['admin', 'staff'], true);
+
+        return ($isStaffRequest && $isAuthorizedStaff) || $showtime->isBookable();
     }
 
     public function destroy($id)

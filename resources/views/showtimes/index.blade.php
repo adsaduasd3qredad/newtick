@@ -71,6 +71,11 @@
     <!-- Showtimes Schedule (Timetable refactored to minimalist style) -->
     <section id="schedule" class="bg-white py-16 border-t border-gray-100">
         <div class="max-w-7xl mx-auto px-4">
+            @if (session('error'))
+                <div class="mb-6 rounded-md bg-red-50 px-4 py-3 text-sm font-medium text-red-700" role="alert">
+                    {{ session('error') }}
+                </div>
+            @endif
             
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-8">
                 <div>
@@ -110,6 +115,7 @@
                                         $cellShowtime = $showtimes->first(function($st) use ($date, $time) {
                                             return $st->show_date->toDateString() === $date->toDateString() && $st->show_time === $time.':00';
                                         });
+                                        $canBook = $cellShowtime?->isBookable() ?? false;
                                     @endphp
 
                                     @if($time === '12:00')
@@ -121,9 +127,8 @@
                                             </td>
                                         @endif
                                     @else
-                                        <td class="p-0 border border-gray-300 align-top w-[140px] relative {{ !$cellShowtime ? 'bg-[#999999]' : 'bg-black' }}">
-                                            @if($cellShowtime)
-                                                <!-- Valid Showtime (Can Book) -->
+                                        <td class="p-0 border border-gray-300 align-top w-[140px] relative {{ !$cellShowtime || !$canBook ? 'bg-[#999999]' : 'bg-black' }}">
+                                            @if($cellShowtime && $canBook)
                                                 <a href="{{ route('bookings.create', $cellShowtime->id) }}" class="block relative w-full h-full min-h-[110px] overflow-hidden group cursor-pointer">
                                                     @if($cellShowtime->movie->poster_path)
                                                         <img src="{{ Storage::url($cellShowtime->movie->poster_path) }}" alt="{{ $cellShowtime->movie->title_th }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-70 group-hover:opacity-100">
@@ -141,7 +146,6 @@
                                                     </div>
                                                 </a>
                                             @else
-                                                <!-- Empty slot -->
                                                 <div class="flex items-center justify-center h-full min-h-[110px] text-gray-200 font-bold text-xl">
                                                     -
                                                 </div>
