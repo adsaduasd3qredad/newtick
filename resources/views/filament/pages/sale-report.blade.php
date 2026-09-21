@@ -1,5 +1,16 @@
 <x-filament-panels::page>
-    <div class="mb-6 rounded-2xl border border-primary-100 bg-primary-50/60 p-4">
+    <div class="mb-6 overflow-hidden rounded-2xl border border-primary-100 bg-gradient-to-br from-primary-50 via-white to-cyan-50 shadow-sm">
+        <div class="border-b border-primary-100 px-5 py-4">
+            <div class="flex items-center gap-3">
+                <div class="rounded-xl bg-primary-600 p-2.5 text-white shadow-sm">
+                    <x-heroicon-o-chart-bar-square class="h-6 w-6" />
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900">รายงานยอดขาย</h2>
+                    <p class="text-sm text-gray-500">สรุปยอดและรายละเอียดการชำระเงินตามช่วงเวลาที่เลือก</p>
+                </div>
+            </div>
+        </div>
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
                 <p class="text-sm font-semibold text-primary-800">ช่วงเวลารายงาน</p>
@@ -27,27 +38,27 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <x-filament::section>
-            <div class="text-sm font-medium text-gray-500">รายได้{{ $periods[$period] }}</div>
-            <div class="text-3xl font-bold text-success-600 mt-2">฿ {{ number_format($totalRevenue, 2) }}</div>
-            <div class="text-xs text-gray-500 mt-1">{{ $selectedDate->format($period === 'yearly' ? 'Y' : ($period === 'monthly' ? 'm/Y' : 'd/m/Y')) }}</div>
-        </x-filament::section>
-
-        <x-filament::section>
-            <div class="text-sm font-medium text-gray-500">จำนวนผู้เข้าชม</div>
-            <div class="text-3xl font-bold text-primary-600 mt-2">{{ number_format($totalTicketsSold) }}</div>
-            <div class="text-xs text-gray-500 mt-1">คน</div>
-        </x-filament::section>
-        <x-filament::section>
-            <div class="text-sm font-medium text-gray-500">ค่าธรรมเนียมรวม</div>
-            <div class="text-3xl font-bold text-warning-600 mt-2">฿ {{ number_format($totalFees, 2) }}</div>
-        </x-filament::section>
+    <div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div class="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-5 shadow-sm">
+            <p class="text-sm font-medium text-emerald-800">รายได้{{ $periods[$period] }}</p>
+            <p class="mt-2 text-3xl font-bold text-emerald-700">฿ {{ number_format($totalRevenue, 2) }}</p>
+            <p class="mt-1 text-xs text-emerald-700/70">{{ $selectedDate->format($period === 'yearly' ? 'Y' : ($period === 'monthly' ? 'm/Y' : 'd/m/Y')) }}</p>
+        </div>
+        <div class="rounded-2xl border border-primary-100 bg-primary-50/70 p-5 shadow-sm">
+            <p class="text-sm font-medium text-primary-800">จำนวนผู้เข้าชม</p>
+            <p class="mt-2 text-3xl font-bold text-primary-700">{{ number_format($totalTicketsSold) }}</p>
+            <p class="mt-1 text-xs text-primary-700/70">คน</p>
+        </div>
+        <div class="rounded-2xl border border-amber-100 bg-amber-50/70 p-5 shadow-sm">
+            <p class="text-sm font-medium text-amber-800">ค่าธรรมเนียมรวม</p>
+            <p class="mt-2 text-3xl font-bold text-amber-700">฿ {{ number_format($totalFees, 2) }}</p>
+            <p class="mt-1 text-xs text-amber-700/70">จากรายการในช่วงเวลานี้</p>
+        </div>
     </div>
 
-    <x-filament::section heading="สถิติตามประเภทผู้เข้าชม">
+    <x-filament::section heading="สรุปตามประเภทผู้เข้าชม">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full min-w-[560px] text-left border-collapse">
                 <thead>
                     <tr class="border-b dark:border-gray-700">
                         <th class="py-3 px-4 font-semibold text-gray-900 dark:text-white">ประเภทผู้เข้าชม</th>
@@ -80,7 +91,7 @@
         </div>
     </x-filament::section>
 
-    <x-filament::section>
+    <x-filament::section class="mt-6">
         <x-slot name="heading">รายละเอียด Sale Report · {{ $periods[$period] }}</x-slot>
         <x-slot name="description">รายการที่ชำระแล้วและตรวจตั๋วแล้วตามช่วงเวลาที่เลือก</x-slot>
         <div class="overflow-x-auto">

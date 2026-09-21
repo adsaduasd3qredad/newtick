@@ -19,6 +19,11 @@ class BookingsTable
     {
         return $table
             ->defaultSort('id', 'desc')
+            ->modifyQueryUsing(function (Builder $query): Builder {
+                $status = request()->input('order_status') ?: request()->input('tableFilters.status.value');
+
+                return filled($status) ? $query->where('status', $status) : $query;
+            })
             ->columns([
                 TextColumn::make('id')
                     ->label('Order')
@@ -85,19 +90,24 @@ class BookingsTable
             ->headerActions([
                 Action::make('all_orders')
                     ->label('ทั้งหมด')
+                    ->color('gray')
                     ->url('/admin/bookings'),
                 Action::make('pending_orders')
                     ->label('รอชำระ')
-                    ->url('/admin/bookings?tableFilters[status][value]=pending'),
+                    ->color('warning')
+                    ->url('/admin/bookings?order_status=pending'),
                 Action::make('paid_orders')
                     ->label('ชำระแล้ว')
-                    ->url('/admin/bookings?tableFilters[status][value]=paid'),
+                    ->color('success')
+                    ->url('/admin/bookings?order_status=paid'),
                 Action::make('redeemed_orders')
                     ->label('ตรวจตั๋วแล้ว')
-                    ->url('/admin/bookings?tableFilters[status][value]=redeemed'),
+                    ->color('info')
+                    ->url('/admin/bookings?order_status=redeemed'),
                 Action::make('cancelled_orders')
                     ->label('ยกเลิก')
-                    ->url('/admin/bookings?tableFilters[status][value]=cancelled'),
+                    ->color('danger')
+                    ->url('/admin/bookings?order_status=cancelled'),
             ])
             ->recordActions([
                 ActionGroup::make([
