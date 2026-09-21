@@ -172,21 +172,31 @@ class PosController extends Controller
     public function orders()
     {
         $bookings = Booking::with(['showtime.movie', 'payment'])->latest()->paginate(20);
-        return view('pos.orders', compact('bookings'));
+        $summary = [
+            'orders' => Booking::whereIn('status', ['paid', 'redeemed'])->count(),
+            'tickets' => Booking::whereIn('status', ['paid', 'redeemed'])->sum('quantity'),
+            'collected' => Booking::whereIn('status', ['paid', 'redeemed'])->sum(DB::raw('COALESCE(amount_paid, total_amount)')),
+            'fees' => Booking::whereIn('bookings.status', ['paid', 'redeemed'])
+                ->join('payments', 'payments.booking_id', '=', 'bookings.id')
+                ->sum('payments.transaction_fee'),
+        ];
+
+        return view('pos.orders', compact('bookings', 'summary'));
     }
 
     public function reports()
     {
         // Daily Report and Sales logic could go here or separate routes
         $dailySales = Booking::whereIn('status', ['paid', 'redeemed'])
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total_amount) as total'), DB::raw('COUNT(id) as tickets'))
+            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(COALESCE(amount_paid, total_amount)) as total'), DB::raw('COUNT(id) as tickets'))
             ->groupBy('date')
             ->orderByDesc('date')
             ->limit(30)
             ->get();
 
         $paymentMethods = Booking::whereIn('status', ['paid', 'redeemed'])
-            ->select('payment_method', DB::raw('SUM(total_amount) as total'), DB::raw('COUNT(id) as tickets'))
+            ->leftJoin('payments', 'payments.booking_id', '=', 'bookings.id')
+            ->select('payment_method', DB::raw('SUM(COALESCE(bookings.amount_paid, bookings.total_amount)) as total'), DB::raw('SUM(COALESCE(payments.transaction_fee, 0)) as fees'), DB::raw('COUNT(bookings.id) as tickets'))
             ->groupBy('payment_method')
             ->get();
 
@@ -196,14 +206,15 @@ class PosController extends Controller
     public function exportPdf()
     {
         $dailySales = Booking::whereIn('status', ['paid', 'redeemed'])
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total_amount) as total'), DB::raw('COUNT(id) as tickets'))
+            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(COALESCE(amount_paid, total_amount)) as total'), DB::raw('COUNT(id) as tickets'))
             ->groupBy('date')
             ->orderByDesc('date')
             ->limit(30)
             ->get();
 
         $paymentMethods = Booking::whereIn('status', ['paid', 'redeemed'])
-            ->select('payment_method', DB::raw('SUM(total_amount) as total'), DB::raw('COUNT(id) as tickets'))
+            ->leftJoin('payments', 'payments.booking_id', '=', 'bookings.id')
+            ->select('payment_method', DB::raw('SUM(COALESCE(bookings.amount_paid, bookings.total_amount)) as total'), DB::raw('SUM(COALESCE(payments.transaction_fee, 0)) as fees'), DB::raw('COUNT(bookings.id) as tickets'))
             ->groupBy('payment_method')
             ->get();
 
@@ -214,7 +225,7 @@ class PosController extends Controller
     public function exportCsv()
     {
         $dailySales = Booking::whereIn('status', ['paid', 'redeemed'])
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total_amount) as total'), DB::raw('COUNT(id) as tickets'))
+            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(COALESCE(amount_paid, total_amount)) as total'), DB::raw('COUNT(id) as tickets'))
             ->groupBy('date')
             ->orderByDesc('date')
             ->limit(30)

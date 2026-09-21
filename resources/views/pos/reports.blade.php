@@ -6,11 +6,16 @@
         <h2 class="text-xl font-bold">รายงานยอดขายหน้าเคาน์เตอร์</h2>
         <div class="flex gap-2">
             <a href="{{ route('pos.reports.pdf') }}" target="_blank" class="bg-red-50 text-red-600 hover:bg-red-100 px-4 py-2 rounded-lg text-sm font-semibold border border-red-200">Export PDF</a>
-            <a href="{{ route('pos.reports.csv') }}" class="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 px-4 py-2 rounded-lg text-sm font-semibold border border-emerald-200">Export CSV (Excel)</a>
+            <a href="{{ route('pos.reports.orders.excel') }}" class="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 px-4 py-2 rounded-lg text-sm font-semibold border border-emerald-200">Export Excel</a>
         </div>
     </div>
 
-    <div class="grid md:grid-cols-2 gap-6 mb-6">
+    <div class="grid md:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <h3 class="font-bold mb-4 text-slate-700">สรุปออเดอร์</h3>
+            <p class="text-sm text-slate-500">จำนวนออเดอร์ที่ชำระแล้ว</p>
+            <p class="text-2xl font-bold text-cyan-700">{{ $dailySales->sum('tickets') }} ออเดอร์/รายการ</p>
+        </div>
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
             <h3 class="font-bold mb-4 text-slate-700">รายได้แยกตามช่องทาง</h3>
             <ul class="space-y-3">
@@ -21,6 +26,11 @@
                 </li>
                 @endforeach
             </ul>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <h3 class="font-bold mb-4 text-slate-700">ค่าธรรมเนียมออนไลน์</h3>
+            <p class="text-2xl font-bold text-amber-600">{{ number_format($paymentMethods->where('payment_method', 'qr_code')->sum('fees'), 2) }} ฿</p>
+            <p class="text-xs text-slate-500 mt-1">คิดจากรายการ QR / โอนเงิน รายการละ 10 บาท</p>
         </div>
     </div>
 
