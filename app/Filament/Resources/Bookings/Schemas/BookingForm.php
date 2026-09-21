@@ -61,6 +61,16 @@ class BookingForm
                     ->required()
                     ->numeric(),
 
+                TextInput::make('amount_paid')
+                    ->label('ยอดเก็บจริง (บาท)')
+                    ->prefix('฿')
+                    ->numeric(),
+
+                \Filament\Forms\Components\Textarea::make('notes')
+                    ->label('หมายเหตุการขาย')
+                    ->rows(3)
+                    ->maxLength(1000),
+
                 TextInput::make('discount_code')
                     ->label('โค้ดส่วนลด'),
 
@@ -98,4 +108,3 @@ class BookingForm
             ]);
     }
 }
-

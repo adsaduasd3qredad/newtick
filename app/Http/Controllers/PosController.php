@@ -47,6 +47,8 @@ class PosController extends Controller
             'booker_name' => 'nullable|string|max:255',
             'booker_phone' => 'nullable|string|max:20',
             'visitor_type' => 'nullable|in:individual,school,government,company',
+            'amount_paid' => 'nullable|numeric|min:0',
+            'notes' => 'nullable|string|max:1000',
         ]);
 
         return DB::transaction(function () use ($validated) {
@@ -99,9 +101,18 @@ class PosController extends Controller
                 'quantity' => $qty,
                 'seats' => $assignedSeats,
                 'total_amount' => $this->pricePerSeat * $qty,
+                'amount_paid' => $validated['amount_paid'] ?? $this->pricePerSeat * $qty,
+                'notes' => $validated['notes'] ?? null,
                 'status' => 'paid',
                 'payment_method' => $validated['payment_method'],
                 'qr_ticket_ref' => (string) Str::uuid(),
+            ]);
+
+            $booking->payment()->create([
+                'ticket_amount' => $booking->total_amount,
+                'transaction_fee' => $validated['payment_method'] === 'qr_code' ? 10 : 0,
+                'method' => $validated['payment_method'],
+                'paid_at' => now(),
             ]);
 
             return redirect()->route('pos.receipt', $booking->id);
@@ -154,13 +165,13 @@ class PosController extends Controller
             ]);
             return redirect()->route('pos.receipt', $booking->id)->with('success', 'ออกตั๋วเรียบร้อยแล้ว');
         }
-        
+
         return back()->withErrors(['error' => 'สถานะไม่ถูกต้อง ไม่สามารถดำเนินการได้']);
     }
 
     public function orders()
     {
-        $bookings = Booking::with('showtime.movie')->latest()->paginate(20);
+        $bookings = Booking::with(['showtime.movie', 'payment'])->latest()->paginate(20);
         return view('pos.orders', compact('bookings'));
     }
 
@@ -173,7 +184,7 @@ class PosController extends Controller
             ->orderByDesc('date')
             ->limit(30)
             ->get();
-            
+
         $paymentMethods = Booking::whereIn('status', ['paid', 'redeemed'])
             ->select('payment_method', DB::raw('SUM(total_amount) as total'), DB::raw('COUNT(id) as tickets'))
             ->groupBy('payment_method')
@@ -190,7 +201,7 @@ class PosController extends Controller
             ->orderByDesc('date')
             ->limit(30)
             ->get();
-            
+
         $paymentMethods = Booking::whereIn('status', ['paid', 'redeemed'])
             ->select('payment_method', DB::raw('SUM(total_amount) as total'), DB::raw('COUNT(id) as tickets'))
             ->groupBy('payment_method')

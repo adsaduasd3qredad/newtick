@@ -68,6 +68,16 @@ class BookingsTable
                     ->money('THB')
                     ->sortable(),
 
+                TextColumn::make('amount_paid')
+                    ->label('ยอดเก็บจริง')
+                    ->money('THB')
+                    ->sortable(),
+
+                TextColumn::make('notes')
+                    ->label('หมายเหตุ')
+                    ->limit(40)
+                    ->wrap(),
+
                 TextColumn::make('status')
                     ->label('สถานะ')
                     ->badge()

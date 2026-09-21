@@ -258,6 +258,10 @@
         <input type="hidden" name="visitor_type" value="{{ $visitor_type }}">
         <input type="hidden" name="quantity" value="{{ $quantity }}">
         @if ($returnToPos)
+            <input type="hidden" name="pos_amount_paid" value="{{ $posAmountPaid }}">
+            <input type="hidden" name="pos_notes" value="{{ $posNotes }}">
+        @endif
+        @if ($returnToPos)
             <input type="hidden" name="return_to_pos" value="1">
         @endif
         <div id="seatInputs"></div>

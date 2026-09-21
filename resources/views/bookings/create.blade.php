@@ -114,6 +114,24 @@
                             class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-white transition">
                     </div>
 
+                    @if ($returnToPos)
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 rounded-xl border border-amber-200 bg-amber-50 p-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">ยอดเก็บจริงหน้าเคาน์เตอร์</label>
+                                <input type="number" name="pos_amount_paid" min="0" step="0.01"
+                                    value="{{ old('pos_amount_paid', old('quantity', 1) * 110) }}"
+                                    class="w-full bg-white border border-amber-300 rounded-xl px-4 py-3 text-slate-800">
+                                <p class="text-xs text-slate-500 mt-1">แก้ไขได้เมื่อมีเด็กเล็กหรือผู้สูงอายุใช้สิทธิ์ดูฟรี</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">หมายเหตุการขาย</label>
+                                <textarea name="pos_notes" rows="2" maxlength="1000"
+                                    placeholder="เช่น มีเด็กเล็ก 1 คน, ผู้สูงอายุ 1 คน"
+                                    class="w-full bg-white border border-amber-300 rounded-xl px-4 py-3 text-slate-800">{{ old('pos_notes') }}</textarea>
+                            </div>
+                        </div>
+                    @endif
+
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-1.5">เบอร์โทรศัพท์</label>
                         <input type="text" name="booker_phone" value="{{ old('booker_phone') }}"
