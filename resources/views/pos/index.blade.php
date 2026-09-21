@@ -172,6 +172,10 @@
                                 <span>เลือกที่นั่งและขายตั๋ว</span>
                                 <span aria-hidden="true">→</span>
                             </a>
+                            <a href="{{ route('bookings.create', [$showtime->id, 'staff' => 1, 'group' => 1]) }}"
+                                class="inline-flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-xl text-xs font-semibold shadow-xs transition">
+                                <span>จองหมู่คณะ</span>
+                            </a>
                         @endif
                     </div>
                 </div>

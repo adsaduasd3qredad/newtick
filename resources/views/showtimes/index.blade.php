@@ -124,7 +124,7 @@
                                         <td class="p-0 border border-gray-300 align-top w-[140px] relative {{ !$cellShowtime ? 'bg-[#999999]' : 'bg-black' }}">
                                             @if($cellShowtime)
                                                 <!-- Valid Showtime (Can Book) -->
-                                                <a href="{{ route('bookings.create', $cellShowtime->id) }}" class="block relative w-full h-full min-h-[110px] overflow-hidden group cursor-pointer">
+                                                <div class="relative w-full h-full min-h-[110px] overflow-hidden group">
                                                     @if($cellShowtime->movie->poster_path)
                                                         <img src="{{ Storage::url($cellShowtime->movie->poster_path) }}" alt="{{ $cellShowtime->movie->title_th }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-70 group-hover:opacity-100">
                                                     @endif
@@ -138,8 +138,18 @@
                                                         <div class="inline-flex mx-auto items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-semibold {{ $cellShowtime->available_seats > 0 ? 'bg-cyan-500 text-white' : 'bg-red-500 text-white' }}">
                                                             {{ $cellShowtime->available_seats > 0 ? $cellShowtime->available_seats . ' Seats' : 'FULL' }}
                                                         </div>
+                                                        @if ($cellShowtime->available_seats > 0)
+                                                            <div class="mt-1 flex justify-center gap-1">
+                                                                <a href="{{ route('bookings.create', $cellShowtime->id) }}" class="rounded bg-white/90 px-1.5 py-0.5 text-[9px] font-semibold text-cyan-700 hover:bg-white">
+                                                                    จองทั่วไป
+                                                                </a>
+                                                                <a href="{{ route('bookings.create', [$cellShowtime->id, 'group' => 1]) }}" class="rounded bg-amber-400/95 px-1.5 py-0.5 text-[9px] font-semibold text-amber-950 hover:bg-amber-300">
+                                                                    จองหมู่คณะ
+                                                                </a>
+                                                            </div>
+                                                        @endif
                                                     </div>
-                                                </a>
+                                                </div>
                                             @else
                                                 <!-- Empty slot -->
                                                 <div class="flex items-center justify-center h-full min-h-[110px] text-gray-200 font-bold text-xl">

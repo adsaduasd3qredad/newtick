@@ -2,8 +2,6 @@
 
 namespace App\Filament\Resources\Bookings\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -174,10 +172,6 @@ class BookingsTable
                         ->label('แก้ไขรายการ'),
                 ])->label('จัดการ')->icon('heroicon-m-ellipsis-vertical'),
             ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->toolbarActions([]);
     }
 }

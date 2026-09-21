@@ -6,8 +6,14 @@
 <div class="flex-1 flex items-center justify-center p-6 my-6">
         <div class="max-w-3xl w-full bg-white p-8 sm:p-10 rounded-2xl shadow-sm border border-slate-200/80">
             <h1 class="text-2xl sm:text-3xl font-bold mb-8 text-center text-slate-900 tracking-tight">
-                กรอกข้อมูลการจองตั๋ว
+                {{ $groupBooking ? 'จองตั๋วแบบหมู่คณะ' : 'กรอกข้อมูลการจองตั๋ว' }}
             </h1>
+
+            @if ($groupBooking)
+                <div class="mb-6 rounded-xl border border-cyan-200 bg-cyan-50 px-4 py-3 text-sm text-cyan-800">
+                    กรุณาเลือกประเภทผู้เข้าชมแบบหมู่คณะและระบุจำนวนที่นั่งที่ต้องการจอง
+                </div>
+            @endif
 
             <!-- ส่วนแสดงโปสเตอร์และข้อมูลรอบฉาย -->
             <div
@@ -133,6 +139,8 @@
                             <option value="individual" {{ old('visitor_type') == 'individual' ? 'selected' : '' }}>
                                 บุคคลทั่วไป</option>
                             <option value="school" {{ old('visitor_type') == 'school' ? 'selected' : '' }}>โรงเรียน
+                            </option>
+                            <option value="company" {{ old('visitor_type') == 'company' ? 'selected' : '' }}>บริษัท
                             </option>
                             <option value="government" {{ old('visitor_type') == 'government' ? 'selected' : '' }}>
                                 อื่นๆ / หน่วยงานรัฐ</option>
@@ -263,9 +271,11 @@
                     limit = 160;
                     quantityHint.textContent = 'โรงเรียน จองได้สูงสุด 160 ที่นั่ง (ตามจำนวนที่นั่งว่าง)';
                     schoolFields.classList.remove('hidden');
-                } else if (selectedType === 'government') {
+                } else if (selectedType === 'government' || selectedType === 'company') {
                     limit = 160;
-                    quantityHint.textContent = 'หน่วยงานรัฐ/อื่นๆ จองได้สูงสุด 160 ที่นั่ง (ตามจำนวนที่นั่งว่าง)';
+                    quantityHint.textContent = selectedType === 'company'
+                        ? 'บริษัท จองได้สูงสุด 160 ที่นั่ง (ตามจำนวนที่นั่งว่าง)'
+                        : 'หน่วยงานรัฐ/อื่นๆ จองได้สูงสุด 160 ที่นั่ง (ตามจำนวนที่นั่งว่าง)';
                     govFields.classList.remove('hidden');
                 } else {
                     quantityHint.textContent = 'บุคคลทั่วไป จองได้สูงสุด 10 ที่นั่ง (ตามจำนวนที่นั่งว่าง)';

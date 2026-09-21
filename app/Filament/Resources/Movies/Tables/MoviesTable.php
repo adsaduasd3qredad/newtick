@@ -2,8 +2,6 @@
 
 namespace App\Filament\Resources\Movies\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ImageColumn; // 🖼️ 1. นำเข้า ImageColumn สำหรับแสดงรูปโปสเตอร์
@@ -71,10 +69,6 @@ class MoviesTable
             ->recordActions([
                 EditAction::make(),
             ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->toolbarActions([]);
     }
 }

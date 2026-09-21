@@ -46,6 +46,7 @@ class BookingController extends Controller
         return view('bookings.create', [
             'showtime' => $showtime,
             'returnToPos' => $request->boolean('staff'),
+            'groupBooking' => $request->boolean('group'),
         ]);
     }
 
