@@ -47,11 +47,6 @@ class MovieForm
                     ->placeholder('เช่น TH/TH, EN/TH')
                     ->nullable(),
 
-                TextInput::make('trailer_url')
-                    ->label('ลิงก์ตัวอย่างภาพยนตร์ (YouTube URL)')
-                    ->url()
-                    ->nullable(),
-
                 TextInput::make('total_seats')
                     ->label('จำนวนที่นั่งรวม (Total Seats)')
                     ->numeric()

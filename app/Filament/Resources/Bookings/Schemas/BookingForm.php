@@ -103,8 +103,7 @@ class BookingForm
                 TextInput::make('qr_ticket_ref')
                     ->label('รหัส QR Ticket'),
 
-                DateTimePicker::make('checked_in_at')
-                    ->label('เวลาที่ตรวจตั๋วเข้าชม'),
+                
             ]);
     }
 }
