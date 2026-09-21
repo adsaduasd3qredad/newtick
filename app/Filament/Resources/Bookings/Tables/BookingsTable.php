@@ -20,6 +20,8 @@ class BookingsTable
                 TextColumn::make('id')
                     ->label('รหัสจอง')
                     ->formatStateUsing(fn ($state) => '#' . $state)
+                    ->url(fn (Booking $record): string => route('filament.admin.resources.bookings.edit', ['record' => $record]))
+                    ->color('primary')
                     ->width('80px')
                     ->sortable()
                     ->searchable(),
@@ -58,9 +60,8 @@ class BookingsTable
                     ]),
 
                 TextColumn::make('quantity')
-                    ->label('ที่นั่ง')
-                    ->formatStateUsing(fn (Booking $record) => $record->quantity . ' ที่ ' . (!empty($record->seats) ? '(' . implode(',', $record->seats) . ')' : ''))
-                    ->wrap()
+                    ->label('จำนวนคน')
+                    ->formatStateUsing(fn ($state) => $state . ' คน')
                     ->sortable(),
 
                 TextColumn::make('total_amount')
@@ -129,6 +130,7 @@ class BookingsTable
                     ->label('กรองตามสถานะ')
                     ->options([
                         'pending' => 'รอชำระ',
+                        'awaiting_payment' => 'รอตรวจสอบการชำระ',
                         'paid' => 'ชำระแล้ว',
                         'redeemed' => 'ตรวจตั๋วแล้ว',
                         'expired' => 'หมดอายุ',

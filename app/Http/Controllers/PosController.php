@@ -169,9 +169,28 @@ class PosController extends Controller
         return back()->withErrors(['error' => 'สถานะไม่ถูกต้อง ไม่สามารถดำเนินการได้']);
     }
 
-    public function orders()
+    public function orders(Request $request)
     {
-        $bookings = Booking::with(['showtime.movie', 'payment'])->latest()->paginate(20);
+        $statuses = [
+            'all' => 'ทั้งหมด',
+            'pending' => 'รอชำระ',
+            'awaiting_payment' => 'รอตรวจสอบการชำระ',
+            'paid' => 'ชำระแล้ว',
+            'redeemed' => 'ตรวจตั๋วแล้ว',
+            'expired' => 'หมดอายุ',
+            'cancelled' => 'ยกเลิก',
+        ];
+        $selectedStatus = $request->query('status', 'all');
+        $ordersQuery = Booking::with(['showtime.movie', 'payment'])->latest();
+        if (array_key_exists($selectedStatus, $statuses) && $selectedStatus !== 'all') {
+            $ordersQuery->where('status', $selectedStatus);
+        } else {
+            $selectedStatus = 'all';
+        }
+        $bookings = $ordersQuery->paginate(20)->withQueryString();
+        $statusCounts = Booking::select('status', DB::raw('COUNT(*) as total'))
+            ->groupBy('status')
+            ->pluck('total', 'status');
         $summary = [
             'orders' => Booking::whereIn('status', ['paid', 'redeemed'])->count(),
             'tickets' => Booking::whereIn('status', ['paid', 'redeemed'])->sum('quantity'),
@@ -181,7 +200,7 @@ class PosController extends Controller
                 ->sum('payments.transaction_fee'),
         ];
 
-        return view('pos.orders', compact('bookings', 'summary'));
+        return view('pos.orders', compact('bookings', 'summary', 'statuses', 'selectedStatus', 'statusCounts'));
     }
 
     public function reports()

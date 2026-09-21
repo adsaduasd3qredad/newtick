@@ -26,6 +26,15 @@
                 <a href="{{ route('pos.reports.orders.excel') }}" class="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">ส่งออก Excel</a>
             </div>
         </div>
+        <div class="flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-4 py-3">
+            @foreach($statuses as $key => $label)
+                <a href="{{ route('pos.orders', $key === 'all' ? [] : ['status' => $key]) }}"
+                    class="whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition {{ $selectedStatus === $key ? 'bg-cyan-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                    {{ $label }}
+                    <span class="ml-1 opacity-75">{{ $key === 'all' ? $statusCounts->sum() : ($statusCounts[$key] ?? 0) }}</span>
+                </a>
+            @endforeach
+        </div>
         <div class="overflow-x-auto">
             <table class="w-full text-sm text-left">
                 <thead class="text-xs text-slate-500 bg-slate-50 uppercase border-b border-slate-200">
@@ -35,7 +44,7 @@
                         <th colspan="4" class="px-6 py-2">ผลการขายและการติดตาม</th>
                     </tr>
                     <tr>
-                        <th class="px-6 py-3">เลขหน้าเคาน์เตอร์</th>
+                        <th class="px-6 py-3">รหัสจอง</th>
                         <th class="px-6 py-3">วันที่จอง</th>
                         <th class="px-6 py-3">โอนเงินวันที่</th>
                         <th class="px-6 py-3">ภาพยนตร์ / รอบ</th>
@@ -51,7 +60,12 @@
                 <tbody class="divide-y divide-slate-100">
                     @forelse($bookings as $b)
                     <tr class="hover:bg-slate-50">
-                        <td class="px-6 py-4 font-semibold">#{{ $b->id }}</td>
+                        <td class="px-6 py-4">
+                            <a href="{{ route('pos.receipt', $b->id) }}" target="_blank" class="font-bold text-cyan-700 hover:text-cyan-900 hover:underline">
+                                #{{ $b->id }}
+                            </a>
+                            <div class="text-[11px] text-slate-400">กดดูรายละเอียด</div>
+                        </td>
                         <td class="px-6 py-4">{{ $b->created_at->format('d/m/Y H:i') }}</td>
                         <td class="px-6 py-4">{{ $b->payment?->paid_at?->format('d/m/Y H:i') ?? '-' }}</td>
                         <td class="px-6 py-4">
@@ -79,7 +93,7 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 text-center">
-                            <a href="{{ route('pos.receipt', $b->id) }}" target="_blank" class="text-cyan-600 hover:underline text-xs">พิมพ์ตั๋ว</a>
+                            <a href="{{ route('pos.receipt', $b->id) }}" target="_blank" class="text-cyan-600 hover:underline text-xs">ดูรายละเอียด</a>
                             @if($b->payment?->slip_path)
                                 <a href="{{ asset('storage/' . $b->payment->slip_path) }}" target="_blank" rel="noopener"
                                     class="ml-2 text-amber-600 hover:underline text-xs">ดูสลิป</a>

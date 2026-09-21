@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 10px; }
-        h1 { font-size: 18px; margin-bottom: 4px; }
-        .summary { margin-bottom: 12px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #cbd5e1; padding: 5px; }
-        th { background: #e2e8f0; }
+        @page { size: A4 landscape; margin: 24px; }
+        body { font-family: freeserif, DejaVu Sans, sans-serif; font-size: 9px; color: #1e293b; }
+        h1 { color: #0e7490; font-size: 18px; margin: 0 0 4px; }
+        .summary { color: #64748b; margin-bottom: 14px; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; }
+        th, td { border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; padding: 6px; }
+        th { background: #e0f2fe; color: #155e75; text-align: left; }
+        tr:last-child td { border-bottom: 0; }
+        th:last-child, td:last-child { border-right: 0; }
         .right { text-align: right; }
+        .status { font-weight: bold; }
     </style>
 </head>
 <body>
@@ -18,7 +22,7 @@
     <table>
         <thead>
             <tr>
-                <th>เลขที่</th><th>วันที่จอง</th><th>ภาพยนตร์ / รอบ</th><th>จำนวน</th>
+                <th>รหัสจอง</th><th>วันที่จอง</th><th>ภาพยนตร์ / รอบ</th><th>จำนวนคน</th>
                 <th class="right">ยอดตั๋ว</th><th class="right">ค่าธรรมเนียม</th><th class="right">เก็บจริง</th>
                 <th>วิธีชำระ</th><th>หมายเหตุ</th>
             </tr>
@@ -26,7 +30,7 @@
         <tbody>
         @foreach ($bookings as $booking)
             <tr>
-                <td>#{{ $booking->id }}</td>
+                <td class="status">#{{ $booking->id }}</td>
                 <td>{{ $booking->created_at?->format('d/m/Y H:i') }}</td>
                 <td>{{ $booking->showtime?->movie?->title_th ?? '-' }}<br>{{ $booking->showtime?->show_date?->format('d/m/Y') }} {{ substr((string) ($booking->showtime?->show_time ?? ''), 0, 5) }}</td>
                 <td>{{ $booking->quantity }}</td>
