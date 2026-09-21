@@ -413,7 +413,7 @@
             const bookedSeats = @json($bookedSeats);
             const requiredSeats = {{ $quantity }};
             const pricePerSeat = {{ $pricePerSeat }};
-            const autoSelectGroupBooking = @json(in_array($visitor_type, ['school', 'company', 'government'], true));
+            const autoSelectGroupBooking = @json($groupBooking);
             const selected = new Set();
 
             const groupsContainer = document.querySelector('#seat-groups');

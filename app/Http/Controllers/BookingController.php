@@ -96,7 +96,7 @@ class BookingController extends Controller
             'visitor_type' => $validated['visitor_type'],
             'quantity' => $validated['quantity'],
             'returnToPos' => $request->boolean('return_to_pos'),
-            'groupBooking' => $request->boolean('group'),
+            'groupBooking' => in_array($validated['visitor_type'], ['school', 'company', 'government'], true),
         ]);
     }
 
