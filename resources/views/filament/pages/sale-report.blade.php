@@ -1,13 +1,37 @@
 <x-filament-panels::page>
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <x-filament::section>
-            <div class="text-sm font-medium text-gray-500">รายได้วันนี้</div>
-            <div class="text-3xl font-bold text-success-600 mt-2">฿ {{ number_format($todayRevenue, 2) }}</div>
-        </x-filament::section>
+    <div class="mb-6 rounded-2xl border border-primary-100 bg-primary-50/60 p-4">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <p class="text-sm font-semibold text-primary-800">ช่วงเวลารายงาน</p>
+                <p class="text-xs text-gray-500 mt-1">เลือกช่วงเวลาเพื่อปรับยอดและรายการล่าสุด</p>
+            </div>
+            <form method="GET" class="flex flex-wrap items-center gap-2">
+                <input type="hidden" name="period" value="{{ $period }}">
+                @if ($period === 'daily')
+                    <input type="date" name="date" value="{{ $selectedDate->format('Y-m-d') }}" class="rounded-lg border-gray-300 text-sm">
+                @elseif ($period === 'monthly')
+                    <input type="month" name="date" value="{{ $selectedDate->format('Y-m') }}" class="rounded-lg border-gray-300 text-sm">
+                @else
+                    <input type="number" name="date" value="{{ $selectedDate->year }}" min="2000" max="2100" class="w-24 rounded-lg border-gray-300 text-sm">
+                @endif
+                <button type="submit" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white">ดูรายงาน</button>
+            </form>
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2">
+            @foreach ($periods as $key => $label)
+                <a href="{{ request()->fullUrlWithQuery(['period' => $key, 'date' => $key === 'yearly' ? $selectedDate->year : ($key === 'monthly' ? $selectedDate->format('Y-m') : $selectedDate->format('Y-m-d'))]) }}"
+                    class="rounded-full px-4 py-2 text-sm font-semibold {{ $period === $key ? 'bg-primary-600 text-white shadow-sm' : 'bg-white text-gray-600 ring-1 ring-gray-200 hover:bg-gray-50' }}">
+                    {{ $label }}
+                </a>
+            @endforeach
+        </div>
+    </div>
 
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <x-filament::section>
-            <div class="text-sm font-medium text-gray-500">รายได้เดือนนี้</div>
-            <div class="text-3xl font-bold text-primary-600 mt-2">฿ {{ number_format($thisMonthRevenue, 2) }}</div>
+            <div class="text-sm font-medium text-gray-500">รายได้{{ $periods[$period] }}</div>
+            <div class="text-3xl font-bold text-success-600 mt-2">฿ {{ number_format($totalRevenue, 2) }}</div>
+            <div class="text-xs text-gray-500 mt-1">{{ $selectedDate->format($period === 'yearly' ? 'Y' : ($period === 'monthly' ? 'm/Y' : 'd/m/Y')) }}</div>
         </x-filament::section>
 
         <x-filament::section>
@@ -55,31 +79,28 @@
         </div>
     </x-filament::section>
 
-    <x-filament::section heading="รายการออเดอร์ล่าสุด">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="border-b dark:border-gray-700">
-                        <th class="py-3 px-4">เลขที่</th><th class="py-3 px-4">วันที่จอง</th>
-                        <th class="py-3 px-4">ภาพยนตร์ / รอบ</th><th class="py-3 px-4 text-right">จำนวน</th>
-                        <th class="py-3 px-4 text-right">ยอดเก็บจริง</th><th class="py-3 px-4">วิธีชำระ</th>
-                        <th class="py-3 px-4">หมายเหตุ</th>
-                    </tr>
-                </thead>
-                <tbody>
+    <x-filament::section>
+        <x-slot name="heading">รายการล่าสุด · {{ $periods[$period] }}</x-slot>
+        <x-slot name="description">แสดงรายการที่ชำระแล้วและตรวจตั๋วแล้วตามช่วงเวลาที่เลือก</x-slot>
+        <div class="space-y-3">
                     @foreach ($recentOrders as $order)
-                        <tr class="border-b dark:border-gray-700">
-                            <td class="py-3 px-4 font-medium">#{{ $order->id }}</td>
-                            <td class="py-3 px-4">{{ $order->created_at?->format('d/m/Y H:i') }}</td>
-                            <td class="py-3 px-4">{{ $order->showtime?->movie?->title_th ?? '-' }}<br><span class="text-xs text-gray-500">{{ $order->showtime?->show_date?->format('d/m/Y') }} {{ substr((string) ($order->showtime?->show_time ?? ''), 0, 5) }}</span></td>
-                            <td class="py-3 px-4 text-right">{{ $order->quantity }}</td>
-                            <td class="py-3 px-4 text-right font-medium">฿ {{ number_format((float) ($order->amount_paid ?? $order->total_amount), 2) }}</td>
-                            <td class="py-3 px-4">{{ $order->payment_method === 'counter' ? 'เคาน์เตอร์ POS' : 'ออนไลน์/QR' }}</td>
-                            <td class="py-3 px-4">{{ $order->notes ?: '-' }}</td>
-                        </tr>
+                        <div class="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gray-200 bg-gray-50/70 px-4 py-3">
+                            <div class="flex min-w-0 items-center gap-3">
+                                <div class="rounded-lg bg-primary-100 px-3 py-2 text-sm font-bold text-primary-700">#{{ $order->id }}</div>
+                                <div class="min-w-0">
+                                    <p class="truncate font-semibold text-gray-900">{{ $order->showtime?->movie?->title_th ?? '-' }}</p>
+                                    <p class="text-xs text-gray-500">{{ $order->created_at?->format('d/m/Y H:i') }} · {{ $order->quantity }} คน</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 text-sm">
+                                <span class="hidden text-gray-500 sm:inline">{{ $order->payment_method === 'counter' ? 'เคาน์เตอร์ POS' : 'ออนไลน์/QR' }}</span>
+                                <span class="font-bold text-success-700">฿ {{ number_format((float) ($order->amount_paid ?? $order->total_amount), 2) }}</span>
+                            </div>
+                        </div>
                     @endforeach
-                </tbody>
-            </table>
+                    @if ($recentOrders->isEmpty())
+                        <div class="rounded-xl border border-dashed border-gray-300 py-10 text-center text-sm text-gray-500">ไม่พบรายการในช่วงเวลานี้</div>
+                    @endif
         </div>
     </x-filament::section>
 </x-filament-panels::page>

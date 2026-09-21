@@ -5,23 +5,28 @@ namespace App\Http\Controllers;
 use App\Models\Booking;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Response;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 
 class OrderReportController extends Controller
 {
-    public function pdf(): Response
+    public function pdf(Request $request): Response
     {
+        [$period, $date, $label] = $this->period($request);
         return Pdf::loadView('reports.orders-pdf', [
-            'bookings' => $this->bookings(),
-            'title' => 'รายงานออเดอร์การจอง',
-        ])->download('orders-report.pdf');
+            'bookings' => $this->bookings($period, $date),
+            'title' => 'รายงานออเดอร์การจอง ' . $label,
+        ])->download('orders-report-' . $period . '.pdf');
     }
 
-    public function excel(): Response
+    public function excel(Request $request): Response
     {
+        [$period, $date] = $this->period($request);
         $rows = [];
         $rows[] = ['เลขที่การจอง', 'วันที่จอง', 'ภาพยนตร์', 'วันที่ฉาย', 'รอบฉาย', 'จำนวนคน', 'ยอดตั๋ว', 'ค่าธรรมเนียม', 'ยอดเก็บจริง', 'วิธีชำระ', 'สถานะ', 'หมายเหตุ'];
 
-        foreach ($this->bookings() as $booking) {
+        foreach ($this->bookings($period, $date) as $booking) {
             $rows[] = [
                 '#' . $booking->id,
                 $booking->created_at?->format('d/m/Y H:i'),
@@ -49,14 +54,33 @@ class OrderReportController extends Controller
 
         return response($content)
             ->header('Content-Type', 'text/csv; charset=UTF-8')
-            ->header('Content-Disposition', 'attachment; filename="orders-report.csv"');
+            ->header('Content-Disposition', 'attachment; filename="orders-report-' . $period . '.csv"');
     }
 
-    private function bookings()
+    private function bookings(string $period, Carbon $date)
     {
-        return Booking::with(['showtime.movie', 'payment'])
+        $query = Booking::with(['showtime.movie', 'payment'])
             ->whereIn('status', ['paid', 'redeemed'])
-            ->latest()
-            ->get();
+            ->latest();
+
+        return $this->applyPeriod($query, $period, $date)->get();
+    }
+
+    private function period(Request $request): array
+    {
+        $periods = ['daily' => 'รายวัน', 'monthly' => 'รายเดือน', 'yearly' => 'รายปี'];
+        $period = array_key_exists($request->query('period'), $periods) ? $request->query('period') : 'daily';
+        $date = Carbon::parse($request->query('date', today()->toDateString()));
+
+        return [$period, $date, $periods[$period]];
+    }
+
+    private function applyPeriod(Builder $query, string $period, Carbon $date): Builder
+    {
+        return match ($period) {
+            'monthly' => $query->whereYear('created_at', $date->year)->whereMonth('created_at', $date->month),
+            'yearly' => $query->whereYear('created_at', $date->year),
+            default => $query->whereDate('created_at', $date->toDateString()),
+        };
     }
 }
