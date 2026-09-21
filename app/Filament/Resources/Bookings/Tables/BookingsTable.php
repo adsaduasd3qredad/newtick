@@ -5,10 +5,13 @@ namespace App\Filament\Resources\Bookings\Tables;
 use Filament\Actions\EditAction;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use App\Models\Booking;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 
 class BookingsTable
 {
@@ -18,66 +21,21 @@ class BookingsTable
             ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('id')
-                    ->label('รหัสจอง')
-                    ->formatStateUsing(fn ($state) => '#' . $state)
+                    ->label('Order')
+                    ->formatStateUsing(fn ($state) => '#' . str_pad((string) $state, 2, '0', STR_PAD_LEFT))
                     ->url(fn (Booking $record): string => route('filament.admin.resources.bookings.edit', ['record' => $record]))
                     ->color('primary')
+                    ->description(fn (Booking $record): string => $record->payment_method === 'counter'
+                        ? 'POS'
+                        : ($record->booker_name ?: 'ออนไลน์'))
                     ->width('80px')
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('showtime.movie.title_th')
-                    ->label('ภาพยนตร์')
-                    ->description(fn (Booking $record) => $record->showtime ? \Carbon\Carbon::parse($record->showtime->show_date)->format('d/m/Y') . ' รอบ ' . \Carbon\Carbon::parse($record->showtime->show_time)->format('H:i') . ' น.' : '-')
-                    ->limit(28)
-                    ->wrap()
-                    ->searchable()
+                TextColumn::make('created_at')
+                    ->label('วันที่สั่งซื้อ')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable(),
-
-                TextColumn::make('booker_name')
-                    ->label('ผู้จอง')
-                    ->description(fn (Booking $record) => $record->booker_phone)
-                    ->limit(20)
-                    ->wrap()
-                    ->searchable()
-                    ->sortable(),
-
-                TextColumn::make('visitor_type')
-                    ->label('ประเภท')
-                    ->badge()
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'individual' => 'บุคคลทั่วไป',
-                        'school' => 'โรงเรียน',
-                        'government' => 'หน่วยงานรัฐ',
-                        'company' => 'บริษัท',
-                        default => $state,
-                    })
-                    ->colors([
-                        'primary' => 'individual',
-                        'warning' => 'school',
-                        'info' => 'government',
-                        'success' => 'company',
-                    ]),
-
-                TextColumn::make('quantity')
-                    ->label('จำนวนคน')
-                    ->formatStateUsing(fn ($state) => $state . ' คน')
-                    ->sortable(),
-
-                TextColumn::make('total_amount')
-                    ->label('ยอดรวม')
-                    ->money('THB')
-                    ->sortable(),
-
-                TextColumn::make('amount_paid')
-                    ->label('ยอดเก็บจริง')
-                    ->money('THB')
-                    ->sortable(),
-
-                TextColumn::make('notes')
-                    ->label('หมายเหตุ')
-                    ->limit(40)
-                    ->wrap(),
 
                 TextColumn::make('status')
                     ->label('สถานะ')
@@ -98,31 +56,9 @@ class BookingsTable
                         'danger' => fn ($state) => in_array($state, ['expired', 'cancelled']),
                     ]),
 
-                TextColumn::make('payment_method')
-                    ->label('วิธีจ่าย')
-                    ->badge()
-                    ->formatStateUsing(fn (?string $state): string => match ($state) {
-                        'qr_code' => 'PromptPay QR',
-                        'counter' => 'เคาน์เตอร์ POS',
-                        default => $state ?? 'QR',
-                    }),
-
-                TextColumn::make('payment.slip_path')
-                    ->label('หลักฐาน')
-                    ->formatStateUsing(fn (?string $state): string => filled($state) ? 'มีสลิป' : 'ไม่มีสลิป')
-                    ->badge()
-                    ->color(fn (?string $state): string => filled($state) ? 'success' : 'gray')
-                    ->tooltip(fn (?string $state): string => filled($state) ? 'เปิดดูสลิปได้จากเมนูการทำงาน' : 'ลูกค้ายังไม่ได้แนบสลิป'),
-
-                TextColumn::make('checked_in_at')
-                    ->label('เวลาตรวจตั๋ว')
-                    ->dateTime('d/m/Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                TextColumn::make('created_at')
-                    ->label('สร้างเมื่อ')
-                    ->dateTime('d/m/Y H:i')
+                TextColumn::make('amount_paid')
+                    ->label('ยอดรวม')
+                    ->money('THB')
                     ->sortable(),
             ])
             ->filters([
@@ -134,23 +70,34 @@ class BookingsTable
                         'paid' => 'ชำระแล้ว',
                         'redeemed' => 'ตรวจตั๋วแล้ว',
                         'expired' => 'หมดอายุ',
+                        'cancelled' => 'ยกเลิก',
                     ]),
 
-                SelectFilter::make('visitor_type')
-                    ->label('กรองตามประเภท')
-                    ->options([
-                        'individual' => 'บุคคลทั่วไป',
-                        'school' => 'โรงเรียน',
-                        'government' => 'หน่วยงานรัฐ',
-                        'company' => 'บริษัท',
-                    ]),
-
-                SelectFilter::make('payment_method')
-                    ->label('วิธีชำระ')
-                    ->options([
-                        'qr_code' => 'PromptPay QR',
-                        'counter' => 'เคาน์เตอร์',
-                    ]),
+                SelectFilter::make('created_month')
+                    ->label('เดือนที่สั่งซื้อ')
+                    ->options(collect(range(1, 12))->mapWithKeys(fn (int $month) => [
+                        str_pad((string) $month, 2, '0', STR_PAD_LEFT) => Carbon::create()->month($month)->translatedFormat('F'),
+                    ])->all())
+                    ->query(fn (Builder $query, array $data): Builder => filled($data['value'] ?? null)
+                        ? $query->whereMonth('created_at', (int) $data['value'])
+                        : $query),
+            ])
+            ->headerActions([
+                Action::make('all_orders')
+                    ->label('ทั้งหมด')
+                    ->url('/admin/bookings'),
+                Action::make('pending_orders')
+                    ->label('รอชำระ')
+                    ->url('/admin/bookings?tableFilters[status][value]=pending'),
+                Action::make('paid_orders')
+                    ->label('ชำระแล้ว')
+                    ->url('/admin/bookings?tableFilters[status][value]=paid'),
+                Action::make('redeemed_orders')
+                    ->label('ตรวจตั๋วแล้ว')
+                    ->url('/admin/bookings?tableFilters[status][value]=redeemed'),
+                Action::make('cancelled_orders')
+                    ->label('ยกเลิก')
+                    ->url('/admin/bookings?tableFilters[status][value]=cancelled'),
             ])
             ->recordActions([
                 ActionGroup::make([
@@ -182,8 +129,44 @@ class BookingsTable
 
                     EditAction::make()
                         ->label('แก้ไขรายการ'),
+                    Action::make('change_status')
+                        ->label('เปลี่ยนสถานะ')
+                        ->icon('heroicon-m-arrow-path')
+                        ->form([
+                            \Filament\Forms\Components\Select::make('status')
+                                ->label('สถานะใหม่')
+                                ->options([
+                                    'pending' => 'รอชำระ',
+                                    'awaiting_payment' => 'รอตรวจสอบการชำระ',
+                                    'paid' => 'ชำระแล้ว',
+                                    'redeemed' => 'ตรวจตั๋วแล้ว',
+                                    'expired' => 'หมดอายุ',
+                                    'cancelled' => 'ยกเลิก',
+                                ])
+                                ->required(),
+                        ])
+                        ->action(fn (Booking $record, array $data) => $record->update(['status' => $data['status']])),
                 ])->label('จัดการ')->icon('heroicon-m-ellipsis-vertical'),
             ])
-            ->toolbarActions([]);
+            ->toolbarActions([
+                BulkAction::make('change_status')
+                    ->label('เปลี่ยนสถานะทั้งหมด')
+                    ->icon('heroicon-m-arrow-path')
+                    ->form([
+                        \Filament\Forms\Components\Select::make('status')
+                            ->label('สถานะใหม่')
+                            ->options([
+                                'pending' => 'รอชำระ',
+                                'awaiting_payment' => 'รอตรวจสอบการชำระ',
+                                'paid' => 'ชำระแล้ว',
+                                'redeemed' => 'ตรวจตั๋วแล้ว',
+                                'expired' => 'หมดอายุ',
+                                'cancelled' => 'ยกเลิก',
+                            ])
+                            ->required(),
+                    ])
+                    ->requiresConfirmation()
+                    ->action(fn (\Illuminate\Support\Collection $records, array $data) => $records->each->update(['status' => $data['status']])),
+            ]);
     }
 }
