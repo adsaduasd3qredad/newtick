@@ -87,15 +87,9 @@ class MovieForm
                                         7 => 'อาทิตย์ (Sunday)',
                                     ])
                                     ->required(),
-                                \Filament\Forms\Components\Select::make('show_time')
+                                \Filament\Forms\Components\TimePicker::make('show_time')
                                     ->label('เวลาฉาย')
-                                    ->options([
-                                        '10:00:00' => '10:00 น.',
-                                        '11:00:00' => '11:00 น.',
-                                        '13:00:00' => '13:00 น.',
-                                        '14:00:00' => '14:00 น.',
-                                        '15:00:00' => '15:00 น.',
-                                    ])
+                                    ->seconds(false)
                                     ->required(),
                                 TextInput::make('total_seats')
                                     ->label('จำนวนที่นั่ง')
