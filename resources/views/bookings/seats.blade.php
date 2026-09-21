@@ -480,7 +480,16 @@
             });
 
             if (autoSelectGroupBooking) {
-                document.querySelectorAll('.seat:not(.unavailable)').forEach(function(seat) {
+                const availableSeats = Array.from(document.querySelectorAll('.seat:not(.unavailable)'))
+                    .sort(function(firstSeat, secondSeat) {
+                        const firstCode = firstSeat.dataset.seat;
+                        const secondCode = secondSeat.dataset.seat;
+                        const rowOrder = secondCode.charCodeAt(0) - firstCode.charCodeAt(0);
+
+                        return rowOrder || Number(firstCode.slice(1)) - Number(secondCode.slice(1));
+                    });
+
+                availableSeats.forEach(function(seat) {
                     if (selected.size >= requiredSeats) {
                         return;
                     }
