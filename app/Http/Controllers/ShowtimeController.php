@@ -29,26 +29,28 @@ class ShowtimeController extends Controller
         $weekDates = collect(range(0, 6))->map(fn($i) => $startOfWeek->copy()->addDays($i));
 
         // 2. à¸”à¸¶à¸‡à¸£à¸­à¸šà¸‰à¸²à¸¢à¸žà¸´à¹€à¸¨à¸©à¸—à¸µà¹ˆà¸£à¸°à¸šà¸¸à¸§à¸±à¸™à¸—à¸µà¹ˆà¹à¸™à¹ˆà¸™à¸­à¸™ à¸žà¸£à¹‰à¸­à¸¡à¸ à¸²à¸žà¸¢à¸™à¸•à¸£à¹Œà¹à¸šà¸š Eager Loading (à¸Šà¹ˆà¸§à¸¢à¹à¸à¹‰à¹€à¸§à¹‡à¸šà¸­à¸·à¸” N+1)
-        $showtimes = Showtime::with(['movie' => function($q) {
-                $q->where('is_active', true);
-            }])
+        $showtimes = Showtime::with('movie')
             ->whereHas('movie', function ($q) {
                 $q->where('is_active', true);
             })
             ->whereBetween('show_date', [$startOfWeek->toDateString(), $endOfWeek->toDateString()])
+            ->orderBy('show_date')
+            ->orderBy('show_time')
+            ->orderBy('id')
             ->get();
+        $showtimes = $showtimes->filter(
+            fn (Showtime $showtime) => $showtime->movie?->isActiveOn($showtime->show_date)
+        );
 
         // 3. à¸”à¸¶à¸‡à¸£à¸­à¸šà¸‰à¸²à¸¢à¸›à¸£à¸°à¸ˆà¸³à¸ªà¸±à¸›à¸”à¸²à¸«à¹Œ (Weekly Schedules) à¸žà¸£à¹‰à¸­à¸¡ Eager Loading
-        $weeklySchedules = WeeklySchedule::with(['movie' => function($q) {
-                $q->where('is_active', true);
-            }])
+        $weeklySchedules = WeeklySchedule::with('movie')
             ->whereHas('movie', function ($q) {
                 $q->where('is_active', true);
             })
             ->get();
 
         // 4. à¸”à¸¶à¸‡à¸ à¸²à¸žà¸¢à¸™à¸•à¸£à¹Œà¸—à¸µà¹ˆà¹€à¸›à¸´à¸”à¸‰à¸²à¸¢à¸—à¸±à¹‰à¸‡à¸«à¸¡à¸”
-        $movies = Movie::where('is_active', true)->get();
+        $movies = Movie::active($startOfWeek)->get();
 
         // à¸„à¸‡à¹€à¸§à¸¥à¸² 6 à¸ªà¸¥à¹‡à¸­à¸•à¸žà¸·à¹‰à¸™à¸à¸²à¸™à¹„à¸§à¹‰
         $timeSlots = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00'];

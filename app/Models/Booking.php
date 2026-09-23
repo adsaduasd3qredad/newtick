@@ -17,7 +17,9 @@ class Booking extends Model
         'quantity',
         'seats',
         'total_amount',
+        'amount_paid',
         'discount_code',
+        'notes',
         'status',
         'payment_method',
         'expires_at',
@@ -31,6 +33,8 @@ class Booking extends Model
         'visitor_details' => 'array',
         'expires_at' => 'datetime',
         'checked_in_at' => 'datetime',
+        'total_amount' => 'decimal:2',
+        'amount_paid' => 'decimal:2',
     ];
 
     public function showtime()

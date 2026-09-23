@@ -129,7 +129,7 @@
                                     @else
                                         <td class="p-0 border border-gray-300 align-top w-[140px] relative {{ !$cellShowtime || !$canBook ? 'bg-[#999999]' : 'bg-black' }}">
                                             @if($cellShowtime && $canBook)
-                                                <a href="{{ route('bookings.create', $cellShowtime->id) }}" class="block relative w-full h-full min-h-[110px] overflow-hidden group cursor-pointer">
+                                                <a href="{{ route('bookings.create', $cellShowtime->id) }}" class="relative block w-full h-full min-h-[110px] overflow-hidden group cursor-pointer">
                                                     @if($cellShowtime->movie->poster_path)
                                                         <img src="{{ Storage::url($cellShowtime->movie->poster_path) }}" alt="{{ $cellShowtime->movie->title_th }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-70 group-hover:opacity-100">
                                                     @endif
@@ -141,7 +141,7 @@
                                                             {{ Str::limit($cellShowtime->movie->title_th, 20) }}
                                                         </div>
                                                         <div class="inline-flex mx-auto items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-semibold {{ $cellShowtime->available_seats > 0 ? 'bg-cyan-500 text-white' : 'bg-red-500 text-white' }}">
-                                                            {{ $cellShowtime->available_seats > 0 ? $cellShowtime->available_seats . ' Seats' : 'FULL' }}
+                                                            {{ $cellShowtime->available_seats > 0 ? 'เปิดจอง' : 'เต็ม' }}
                                                         </div>
                                                     </div>
                                                 </a>

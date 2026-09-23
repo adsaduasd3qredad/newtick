@@ -192,6 +192,11 @@
                 ที่นั่ง
                 (เลือกแล้ว <span id="selectedCount" class="font-bold text-cyan-600">0</span> / {{ $quantity }})
             </p>
+            @if ($groupBooking)
+                <p class="mb-6 text-center text-xs text-slate-500">
+                    ระบบเลือกที่นั่งว่างให้จากแถวบนลงล่างแล้ว คุณสามารถคลิกเพื่อเปลี่ยนที่นั่งได้
+                </p>
+            @endif
 
             <!-- Seat map container รองรับมือถือ (เลื่อนซ้าย-ขวาได้เมื่อหน้าจอเล็ก) -->
             <div class="w-full overflow-x-auto pb-4 mb-6">
@@ -252,6 +257,10 @@
         <input type="hidden" name="booker_phone" value="{{ $booker_phone }}">
         <input type="hidden" name="visitor_type" value="{{ $visitor_type }}">
         <input type="hidden" name="quantity" value="{{ $quantity }}">
+        @if ($returnToPos)
+            <input type="hidden" name="pos_amount_paid" value="{{ $posAmountPaid }}">
+            <input type="hidden" name="pos_notes" value="{{ $posNotes }}">
+        @endif
         @if ($returnToPos)
             <input type="hidden" name="return_to_pos" value="1">
         @endif
@@ -408,6 +417,7 @@
             const bookedSeats = @json($bookedSeats);
             const requiredSeats = {{ $quantity }};
             const pricePerSeat = {{ $pricePerSeat }};
+            const autoSelectGroupBooking = @json($groupBooking);
             const selected = new Set();
 
             const groupsContainer = document.querySelector('#seat-groups');
@@ -472,6 +482,26 @@
 
                 groupsContainer.appendChild(groupElement);
             });
+
+            if (autoSelectGroupBooking) {
+                const availableSeats = Array.from(document.querySelectorAll('.seat:not(.unavailable)'))
+                    .sort(function(firstSeat, secondSeat) {
+                        const firstCode = firstSeat.dataset.seat;
+                        const secondCode = secondSeat.dataset.seat;
+                        const rowOrder = secondCode.charCodeAt(0) - firstCode.charCodeAt(0);
+
+                        return rowOrder || Number(firstCode.slice(1)) - Number(secondCode.slice(1));
+                    });
+
+                availableSeats.forEach(function(seat) {
+                    if (selected.size >= requiredSeats) {
+                        return;
+                    }
+
+                    selected.add(seat.dataset.seat);
+                    seat.classList.add('selected');
+                });
+            }
 
             render();
         });

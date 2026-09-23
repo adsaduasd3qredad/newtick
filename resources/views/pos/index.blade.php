@@ -59,37 +59,6 @@
             @forelse($showtimes as $showtime)
                 @php
                     $movieTitle = $showtime->movie->title_th ?? $showtime->movie->title ?? '';
-
-                    if (str_contains($movieTitle, 'แรงโน้มถ่วง')) {
-                        $imageName = 'gravity.jpg';
-                    } elseif (str_contains($movieTitle, 'Cosmos') || str_contains($movieTitle, 'คอสโมส')) {
-                        $imageName = 'cosmos.jpg';
-                    } elseif (str_contains($movieTitle, 'Polaris') || str_contains($movieTitle, 'ดาวเหนือ')) {
-                        $imageName = 'polaris.jpg';
-                    } elseif (
-                        str_contains($movieTitle, 'World') ||
-                        str_contains($movieTitle, 'นอกโลก') ||
-                        str_contains($movieTitle, 'สุริยะ')
-                    ) {
-                        $imageName = 'worldbeyon.jpg';
-                    } elseif (str_contains($movieTitle, 'Earth') || str_contains($movieTitle, 'จักรวาล')) {
-                        $imageName = 'earthuniverse.jpg';
-                    } elseif (str_contains($movieTitle, 'Life') || str_contains($movieTitle, 'ชีวิต')) {
-                        $imageName = 'life.jpg';
-                    } elseif (str_contains($movieTitle, 'Lucia') || str_contains($movieTitle, 'ลูเซีย')) {
-                        $imageName = 'lucia.jpg';
-                    } elseif (str_contains($movieTitle, 'Oddy') || str_contains($movieTitle, 'ออดี้')) {
-                        $imageName = 'oddy.jpg';
-                    } elseif (str_contains($movieTitle, 'Solar')) {
-                        $imageName = 'solar.jpg';
-                    } elseif (str_contains($movieTitle, 'Star') || str_contains($movieTitle, 'ดวงดาว')) {
-                        $imageName = 'star.jpg';
-                    } elseif (str_contains($movieTitle, 'Dancing') || str_contains($movieTitle, 'เต้น')) {
-                        $imageName = 'dancing.jpg';
-                    } else {
-                        $imageName = 'gravity.jpg';
-                    }
-
                     $totalSeats = $showtime->total_seats ?? 160;
                     $availableSeats = $showtime->available_seats;
                     $bookedSeats = $totalSeats - $availableSeats;
@@ -103,9 +72,15 @@
                     <div class="p-5 flex gap-4 flex-1">
                         <!-- Poster Image -->
                         <div class="w-24 h-32 shrink-0 rounded-xl overflow-hidden shadow-sm border border-slate-100 bg-slate-100">
-                            <img src="{{ asset('images/' . $imageName) }}"
-                                alt="{{ $movieTitle }}"
-                                class="w-full h-full object-cover">
+                            @if ($showtime->movie?->poster_path)
+                                <img src="{{ Storage::url($showtime->movie->poster_path) }}"
+                                    alt="{{ $movieTitle }}"
+                                    class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center text-xs text-slate-400">
+                                    ไม่มีโปสเตอร์
+                                </div>
+                            @endif
                         </div>
 
                         <!-- Info -->

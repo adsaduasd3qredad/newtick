@@ -144,10 +144,21 @@
                 <span>ราคาตั๋ว (110 ฿ x {{ $booking->quantity }}):</span>
                 <span>฿ {{ number_format($booking->total_amount, 2) }}</span>
             </div>
+            @if ($booking->payment?->transaction_fee)
+                <div class="flex justify-between">
+                    <span>ค่าธรรมเนียม:</span>
+                    <span>฿ {{ number_format($booking->payment->transaction_fee, 2) }}</span>
+                </div>
+            @endif
             <div class="flex justify-between font-bold text-sm pt-1 border-t border-slate-200">
                 <span>ยอดชำระสุทธิ:</span>
-                <span class="font-display">฿ {{ number_format($booking->total_amount, 2) }}</span>
+                <span class="font-display">฿ {{ number_format($booking->amount_paid ?? $booking->total_amount, 2) }}</span>
             </div>
+            @if ($booking->notes)
+                <div class="pt-1 text-[10px] text-slate-600">
+                    หมายเหตุ: {{ $booking->notes }}
+                </div>
+            @endif
             <div class="flex justify-between text-[10px] text-slate-500">
                 <span>สถานะ:</span>
                 <span class="font-bold text-emerald-700">ชำระเงินแล้ว ({{ $booking->payment_method === 'qr_code' ? 'QR Code' : 'เงินสด' }})</span>
@@ -175,4 +186,3 @@
 </body>
 
 </html>
-

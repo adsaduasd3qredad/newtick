@@ -61,6 +61,16 @@ class BookingForm
                     ->required()
                     ->numeric(),
 
+                TextInput::make('amount_paid')
+                    ->label('ยอดเก็บจริง (บาท)')
+                    ->prefix('฿')
+                    ->numeric(),
+
+                \Filament\Forms\Components\Textarea::make('notes')
+                    ->label('หมายเหตุการขาย')
+                    ->rows(3)
+                    ->maxLength(1000),
+
                 TextInput::make('discount_code')
                     ->label('โค้ดส่วนลด'),
 
@@ -93,9 +103,7 @@ class BookingForm
                 TextInput::make('qr_ticket_ref')
                     ->label('รหัส QR Ticket'),
 
-                DateTimePicker::make('checked_in_at')
-                    ->label('เวลาที่ตรวจตั๋วเข้าชม'),
+                
             ]);
     }
 }
-

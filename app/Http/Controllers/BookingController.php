@@ -51,6 +51,7 @@ class BookingController extends Controller
         return view('bookings.create', [
             'showtime' => $showtime,
             'returnToPos' => $request->boolean('staff'),
+            'groupBooking' => $request->boolean('group'),
         ]);
     }
 
@@ -69,6 +70,8 @@ class BookingController extends Controller
             'visitor_type' => 'required|in:individual,school,company,government',
             'quantity' => 'required|integer|min:1|max:160',
             'return_to_pos' => 'nullable|boolean',
+            'pos_amount_paid' => 'nullable|numeric|min:0',
+            'pos_notes' => 'nullable|string|max:1000',
         ]);
 
         $showtime = Showtime::with('movie')->findOrFail($validated['showtime_id']);
@@ -104,6 +107,9 @@ class BookingController extends Controller
             'visitor_type' => $validated['visitor_type'],
             'quantity' => $validated['quantity'],
             'returnToPos' => $request->boolean('return_to_pos'),
+            'groupBooking' => in_array($validated['visitor_type'], ['school', 'company', 'government'], true),
+            'posAmountPaid' => $request->input('pos_amount_paid'),
+            'posNotes' => $request->input('pos_notes'),
         ]);
     }
 
@@ -118,6 +124,8 @@ class BookingController extends Controller
             'visitor_type' => 'required|in:individual,school,company,government',
             'quantity' => 'required|integer|min:1|max:160',
             'return_to_pos' => 'nullable|boolean',
+            'pos_amount_paid' => 'nullable|numeric|min:0',
+            'pos_notes' => 'nullable|string|max:1000',
             'seats' => 'required|array|min:1',
             'seats.*' => 'string|max:10',
             'school_name' => 'nullable|string|max:255',
@@ -193,6 +201,10 @@ class BookingController extends Controller
                 ...$validated,
                 'visitor_details' => $visitorDetails,
                 'total_amount' => $this->pricePerSeat * $validated['quantity'],
+                'amount_paid' => $returnToPos && $request->filled('pos_amount_paid')
+                    ? $request->input('pos_amount_paid')
+                    : $this->pricePerSeat * $validated['quantity'],
+                'notes' => $returnToPos ? $request->input('pos_notes') : null,
                 'status' => 'pending',
                 'qr_ticket_ref' => (string) Str::uuid(),
                 'expires_at' => now()->addMinutes(30),
@@ -262,12 +274,16 @@ class BookingController extends Controller
             ['booking_id' => $booking->id],
             [
                 'ticket_amount' => $booking->total_amount,
-                'transaction_fee' => 0,
+                'transaction_fee' => $request->input('payment_method') === 'qr_code' ? 10 : 0,
                 'method' => $request->input('payment_method'),
                 'slip_path' => $slipPath,
                 'paid_at' => $returnToPos ? now() : null,
             ]
         );
+
+        $booking->update([
+            'amount_paid' => $booking->total_amount + ($request->input('payment_method') === 'qr_code' ? 10 : 0),
+        ]);
 
         if ($returnToPos) {
             return redirect()->route('pos.index')->with('success', 'ชำระเงินและออกตั๋วเรียบร้อยแล้ว');

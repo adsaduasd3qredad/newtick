@@ -7,6 +7,7 @@ use App\Http\Controllers\ShowtimeController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\PosController;
+use App\Http\Controllers\OrderReportController;
 
 // --- 1. หน้าแรกและระบบจองฝั่งลูกค้า ---
 Route::get('/', [ShowtimeController::class, 'index'])->name('showtimes.index');
@@ -86,5 +87,7 @@ Route::middleware(['auth', 'role:admin,staff'])->group(function () {
         Route::get('/reports', [PosController::class, 'reports'])->name('reports');
         Route::get('/reports/pdf', [PosController::class, 'exportPdf'])->name('reports.pdf');
         Route::get('/reports/csv', [PosController::class, 'exportCsv'])->name('reports.csv');
+        Route::get('/reports/orders/pdf', [OrderReportController::class, 'pdf'])->name('reports.orders.pdf');
+        Route::get('/reports/orders/excel', [OrderReportController::class, 'excel'])->name('reports.orders.excel');
     });
 });

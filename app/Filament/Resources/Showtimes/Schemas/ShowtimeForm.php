@@ -18,7 +18,7 @@ class ShowtimeForm
                     ->label('ภาพยนตร์')
                     ->relationship('movie', 'title_th') // ดึงชื่อฟิลด์ title_th จากตาราง movies มาแสดงผล
                     ->required()
-                    ->searchable(),
+                    ->preload(),
                 DatePicker::make('show_date')
                     ->label('วันที่ฉาย')
                     ->required(),

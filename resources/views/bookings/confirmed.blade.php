@@ -170,22 +170,10 @@
                             </div>
                         </div>
 
-                        <!-- Seats badges -->
-                        <div>
-                            <p class="text-xs text-slate-400 uppercase font-semibold mb-2">
-                                ที่นั่งที่ระบุ ({{ $booking->quantity }} ที่นั่ง)
-                            </p>
-                            <div class="flex flex-wrap gap-1.5">
-                                @if (!empty($booking->seats) && is_array($booking->seats))
-                                    @foreach ($booking->seats as $seat)
-                                        <span class="px-3 py-1 bg-cyan-600 text-white font-bold rounded-lg text-xs font-display shadow-xs">
-                                            {{ $seat }}
-                                        </span>
-                                    @endforeach
-                                @else
-                                    <span class="text-xs text-slate-500">จำนวน {{ $booking->quantity }} ที่นั่ง</span>
-                                @endif
-                            </div>
+                        <div class="rounded-2xl border border-cyan-100 bg-cyan-50/60 p-4">
+                            <p class="text-xs text-cyan-700 font-semibold">จำนวนผู้เข้าชม</p>
+                            <p class="mt-1 text-xl font-bold text-slate-900">{{ $booking->quantity }} คน</p>
+                            <p class="mt-1 text-xs text-slate-500">เจ้าหน้าที่จะตรวจสอบและจัดการที่นั่งจากรหัสการจอง</p>
                         </div>
 
                         <!-- Booker info & payment -->

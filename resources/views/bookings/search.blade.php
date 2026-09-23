@@ -103,32 +103,6 @@
                 @forelse($bookings as $booking)
                     @php
                         $mTitle = $booking->showtime->movie->title_th ?? '';
-                        if (str_contains($mTitle, 'แรงโน้มถ่วง')) {
-                            $thumbImg = 'gravity.jpg';
-                        } elseif (str_contains($mTitle, 'Cosmos') || str_contains($mTitle, 'คอสโมส')) {
-                            $thumbImg = 'cosmos.jpg';
-                        } elseif (str_contains($mTitle, 'Polaris') || str_contains($mTitle, 'ดาวเหนือ')) {
-                            $thumbImg = 'polaris.jpg';
-                        } elseif (str_contains($mTitle, 'World') || str_contains($mTitle, 'นอกโลก') || str_contains($mTitle, 'สุริยะ')) {
-                            $thumbImg = 'worldbeyon.jpg';
-                        } elseif (str_contains($mTitle, 'Earth') || str_contains($mTitle, 'จักรวาล')) {
-                            $thumbImg = 'earthuniverse.jpg';
-                        } elseif (str_contains($mTitle, 'Life') || str_contains($mTitle, 'ชีวิต')) {
-                            $thumbImg = 'life.jpg';
-                        } elseif (str_contains($mTitle, 'Lucia') || str_contains($mTitle, 'ลูเซีย')) {
-                            $thumbImg = 'lucia.jpg';
-                        } elseif (str_contains($mTitle, 'Oddy') || str_contains($mTitle, 'ออดี้')) {
-                            $thumbImg = 'oddy.jpg';
-                        } elseif (str_contains($mTitle, 'Solar')) {
-                            $thumbImg = 'solar.jpg';
-                        } elseif (str_contains($mTitle, 'Star') || str_contains($mTitle, 'ดวงดาว')) {
-                            $thumbImg = 'star.jpg';
-                        } elseif (str_contains($mTitle, 'Dancing') || str_contains($mTitle, 'เต้น')) {
-                            $thumbImg = 'dancing.jpg';
-                        } else {
-                            $thumbImg = 'gravity.jpg';
-                        }
-
                         $statusBadge = match($booking->status) {
                             'paid' => ['bg-emerald-50 text-emerald-700 border-emerald-200', 'ชำระเงินแล้ว (PAID)'],
                             'redeemed' => ['bg-blue-50 text-blue-700 border-blue-200', 'ตรวจตั๋วเข้าชมแล้ว'],
@@ -141,8 +115,14 @@
 
                     <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs hover:shadow-md transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div class="flex items-center gap-4">
-                            <img src="{{ asset('images/' . $thumbImg) }}" alt="{{ $mTitle }}"
-                                class="w-14 h-18 object-cover rounded-xl border border-slate-200 shadow-xs shrink-0">
+                            @if ($booking->showtime->movie?->poster_path)
+                                <img src="{{ Storage::url($booking->showtime->movie->poster_path) }}" alt="{{ $mTitle }}"
+                                    class="w-14 h-18 object-cover rounded-xl border border-slate-200 shadow-xs shrink-0">
+                            @else
+                                <div class="w-14 h-18 flex items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-[10px] text-slate-400 shrink-0">
+                                    ไม่มีรูป
+                                </div>
+                            @endif
                             
                             <div>
                                 <div class="flex items-center gap-2 mb-1">

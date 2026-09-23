@@ -12,6 +12,12 @@ class Movie extends Model
         'start_date', 'end_date'
     ];
 
+    protected $casts = [
+        'is_active' => 'boolean',
+        'start_date' => 'date',
+        'end_date' => 'date',
+    ];
+
     public function showtimes()
     {
         return $this->hasMany(Showtime::class);
@@ -32,5 +38,14 @@ class Movie extends Model
             ->where(function ($q) use ($date) {
                 $q->whereNull('end_date')->orWhere('end_date', '>=', $date);
             });
+    }
+
+    public function isActiveOn($date = null): bool
+    {
+        $date = $date ? \Illuminate\Support\Carbon::parse($date)->toDateString() : now()->toDateString();
+
+        return $this->is_active
+            && (! $this->start_date || $this->start_date->toDateString() <= $date)
+            && (! $this->end_date || $this->end_date->toDateString() >= $date);
     }
 }

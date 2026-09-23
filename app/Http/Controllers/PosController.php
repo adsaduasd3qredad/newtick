@@ -47,6 +47,8 @@ class PosController extends Controller
             'booker_name' => 'nullable|string|max:255',
             'booker_phone' => 'nullable|string|max:20',
             'visitor_type' => 'nullable|in:individual,school,government,company',
+            'amount_paid' => 'nullable|numeric|min:0',
+            'notes' => 'nullable|string|max:1000',
         ]);
 
         return DB::transaction(function () use ($validated) {
@@ -99,9 +101,18 @@ class PosController extends Controller
                 'quantity' => $qty,
                 'seats' => $assignedSeats,
                 'total_amount' => $this->pricePerSeat * $qty,
+                'amount_paid' => $validated['amount_paid'] ?? $this->pricePerSeat * $qty,
+                'notes' => $validated['notes'] ?? null,
                 'status' => 'paid',
                 'payment_method' => $validated['payment_method'],
                 'qr_ticket_ref' => (string) Str::uuid(),
+            ]);
+
+            $booking->payment()->create([
+                'ticket_amount' => $booking->total_amount,
+                'transaction_fee' => $validated['payment_method'] === 'qr_code' ? 10 : 0,
+                'method' => $validated['payment_method'],
+                'paid_at' => now(),
             ]);
 
             return redirect()->route('pos.receipt', $booking->id);
@@ -154,28 +165,57 @@ class PosController extends Controller
             ]);
             return redirect()->route('pos.receipt', $booking->id)->with('success', 'ออกตั๋วเรียบร้อยแล้ว');
         }
-        
+
         return back()->withErrors(['error' => 'สถานะไม่ถูกต้อง ไม่สามารถดำเนินการได้']);
     }
 
-    public function orders()
+    public function orders(Request $request)
     {
-        $bookings = Booking::with('showtime.movie')->latest()->paginate(20);
-        return view('pos.orders', compact('bookings'));
+        $statuses = [
+            'all' => 'ทั้งหมด',
+            'pending' => 'รอชำระ',
+            'awaiting_payment' => 'รอตรวจสอบการชำระ',
+            'paid' => 'ชำระแล้ว',
+            'redeemed' => 'ตรวจตั๋วแล้ว',
+            'expired' => 'หมดอายุ',
+            'cancelled' => 'ยกเลิก',
+        ];
+        $selectedStatus = $request->query('status', 'all');
+        $ordersQuery = Booking::with(['showtime.movie', 'payment'])->latest();
+        if (array_key_exists($selectedStatus, $statuses) && $selectedStatus !== 'all') {
+            $ordersQuery->where('status', $selectedStatus);
+        } else {
+            $selectedStatus = 'all';
+        }
+        $bookings = $ordersQuery->paginate(20)->withQueryString();
+        $statusCounts = Booking::select('status', DB::raw('COUNT(*) as total'))
+            ->groupBy('status')
+            ->pluck('total', 'status');
+        $summary = [
+            'orders' => Booking::whereIn('status', ['paid', 'redeemed'])->count(),
+            'tickets' => Booking::whereIn('status', ['paid', 'redeemed'])->sum('quantity'),
+            'collected' => Booking::whereIn('status', ['paid', 'redeemed'])->sum(DB::raw('COALESCE(amount_paid, total_amount)')),
+            'fees' => Booking::whereIn('bookings.status', ['paid', 'redeemed'])
+                ->join('payments', 'payments.booking_id', '=', 'bookings.id')
+                ->sum('payments.transaction_fee'),
+        ];
+
+        return view('pos.orders', compact('bookings', 'summary', 'statuses', 'selectedStatus', 'statusCounts'));
     }
 
     public function reports()
     {
         // Daily Report and Sales logic could go here or separate routes
         $dailySales = Booking::whereIn('status', ['paid', 'redeemed'])
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total_amount) as total'), DB::raw('COUNT(id) as tickets'))
+            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(COALESCE(amount_paid, total_amount)) as total'), DB::raw('COUNT(id) as tickets'))
             ->groupBy('date')
             ->orderByDesc('date')
             ->limit(30)
             ->get();
-            
+
         $paymentMethods = Booking::whereIn('status', ['paid', 'redeemed'])
-            ->select('payment_method', DB::raw('SUM(total_amount) as total'), DB::raw('COUNT(id) as tickets'))
+            ->leftJoin('payments', 'payments.booking_id', '=', 'bookings.id')
+            ->select('payment_method', DB::raw('SUM(COALESCE(bookings.amount_paid, bookings.total_amount)) as total'), DB::raw('SUM(COALESCE(payments.transaction_fee, 0)) as fees'), DB::raw('COUNT(bookings.id) as tickets'))
             ->groupBy('payment_method')
             ->get();
 
@@ -185,14 +225,15 @@ class PosController extends Controller
     public function exportPdf()
     {
         $dailySales = Booking::whereIn('status', ['paid', 'redeemed'])
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total_amount) as total'), DB::raw('COUNT(id) as tickets'))
+            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(COALESCE(amount_paid, total_amount)) as total'), DB::raw('COUNT(id) as tickets'))
             ->groupBy('date')
             ->orderByDesc('date')
             ->limit(30)
             ->get();
-            
+
         $paymentMethods = Booking::whereIn('status', ['paid', 'redeemed'])
-            ->select('payment_method', DB::raw('SUM(total_amount) as total'), DB::raw('COUNT(id) as tickets'))
+            ->leftJoin('payments', 'payments.booking_id', '=', 'bookings.id')
+            ->select('payment_method', DB::raw('SUM(COALESCE(bookings.amount_paid, bookings.total_amount)) as total'), DB::raw('SUM(COALESCE(payments.transaction_fee, 0)) as fees'), DB::raw('COUNT(bookings.id) as tickets'))
             ->groupBy('payment_method')
             ->get();
 
@@ -203,7 +244,7 @@ class PosController extends Controller
     public function exportCsv()
     {
         $dailySales = Booking::whereIn('status', ['paid', 'redeemed'])
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total_amount) as total'), DB::raw('COUNT(id) as tickets'))
+            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(COALESCE(amount_paid, total_amount)) as total'), DB::raw('COUNT(id) as tickets'))
             ->groupBy('date')
             ->orderByDesc('date')
             ->limit(30)
