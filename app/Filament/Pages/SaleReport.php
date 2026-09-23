@@ -23,11 +23,6 @@ class SaleReport extends Page
         $query = request()->only(['period', 'date']);
 
         return [
-            Action::make('export_pdf')
-                ->label('ส่งออก PDF')
-                ->icon('heroicon-o-document-arrow-down')
-                ->url(route('pos.reports.orders.pdf', $query))
-                ->openUrlInNewTab(),
             Action::make('export_excel')
                 ->label('ส่งออก Excel')
                 ->icon('heroicon-o-table-cells')
@@ -37,8 +32,8 @@ class SaleReport extends Page
 
     protected function getViewData(): array
     {
-        $periods = ['weekly' => '7 วันล่าสุด', 'monthly' => 'รายเดือน', 'yearly' => 'รายปี'];
-        $period = request()->query('period', 'weekly');
+        $periods = ['daily' => 'วันนี้', 'monthly' => 'รายเดือน', 'yearly' => 'รายปี'];
+        $period = request()->query('period', 'daily');
         $period = array_key_exists($period, $periods) ? $period : 'daily';
         $selectedDate = Carbon::parse(request()->query('date', today()->toDateString()));
         $sales = Booking::with(['showtime.movie', 'payment'])->whereIn('status', ['paid', 'redeemed']);
@@ -48,15 +43,15 @@ class SaleReport extends Page
             'periods' => $periods,
             'period' => $period,
             'selectedDate' => $selectedDate,
-            'periodStart' => $period === 'weekly' ? $selectedDate->copy()->subDays(6) : ($period === 'monthly' ? $selectedDate->copy()->startOfMonth() : $selectedDate->copy()->startOfYear()),
-            'periodEnd' => $period === 'weekly' ? $selectedDate->copy()->endOfDay() : ($period === 'monthly' ? $selectedDate->copy()->endOfMonth() : $selectedDate->copy()->endOfYear()),
+            'periodStart' => $period === 'daily' ? $selectedDate->copy()->startOfDay() : ($period === 'monthly' ? $selectedDate->copy()->startOfMonth() : $selectedDate->copy()->startOfYear()),
+            'periodEnd' => $period === 'daily' ? $selectedDate->copy()->endOfDay() : ($period === 'monthly' ? $selectedDate->copy()->endOfMonth() : $selectedDate->copy()->endOfYear()),
         ];
     }
 
     private function applyPeriod(Builder $query, string $period, Carbon $date): Builder
     {
         return match ($period) {
-            'weekly' => $query->whereBetween('created_at', [$date->copy()->subDays(6)->startOfDay(), $date->copy()->endOfDay()]),
+            'daily' => $query->whereDate('created_at', $date->toDateString()),
             'monthly' => $query->whereYear('created_at', $date->year)->whereMonth('created_at', $date->month),
             'yearly' => $query->whereYear('created_at', $date->year),
             default => $query->whereDate('created_at', $date->toDateString()),

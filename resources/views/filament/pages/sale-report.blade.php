@@ -20,7 +20,7 @@
         .sales-report .period-tab.active { background: #0f766e; color: #fff; }
         .sales-report .range-note { color: #64748b; font-size: 12px; line-height: 1.5; text-align: right; }
         .sales-report .range-note strong { display: block; color: #0f172a; font-size: 14px; }
-        .sales-report .summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 18px 28px; background: #fff; }
+        .sales-report .summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; padding: 18px 28px; background: #fff; }
         .sales-report .summary-card { border: 1px solid #e2e8f0; border-radius: 12px; padding: 13px 15px; background: #f8fafc; }
         .sales-report .summary-label { color: #64748b; font-size: 11px; font-weight: 700; }
         .sales-report .summary-value { margin-top: 4px; color: #0f172a; font-size: 20px; font-weight: 800; }
@@ -45,7 +45,10 @@
         .sales-report .note { max-width: 240px; color: #64748b; }
         .sales-report .empty { padding: 56px 20px; color: #64748b; text-align: center; }
         .sales-report .report-footer { display: flex; justify-content: space-between; gap: 12px; padding: 13px 28px; background: #f8fafc; color: #64748b; font-size: 12px; }
-        @media (max-width: 800px) {
+        @media (max-width: 1100px) {
+            .sales-report .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 640px) {
             .sales-report .report-header { align-items: flex-start; flex-direction: column; padding: 20px; }
             .sales-report .filter-bar, .sales-report .summary-grid { padding-right: 20px; padding-left: 20px; }
             .sales-report .summary-grid { grid-template-columns: 1fr; }
@@ -63,21 +66,7 @@
 
     <div class="sales-report">
         <div class="report-shell">
-            <div class="report-header">
-                <div style="display:flex;align-items:center;gap:13px;">
-                    <div class="report-icon">
-                        <x-heroicon-o-chart-bar-square style="width:26px;height:26px;" />
-                    </div>
-                    <div>
-                        <h2 class="report-title">Sale Report</h2>
-                        <p class="report-subtitle">รายงานการขายและการรับชำระเงินตามช่วงเวลาที่เลือก</p>
-                    </div>
-                </div>
-                <div class="export-links">
-                    <a class="export-link" href="{{ route('pos.reports.orders.pdf', ['period' => $period, 'date' => $selectedDate->toDateString()]) }}" target="_blank">ดาวน์โหลด PDF</a>
-                    <a class="export-link" href="{{ route('pos.reports.orders.excel', ['period' => $period, 'date' => $selectedDate->toDateString()]) }}">ดาวน์โหลด Excel</a>
-                </div>
-            </div>
+            
 
             <div class="filter-bar">
                 <div class="filter-left">
@@ -89,8 +78,8 @@
                     <form method="GET" style="display:flex;align-items:end;gap:8px;">
                         <input type="hidden" name="period" value="{{ $period }}">
                         <div>
-                            <label class="filter-label">{{ $period === 'weekly' ? 'วันที่สิ้นสุด' : ($period === 'monthly' ? 'เดือน' : 'ปี') }}</label>
-                            @if ($period === 'weekly')
+                            <label class="filter-label">{{ $period === 'daily' ? 'วันที่' : ($period === 'monthly' ? 'เดือน' : 'ปี') }}</label>
+                            @if ($period === 'daily')
                                 <input class="filter-input" type="date" name="date" value="{{ $selectedDate->format('Y-m-d') }}">
                             @elseif ($period === 'monthly')
                                 <input class="filter-input" type="month" name="date" value="{{ $selectedDate->format('Y-m') }}">
@@ -101,7 +90,7 @@
                         <button class="filter-submit" type="submit">แสดงข้อมูล</button>
                     </form>
                 </div>
-                <div class="range-note">ช่วงข้อมูล<strong>{{ $periodStart->format('d/m/Y') }} - {{ $periodEnd->format('d/m/Y') }}</strong></div>
+                <div class="range-note">ช่วงข้อมูล<strong>{{ $period === 'daily' ? $periodStart->format('d/m/Y') : $periodStart->format('d/m/Y') . ' - ' . $periodEnd->format('d/m/Y') }}</strong></div>
             </div>
 
             <div class="summary-grid">

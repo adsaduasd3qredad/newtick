@@ -6,57 +6,23 @@
 <div class="flex-1 flex items-center justify-center p-6 my-6">
         <div class="max-w-3xl w-full bg-white p-8 sm:p-10 rounded-2xl shadow-sm border border-slate-200/80">
             <h1 class="text-2xl sm:text-3xl font-bold mb-8 text-center text-slate-900 tracking-tight">
-                {{ $groupBooking ? 'จองตั๋วแบบหมู่คณะ' : 'กรอกข้อมูลการจองตั๋ว' }}
+                กรอกข้อมูลการจองตั๋ว
             </h1>
-
-            @if ($groupBooking)
-                <div class="mb-6 rounded-xl border border-cyan-200 bg-cyan-50 px-4 py-3 text-sm text-cyan-800">
-                    กรุณาเลือกประเภทผู้เข้าชมแบบหมู่คณะและระบุจำนวนที่นั่งที่ต้องการจอง
-                </div>
-            @endif
 
             <!-- ส่วนแสดงโปสเตอร์และข้อมูลรอบฉาย -->
             <div
                 class="mb-8 bg-slate-50 p-6 rounded-2xl border border-slate-200/60 flex flex-col sm:flex-row items-center gap-6">
                 @if ($showtime->movie)
                     <div class="shrink-0 text-center">
-                        @php
-                            $movieTitle = $showtime->movie->title_th ?? '';
-
-                            if (str_contains($movieTitle, 'แรงโน้มถ่วง')) {
-                                $imageName = 'gravity.jpg';
-                            } elseif (str_contains($movieTitle, 'Cosmos') || str_contains($movieTitle, 'คอสโมส')) {
-                                $imageName = 'cosmos.jpg';
-                            } elseif (str_contains($movieTitle, 'Polaris') || str_contains($movieTitle, 'ดาวเหนือ')) {
-                                $imageName = 'polaris.jpg';
-                            } elseif (
-                                str_contains($movieTitle, 'World') ||
-                                str_contains($movieTitle, 'นอกโลก') ||
-                                str_contains($movieTitle, 'สุริยะ')
-                            ) {
-                                $imageName = 'worldbeyon.jpg';
-                            } elseif (str_contains($movieTitle, 'Earth') || str_contains($movieTitle, 'จักรวาล')) {
-                                $imageName = 'earthuniverse.jpg';
-                            } elseif (str_contains($movieTitle, 'Life') || str_contains($movieTitle, 'ชีวิต')) {
-                                $imageName = 'life.jpg';
-                            } elseif (str_contains($movieTitle, 'Lucia') || str_contains($movieTitle, 'ลูเซีย')) {
-                                $imageName = 'lucia.jpg';
-                            } elseif (str_contains($movieTitle, 'Oddy') || str_contains($movieTitle, 'ออดี้')) {
-                                $imageName = 'oddy.jpg';
-                            } elseif (str_contains($movieTitle, 'Solar')) {
-                                $imageName = 'solar.jpg';
-                            } elseif (str_contains($movieTitle, 'Star') || str_contains($movieTitle, 'ดวงดาว')) {
-                                $imageName = 'star.jpg';
-                            } elseif (str_contains($movieTitle, 'Dancing') || str_contains($movieTitle, 'เต้น')) {
-                                $imageName = 'dancing.jpg';
-                            } else {
-                                $imageName = 'gravity.jpg';
-                            }
-                        @endphp
-
-                        <img src="{{ asset('images/' . $imageName) }}"
-                            alt="{{ $showtime->movie->title_th ?? 'Movie Poster' }}"
-                            class="w-36 h-52 object-cover rounded-xl shadow-md border border-slate-200">
+                        @if ($showtime->movie->poster_path)
+                            <img src="{{ Storage::url($showtime->movie->poster_path) }}"
+                                alt="{{ $showtime->movie->title_th ?? 'Movie Poster' }}"
+                                class="w-36 h-52 object-cover rounded-xl shadow-md border border-slate-200">
+                        @else
+                            <div class="w-36 h-52 flex items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-xs text-slate-400">
+                                ไม่มีโปสเตอร์
+                            </div>
+                        @endif
                     </div>
                 @endif
 
@@ -114,24 +80,6 @@
                             class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-white transition">
                     </div>
 
-                    @if ($returnToPos)
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 rounded-xl border border-amber-200 bg-amber-50 p-4">
-                            <div>
-                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">ยอดเก็บจริงหน้าเคาน์เตอร์</label>
-                                <input type="number" name="pos_amount_paid" min="0" step="0.01"
-                                    value="{{ old('pos_amount_paid', old('quantity', 1) * 110) }}"
-                                    class="w-full bg-white border border-amber-300 rounded-xl px-4 py-3 text-slate-800">
-                                <p class="text-xs text-slate-500 mt-1">แก้ไขได้เมื่อมีเด็กเล็กหรือผู้สูงอายุใช้สิทธิ์ดูฟรี</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">หมายเหตุการขาย</label>
-                                <textarea name="pos_notes" rows="2" maxlength="1000"
-                                    placeholder="เช่น มีเด็กเล็ก 1 คน, ผู้สูงอายุ 1 คน"
-                                    class="w-full bg-white border border-amber-300 rounded-xl px-4 py-3 text-slate-800">{{ old('pos_notes') }}</textarea>
-                            </div>
-                        </div>
-                    @endif
-
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-1.5">เบอร์โทรศัพท์</label>
                         <input type="text" name="booker_phone" value="{{ old('booker_phone') }}"
@@ -157,8 +105,6 @@
                             <option value="individual" {{ old('visitor_type') == 'individual' ? 'selected' : '' }}>
                                 บุคคลทั่วไป</option>
                             <option value="school" {{ old('visitor_type') == 'school' ? 'selected' : '' }}>โรงเรียน
-                            </option>
-                            <option value="company" {{ old('visitor_type') == 'company' ? 'selected' : '' }}>บริษัท
                             </option>
                             <option value="government" {{ old('visitor_type') == 'government' ? 'selected' : '' }}>
                                 อื่นๆ / หน่วยงานรัฐ</option>
@@ -289,11 +235,9 @@
                     limit = 160;
                     quantityHint.textContent = 'โรงเรียน จองได้สูงสุด 160 ที่นั่ง (ตามจำนวนที่นั่งว่าง)';
                     schoolFields.classList.remove('hidden');
-                } else if (selectedType === 'government' || selectedType === 'company') {
+                } else if (selectedType === 'government') {
                     limit = 160;
-                    quantityHint.textContent = selectedType === 'company'
-                        ? 'บริษัท จองได้สูงสุด 160 ที่นั่ง (ตามจำนวนที่นั่งว่าง)'
-                        : 'หน่วยงานรัฐ/อื่นๆ จองได้สูงสุด 160 ที่นั่ง (ตามจำนวนที่นั่งว่าง)';
+                    quantityHint.textContent = 'หน่วยงานรัฐ/อื่นๆ จองได้สูงสุด 160 ที่นั่ง (ตามจำนวนที่นั่งว่าง)';
                     govFields.classList.remove('hidden');
                 } else {
                     quantityHint.textContent = 'บุคคลทั่วไป จองได้สูงสุด 10 ที่นั่ง (ตามจำนวนที่นั่งว่าง)';

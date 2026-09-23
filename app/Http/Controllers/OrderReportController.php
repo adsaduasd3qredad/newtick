@@ -68,8 +68,8 @@ class OrderReportController extends Controller
 
     private function period(Request $request): array
     {
-        $periods = ['weekly' => '7 วันล่าสุด', 'monthly' => 'รายเดือน', 'yearly' => 'รายปี'];
-        $period = array_key_exists($request->query('period'), $periods) ? $request->query('period') : 'weekly';
+        $periods = ['daily' => 'วันนี้', 'monthly' => 'รายเดือน', 'yearly' => 'รายปี', 'weekly' => '7 วันล่าสุด'];
+        $period = array_key_exists($request->query('period'), $periods) ? $request->query('period') : 'daily';
         $date = Carbon::parse($request->query('date', today()->toDateString()));
 
         return [$period, $date, $periods[$period]];
@@ -78,6 +78,7 @@ class OrderReportController extends Controller
     private function applyPeriod(Builder $query, string $period, Carbon $date): Builder
     {
         return match ($period) {
+            'daily' => $query->whereDate('created_at', $date->toDateString()),
             'weekly' => $query->whereBetween('created_at', [$date->copy()->subDays(6)->startOfDay(), $date->copy()->endOfDay()]),
             'monthly' => $query->whereYear('created_at', $date->year)->whereMonth('created_at', $date->month),
             'yearly' => $query->whereYear('created_at', $date->year),
