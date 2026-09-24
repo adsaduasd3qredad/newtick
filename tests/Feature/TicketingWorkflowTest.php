@@ -266,6 +266,55 @@ class TicketingWorkflowTest extends TestCase
             ->assertSet('filter', '2026-08');
     }
 
+    public function test_pos_and_admin_report_exports_use_real_xlsx_and_match_payment_date_period(): void
+    {
+        $staff = User::factory()->create(['role' => 'staff']);
+        $showtime = $this->showtime('2026-09-24', '10:00:00');
+        $this->actingAs($staff);
+        $this->post(route('pos.quick-sell'), [
+            'showtime_id' => $showtime->id,
+            'quantity' => 2,
+            'payment_method' => 'counter',
+        ])->assertRedirect();
+
+        $booking = Booking::firstOrFail();
+        $booking->forceFill(['created_at' => Carbon::parse('2026-09-22 18:00:00')])->save();
+
+        $this->get(route('pos.reports'))
+            ->assertOk()
+            ->assertSee('เลือกช่วงวันที่หรือเดือน')
+            ->assertDontSee('Total Collected');
+
+        $range = ['range_period' => 'daily', 'from' => '2026-09-23', 'to' => '2026-09-23'];
+        $this->get(route('pos.reports', [...$range, 'search' => 1]))
+            ->assertOk()
+            ->assertSee('Total Collected')
+            ->assertSee('Daily Sales Summary')
+            ->assertSee('100.00');
+
+        $this->get(route('pos.reports', [
+            'search' => 1,
+            'range_period' => 'monthly',
+            'from' => '2026-09',
+            'to' => '2026-09',
+        ]))->assertOk()->assertSee('Sep 2026')->assertSee('100.00');
+
+        $xlsx = $this->get(route('pos.reports.orders.excel', $range))
+            ->assertOk()
+            ->assertDownload('sales-report-20260923-to-20260923.xlsx');
+        $xlsxPath = $xlsx->baseResponse->getFile()->getPathname();
+        $this->assertSame('PK', substr(file_get_contents($xlsxPath), 0, 2));
+        $archive = new \ZipArchive();
+        $this->assertSame(true, $archive->open($xlsxPath));
+        $this->assertNotFalse($archive->locateName('xl/workbook.xml'));
+        $archive->close();
+
+        $pdf = $this->get(route('pos.reports.pdf', $range))
+            ->assertOk()
+            ->assertDownload('sales-report-20260923-to-20260923.pdf');
+        $this->assertStringStartsWith('%PDF-', $pdf->getContent());
+    }
+
     public function test_group_booking_counts_are_recalculated_and_saved_for_school_and_government(): void
     {
         $groupBookings = [

@@ -58,10 +58,10 @@
     </style>
 
     @php
-        $totalSales = $sales->count();
-        $totalCollected = $sales->sum(fn ($sale) => (float) ($sale->amount_paid ?? $sale->total_amount));
-        $totalFees = $sales->sum(fn ($sale) => (float) ($sale->payment?->transaction_fee ?? 0));
-        $totalPeople = $sales->sum('quantity');
+        $totalSales = $totalOrders;
+        $totalCollected = $totalCollected;
+        $totalFees = $totalFees;
+        $totalPeople = $totalVisitors;
     @endphp
 
     <div class="sales-report">
@@ -118,8 +118,8 @@
                         @forelse ($sales as $sale)
                             @php
                                 $total = (float) $sale->total_amount;
-                                $collected = (float) ($sale->amount_paid ?? $sale->total_amount);
                                 $fee = (float) ($sale->payment?->transaction_fee ?? 0);
+                                $collected = (float) ($sale->amount_paid ?? ($sale->total_amount + $fee));
                             @endphp
                             <tr>
                                 <td class="nowrap">{{ $sale->payment?->paid_at?->format('d/m/Y') ?? '-' }}</td>
@@ -129,7 +129,7 @@
                                 <td class="num">{{ number_format($sale->quantity) }}</td>
                                 <td class="num money">฿ {{ number_format($total, 2) }}</td>
                                 <td class="num money fee">฿ {{ number_format($fee, 2) }}</td>
-                                <td class="num money discount">฿ {{ number_format(max(0, $total - $collected), 2) }}</td>
+                                <td class="num money discount">฿ {{ number_format(max(0, $total - ($collected - $fee)), 2) }}</td>
                                 <td class="num money collected">฿ {{ number_format($collected, 2) }}</td>
                                 <td><span class="method">{{ $sale->payment_method === 'counter' ? 'POS' : 'ออนไลน์ / QR' }}</span></td>
                                 <td class="nowrap">{{ $sale->payment?->paid_at?->format('H:i') ?? '-' }}</td>

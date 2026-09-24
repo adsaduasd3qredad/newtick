@@ -21,10 +21,7 @@
                 <h2 class="font-bold text-lg">รายการออเดอร์</h2>
                 <p class="text-xs text-slate-500 mt-1">ข้อมูลการจอง การชำระเงิน และหมายเหตุสำคัญ</p>
             </div>
-            <div class="flex gap-2">
-                <a href="{{ route('pos.reports.orders.pdf') }}" target="_blank" class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700">ส่งออก PDF</a>
-                <a href="{{ route('pos.reports.orders.excel') }}" class="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">ส่งออก Excel</a>
-            </div>
+            
         </div>
         <div class="flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-4 py-3">
             @foreach($statuses as $key => $label)

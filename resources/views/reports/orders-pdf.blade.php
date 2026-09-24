@@ -1,46 +1,92 @@
 <!doctype html>
-<html lang="th">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <title>Sales Report</title>
     <style>
-        @page { size: A4 landscape; margin: 24px; }
-        body { font-family: freeserif, DejaVu Sans, sans-serif; font-size: 9px; color: #1e293b; }
-        h1 { color: #0e7490; font-size: 18px; margin: 0 0 4px; }
-        .summary { color: #64748b; margin-bottom: 14px; }
-        table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; }
-        th, td { border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; padding: 6px; }
-        th { background: #e0f2fe; color: #155e75; text-align: left; }
-        tr:last-child td { border-bottom: 0; }
-        th:last-child, td:last-child { border-right: 0; }
-        .right { text-align: right; }
-        .status { font-weight: bold; }
+        @page { size: A4 landscape; margin: 24px 28px 30px; }
+        body { color: #172033; font-family: "DejaVu Sans", sans-serif; font-size: 8px; }
+        h1 { margin: 0 0 3px; color: #0f766e; font-size: 20px; }
+        h2 { margin: 16px 0 6px; color: #0f172a; font-size: 12px; }
+        .meta { margin: 0 0 12px; color: #64748b; font-size: 8px; }
+        .summary { width: 100%; margin: 0 0 12px; border-collapse: separate; border-spacing: 6px 0; }
+        .summary td { width: 25%; padding: 8px; border: 1px solid #dbe4ea; background: #f8fafc; }
+        .label { display: block; color: #64748b; font-size: 7px; text-transform: uppercase; }
+        .value { display: block; margin-top: 3px; color: #0f172a; font-size: 13px; font-weight: bold; }
+        table.data { width: 100%; border-collapse: collapse; margin: 0 0 10px; }
+        table.data th { padding: 5px 4px; border: 1px solid #cbd5e1; background: #0f766e; color: white; text-align: left; }
+        table.data td { padding: 4px; border: 1px solid #dbe4ea; vertical-align: top; }
+        table.data tr:nth-child(even) td { background: #f8fafc; }
+        .num { text-align: right !important; white-space: nowrap; }
+        .nowrap { white-space: nowrap; }
+        .muted { color: #64748b; }
+        .empty { padding: 12px !important; color: #64748b; text-align: center; }
     </style>
 </head>
 <body>
-    <h1>{{ $title }}</h1>
-    <div class="summary">ออกรายงานเมื่อ {{ now()->format('d/m/Y H:i') }} | จำนวน {{ $bookings->count() }} ออเดอร์</div>
-    <table>
-        <thead>
-            <tr>
-                <th>รหัสจอง</th><th>วันที่จอง</th><th>ภาพยนตร์ / รอบ</th><th>จำนวนคน</th>
-                <th class="right">ยอดตั๋ว</th><th class="right">ค่าธรรมเนียม</th><th class="right">เก็บจริง</th>
-                <th>วิธีชำระ</th><th>หมายเหตุ</th>
-            </tr>
-        </thead>
+    <h1>Sales Report</h1>
+    <p class="meta">Period: {{ $periodLabel }} ({{ $periodStart->format('Y-m-d') }} to {{ $periodEnd->format('Y-m-d') }}) &nbsp; | &nbsp; Generated: {{ now()->format('Y-m-d H:i:s') }}</p>
+
+    <table class="summary">
+        <tr>
+            <td><span class="label">Orders</span><span class="value">{{ number_format($totalOrders) }}</span></td>
+            <td><span class="label">Visitors</span><span class="value">{{ number_format($totalVisitors) }}</span></td>
+            <td><span class="label">Total Collected (THB)</span><span class="value">{{ number_format($totalCollected, 2) }}</span></td>
+            <td><span class="label">Fees (THB)</span><span class="value">{{ number_format($totalFees, 2) }}</span></td>
+        </tr>
+    </table>
+
+    <h2>Revenue by Payment Method</h2>
+    <table class="data">
+        <thead><tr><th>Method</th><th class="num">Orders</th><th class="num">Visitors</th><th class="num">Total Collected (THB)</th><th class="num">Fees (THB)</th></tr></thead>
         <tbody>
-        @foreach ($bookings as $booking)
+        @forelse ($paymentMethods as $method)
+            <tr><td>{{ $method->payment_method === 'counter' ? 'Counter / POS' : 'PromptPay QR' }}</td><td class="num">{{ number_format($method->orders) }}</td><td class="num">{{ number_format($method->visitors) }}</td><td class="num">{{ number_format($method->collected, 2) }}</td><td class="num">{{ number_format($method->fees, 2) }}</td></tr>
+        @empty
+            <tr><td class="empty" colspan="5">No payment records in this period.</td></tr>
+        @endforelse
+        </tbody>
+    </table>
+
+    <h2>Daily Sales Summary</h2>
+    <table class="data">
+        <thead><tr><th>Date</th><th class="num">Orders</th><th class="num">Visitors</th><th class="num">Total Revenue (THB)</th><th class="num">Fees (THB)</th></tr></thead>
+        <tbody>
+        @forelse ($dailySales as $day)
+            <tr><td>{{ $day->date }}</td><td class="num">{{ number_format($day->orders) }}</td><td class="num">{{ number_format($day->visitors) }}</td><td class="num">{{ number_format($day->total, 2) }}</td><td class="num">{{ number_format($day->fees, 2) }}</td></tr>
+        @empty
+            <tr><td class="empty" colspan="5">No sales in this period.</td></tr>
+        @endforelse
+        </tbody>
+    </table>
+
+    <h2>Transaction Details</h2>
+    <table class="data">
+        <thead><tr><th>Paid Date</th><th>Showtime</th><th>Movie</th><th>Booking</th><th class="num">Visitors</th><th class="num">Ticket Amount</th><th class="num">Fee</th><th class="num">Discount</th><th class="num">Collected</th><th>Method</th><th>Status</th><th>Notes</th></tr></thead>
+        <tbody>
+        @forelse ($sales as $sale)
+            @php
+                $fee = (float) ($sale->payment?->transaction_fee ?? 0);
+                $collected = (float) ($sale->amount_paid ?? ($sale->total_amount + $fee));
+                $discount = max(0, (float) $sale->total_amount - ($collected - $fee));
+            @endphp
             <tr>
-                <td class="status">#{{ $booking->id }}</td>
-                <td>{{ $booking->created_at?->format('d/m/Y H:i') }}</td>
-                <td>{{ $booking->showtime?->movie?->title_th ?? '-' }}<br>{{ $booking->showtime?->show_date?->format('d/m/Y') }} {{ substr((string) ($booking->showtime?->show_time ?? ''), 0, 5) }}</td>
-                <td>{{ $booking->quantity }}</td>
-                <td class="right">{{ number_format((float) $booking->total_amount, 2) }}</td>
-                <td class="right">{{ number_format((float) ($booking->payment?->transaction_fee ?? 0), 2) }}</td>
-                <td class="right">{{ number_format((float) ($booking->amount_paid ?? $booking->total_amount), 2) }}</td>
-                <td>{{ $booking->payment_method === 'counter' ? 'เคาน์เตอร์ POS' : 'ออนไลน์/QR' }}</td>
-                <td>{{ $booking->notes ?? '-' }}</td>
+                <td class="nowrap">{{ $sale->payment?->paid_at?->format('Y-m-d') ?? '-' }}</td>
+                <td class="nowrap">{{ $sale->showtime?->show_date?->format('Y-m-d') ?? '-' }} {{ $sale->showtime?->show_time ? substr((string) $sale->showtime->show_time, 0, 5) : '' }}</td>
+                <td>{{ $sale->showtime?->movie?->title_en ?: ('Movie #' . ($sale->showtime?->movie_id ?? '')) }}</td>
+                <td class="nowrap">#{{ str_pad((string) $sale->id, 2, '0', STR_PAD_LEFT) }}</td>
+                <td class="num">{{ number_format($sale->quantity) }}</td>
+                <td class="num">{{ number_format($sale->total_amount, 2) }}</td>
+                <td class="num">{{ number_format($fee, 2) }}</td>
+                <td class="num">{{ number_format($discount, 2) }}</td>
+                <td class="num">{{ number_format($collected, 2) }}</td>
+                <td>{{ $sale->payment_method === 'counter' ? 'Counter / POS' : 'PromptPay QR' }}</td>
+                <td>{{ ucfirst($sale->status) }}</td>
+                <td>{{ $sale->notes ?: '-' }}</td>
             </tr>
-        @endforeach
+        @empty
+            <tr><td class="empty" colspan="12">No sales in this period.</td></tr>
+        @endforelse
         </tbody>
     </table>
 </body>

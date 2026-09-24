@@ -228,23 +228,44 @@ class PosController extends Controller
         return view('pos.orders', compact('bookings', 'summary', 'statuses', 'selectedStatus', 'statusCounts'));
     }
 
-    public function reports()
+    public function reports(Request $request)
     {
-        // Daily Report and Sales logic could go here or separate routes
-        $dailySales = Booking::whereIn('status', ['paid', 'redeemed'])
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(COALESCE(amount_paid, total_amount)) as total'), DB::raw('COUNT(id) as tickets'))
-            ->groupBy('date')
-            ->orderByDesc('date')
-            ->limit(30)
-            ->get();
+        $reports = app(\App\Services\SalesReportService::class);
+        $period = $request->query('range_period');
+        $period = in_array($period, ['daily', 'monthly', 'yearly'], true) ? $period : 'daily';
+        $today = now();
+        $defaultValue = match ($period) {
+            'monthly' => $today->format('Y-m'),
+            'yearly' => $today->format('Y'),
+            default => $today->format('Y-m-d'),
+        };
+        $from = $request->query('from', $defaultValue);
+        $to = $request->query('to', $defaultValue);
 
-        $paymentMethods = Booking::whereIn('status', ['paid', 'redeemed'])
-            ->leftJoin('payments', 'payments.booking_id', '=', 'bookings.id')
-            ->select('payment_method', DB::raw('SUM(COALESCE(bookings.amount_paid, bookings.total_amount)) as total'), DB::raw('SUM(COALESCE(payments.transaction_fee, 0)) as fees'), DB::raw('COUNT(bookings.id) as tickets'))
-            ->groupBy('payment_method')
-            ->get();
+        if ($request->boolean('search')) {
+            $validated = $request->validate([
+                'range_period' => ['required', 'in:daily,monthly,yearly'],
+                'from' => ['required', 'string'],
+                'to' => ['required', 'string'],
+            ]);
+            $range = $reports->rangeDescriptor($validated['range_period'], $validated['from'], $validated['to']);
+            $period = $validated['range_period'];
+            $from = $validated['from'];
+            $to = $validated['to'];
+            $report = $reports->makeRange($range['start'], $range['end'], $range['label']);
+        } else {
+            $range = $reports->rangeDescriptor($period, (string) $from, (string) $to);
+            $report = $reports->emptyRange($range['start'], $range['end'], $range['label']);
+        }
 
-        return view('pos.reports', compact('dailySales', 'paymentMethods'));
+        return view('pos.reports', [
+            ...$report,
+            'periods' => ['daily' => 'รายวัน', 'monthly' => 'รายเดือน', 'yearly' => 'รายปี'],
+            'rangePeriod' => $period,
+            'fromInput' => $from,
+            'toInput' => $to,
+            'searched' => $request->boolean('search'),
+        ]);
     }
 
     public function exportPdf()
