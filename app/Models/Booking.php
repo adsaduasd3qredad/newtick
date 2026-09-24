@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use App\Models\Showtime;
 
 class Booking extends Model
 {
@@ -52,11 +54,38 @@ class Booking extends Model
         return $this->hasOne(Payment::class);
     }
 
+    /** Expire an unpaid booking and return its seats exactly once. */
+    public function expireAndReleaseSeats(): bool
+    {
+        return DB::transaction(function (): bool {
+            $showtimeId = self::whereKey($this->getKey())->value('showtime_id');
+            if (! $showtimeId) {
+                return false;
+            }
+
+            // Match the showtime -> booking lock order used when reserving seats.
+            $showtime = Showtime::whereKey($showtimeId)->lockForUpdate()->first();
+            $booking = self::whereKey($this->getKey())->lockForUpdate()->first();
+
+            if (! $showtime || ! $booking
+                || ! in_array($booking->status, ['pending', 'awaiting_payment'], true)
+                || ! $booking->expires_at
+                || $booking->expires_at->isFuture()) {
+                return false;
+            }
+
+            $booking->update(['status' => 'expired']);
+            $showtime->increment('available_seats', $booking->quantity);
+
+            return true;
+        });
+    }
+
     protected static function booted()
     {
         static::deleting(function ($booking) {
-            // เมื่อมีการลบ booking ให้บวกที่นั่งคืนในรอบฉายนั้นๆ
-            if ($booking->showtime) {
+            // Only bookings that still reserve seats may return capacity.
+            if ($booking->showtime && in_array($booking->status, ['pending', 'awaiting_payment'], true)) {
                 $booking->showtime->increment('available_seats', $booking->quantity);
             }
         });

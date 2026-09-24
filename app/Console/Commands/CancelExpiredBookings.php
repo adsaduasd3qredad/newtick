@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\Booking;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class CancelExpiredBookings extends Command
 {
@@ -14,19 +13,27 @@ class CancelExpiredBookings extends Command
     public function handle(): void
     {
         $expiredBookings = Booking::whereIn('status', ['pending', 'awaiting_payment'])
-            ->where('expires_at', '<', now())
+            ->where(function ($query) {
+                $query->where('expires_at', '<', now())
+                    ->orWhere('payment_method', 'counter');
+            })
             ->get();
 
         foreach ($expiredBookings as $booking) {
-            DB::transaction(function () use ($booking) {
-                // ล็อกป้องกันชนกับ booking ใหม่ที่กำลังตัดที่นั่งพร้อมกัน
-                $showtime = $booking->showtime()->lockForUpdate()->first();
-                $showtime->increment('available_seats', $booking->quantity);
+            if ($booking->status === 'awaiting_payment' && $booking->payment_method === 'counter' && $booking->showtime) {
+                $counterDeadline = $booking->showtime->startsAt()->addMinutes(30);
+                if (! $booking->expires_at || ! $booking->expires_at->equalTo($counterDeadline)) {
+                    $booking->update(['expires_at' => $counterDeadline]);
+                }
+            }
 
-                $booking->update(['status' => 'expired']);
-            });
+            if (! $booking->expires_at || $booking->expires_at->isFuture()) {
+                continue;
+            }
 
-            $this->info("ยกเลิกการจอง #{$booking->id} คืนที่นั่ง {$booking->quantity} ที่");
+            if ($booking->expireAndReleaseSeats()) {
+                $this->info("ยกเลิกการจอง #{$booking->id} คืนที่นั่ง {$booking->quantity} ที่");
+            }
         }
 
         if ($expiredBookings->isEmpty()) {

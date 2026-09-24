@@ -11,8 +11,6 @@ use Illuminate\Support\Str;
 
 class PosController extends Controller
 {
-    protected int $pricePerSeat = 110;
-
     public function index(Request $request)
     {
         $dateParam = $request->query('date');
@@ -47,7 +45,6 @@ class PosController extends Controller
             'booker_name' => 'nullable|string|max:255',
             'booker_phone' => 'nullable|string|max:20',
             'visitor_type' => 'nullable|in:individual,school,government,company',
-            'amount_paid' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string|max:1000',
         ]);
 
@@ -55,6 +52,12 @@ class PosController extends Controller
             $showtime = Showtime::where('id', $validated['showtime_id'])
                 ->lockForUpdate()
                 ->firstOrFail();
+
+            if (! $showtime->isBookable()) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'showtime' => 'รอบฉายเริ่มแล้ว ไม่สามารถขายตั๋วได้',
+                ]);
+            }
 
             $qty = (int) $validated['quantity'];
 
@@ -100,8 +103,8 @@ class PosController extends Controller
                 'visitor_type' => $visitorType,
                 'quantity' => $qty,
                 'seats' => $assignedSeats,
-                'total_amount' => $this->pricePerSeat * $qty,
-                'amount_paid' => $validated['amount_paid'] ?? $this->pricePerSeat * $qty,
+                'total_amount' => $this->pricePerSeat() * $qty,
+                'amount_paid' => ($this->pricePerSeat() * $qty) + $this->paymentFee($validated['payment_method']),
                 'notes' => $validated['notes'] ?? null,
                 'status' => 'paid',
                 'payment_method' => $validated['payment_method'],
@@ -110,7 +113,7 @@ class PosController extends Controller
 
             $booking->payment()->create([
                 'ticket_amount' => $booking->total_amount,
-                'transaction_fee' => $validated['payment_method'] === 'qr_code' ? 10 : 0,
+                'transaction_fee' => $this->paymentFee($validated['payment_method']),
                 'method' => $validated['payment_method'],
                 'paid_at' => now(),
             ]);
@@ -139,31 +142,53 @@ class PosController extends Controller
         }
 
         $qrPayload = \App\Services\PromptPayQr::generatePayload(
-            env('PROMPTPAY_TARGET', '0800000000'),
-            (float) $booking->total_amount
+            (string) config('ticketing.promptpay_target'),
+            (float) $booking->total_amount + $this->paymentFee('qr_code')
         );
 
         return view('pos.verify', compact('booking', 'qrPayload'));
     }
 
-        public function confirmCheckin(Request $request, Booking $booking)
+    public function confirmCheckin(Request $request, Booking $booking)
     {
+        $validated = $request->validate([
+            'payment_method' => [in_array($booking->status, ['pending', 'awaiting_payment']) ? 'required' : 'nullable', 'in:counter,qr_code'],
+        ]);
+
         if (in_array($booking->status, ['pending', 'awaiting_payment'])) {
-            $paymentMethod = $request->input('payment_method', 'cash');
+            if ($booking->expires_at && $booking->expires_at->isPast()) {
+                $booking->expireAndReleaseSeats();
+
+                return back()->withErrors(['error' => 'หมดเวลาชำระเงินและคืนที่นั่งแล้ว']);
+            }
+
+            $paymentMethod = $validated['payment_method'];
+            $amountPaid = $booking->total_amount + $this->paymentFee($paymentMethod);
             $booking->update([
                 'payment_method' => $paymentMethod,
-                'status' => 'redeemed',
-                'checked_in_at' => now(),
+                'status' => 'paid',
+                'checked_in_at' => null,
+                'amount_paid' => $amountPaid,
+            ]);
+            $booking->payment()->updateOrCreate(['booking_id' => $booking->id], [
+                'ticket_amount' => $booking->total_amount,
+                'transaction_fee' => $this->paymentFee($paymentMethod),
+                'method' => $paymentMethod,
+                'paid_at' => now(),
             ]);
             return redirect()->route('pos.receipt', $booking->id)->with('success', 'ชำระเงินและออกตั๋วเรียบร้อยแล้ว');
         }
 
-        if ($booking->status === 'paid' || $booking->status === 'redeemed') {
+        if ($booking->status === 'paid') {
             $booking->update([
                 'status' => 'redeemed',
                 'checked_in_at' => now()
             ]);
             return redirect()->route('pos.receipt', $booking->id)->with('success', 'ออกตั๋วเรียบร้อยแล้ว');
+        }
+
+        if ($booking->status === 'redeemed') {
+            return redirect()->route('pos.receipt', $booking->id);
         }
 
         return back()->withErrors(['error' => 'สถานะไม่ถูกต้อง ไม่สามารถดำเนินการได้']);
@@ -174,7 +199,7 @@ class PosController extends Controller
         $statuses = [
             'all' => 'ทั้งหมด',
             'pending' => 'รอชำระ',
-            'awaiting_payment' => 'รอตรวจสอบการชำระ',
+            'awaiting_payment' => 'รอชำระ / ตรวจสอบ',
             'paid' => 'ชำระแล้ว',
             'redeemed' => 'ตรวจตั๋วแล้ว',
             'expired' => 'หมดอายุ',
@@ -268,5 +293,14 @@ class PosController extends Controller
         $booking->load(['showtime.movie']);
         return view('pos.receipt', compact('booking'));
     }
+
+    private function pricePerSeat(): int
+    {
+        return (int) config('ticketing.price_per_seat');
+    }
+
+    private function paymentFee(string $method): int
+    {
+        return $method === 'qr_code' ? (int) config('ticketing.qr_payment_fee') : 0;
+    }
 }
-
