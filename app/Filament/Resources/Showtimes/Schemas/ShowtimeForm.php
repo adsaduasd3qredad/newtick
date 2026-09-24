@@ -6,7 +6,11 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select; // 📌 เพิ่ม use ตัวนี้
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Validation\Rule;
+use App\Models\Showtime;
 
 class ShowtimeForm
 {
@@ -18,6 +22,16 @@ class ShowtimeForm
                     ->label('ภาพยนตร์')
                     ->relationship('movie', 'title_th') // ดึงชื่อฟิลด์ title_th จากตาราง movies มาแสดงผล
                     ->required()
+                    ->rules(fn (Get $get, ?Showtime $record): array => [
+                        Rule::unique('showtimes', 'movie_id')
+                            ->where(fn (Builder $query) => $query
+                                ->whereDate('show_date', $get('show_date'))
+                                ->where('show_time', $get('show_time')))
+                            ->ignore($record?->getKey()),
+                    ])
+                    ->validationMessages([
+                        'unique' => 'ภาพยนตร์เรื่องนี้มีรอบฉายในวันและเวลานี้แล้ว',
+                    ])
                     ->preload(),
                 DatePicker::make('show_date')
                     ->label('วันที่ฉาย')

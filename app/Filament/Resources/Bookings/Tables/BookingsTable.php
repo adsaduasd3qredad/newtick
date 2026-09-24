@@ -5,13 +5,13 @@ namespace App\Filament\Resources\Bookings\Tables;
 use Filament\Actions\EditAction;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
-use Filament\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use App\Models\Booking;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class BookingsTable
 {
@@ -21,6 +21,10 @@ class BookingsTable
             ->defaultSort('id', 'desc')
             ->modifyQueryUsing(function (Builder $query): Builder {
                 $status = request()->input('order_status') ?: request()->input('tableFilters.status.value');
+
+                if ($status === 'pending') {
+                    return $query->whereIn('status', ['pending', 'awaiting_payment']);
+                }
 
                 return filled($status) ? $query->where('status', $status) : $query;
             })
@@ -45,10 +49,10 @@ class BookingsTable
                 TextColumn::make('status')
                     ->label('สถานะ')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'pending' => 'รอชำระ',
-                        'awaiting_payment' => 'รอชำระเงิน',
-                        'paid' => 'ชำระแล้ว',
+                    ->formatStateUsing(fn (string $state, Booking $record): string => match ($state) {
+                        'pending' => 'รอเลือก/ชำระ',
+                        'awaiting_payment' => $record->payment_method === 'counter' ? 'รอชำระหน้าเคาน์เตอร์' : 'รอตรวจสอบ PromptPay',
+                        'paid' => 'ชำระแล้ว / รอตรวจตั๋ว',
                         'redeemed' => 'ตรวจตั๋วแล้ว',
                         'expired' => 'หมดอายุ',
                         'cancelled' => 'ยกเลิก',
@@ -71,12 +75,17 @@ class BookingsTable
                     ->label('กรองตามสถานะ')
                     ->options([
                         'pending' => 'รอชำระ',
-                        'awaiting_payment' => 'รอตรวจสอบการชำระ',
+                        'awaiting_payment' => 'รอชำระ / ตรวจสอบ',
                         'paid' => 'ชำระแล้ว',
                         'redeemed' => 'ตรวจตั๋วแล้ว',
                         'expired' => 'หมดอายุ',
                         'cancelled' => 'ยกเลิก',
-                    ]),
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => ($data['value'] ?? null) === 'pending'
+                        ? $query->whereIn('status', ['pending', 'awaiting_payment'])
+                        : (filled($data['value'] ?? null)
+                            ? $query->where('status', $data['value'])
+                            : $query)),
 
                 SelectFilter::make('created_month')
                     ->label('เดือนที่สั่งซื้อ')
@@ -130,53 +139,57 @@ class BookingsTable
                         ->label('ยืนยันรับเงิน')
                         ->icon('heroicon-m-check')
                         ->color('success')
-                        ->visible(fn (Booking $record) => in_array($record->status, ['pending', 'awaiting_payment']))
+                        ->visible(fn (Booking $record) => $record->status === 'awaiting_payment'
+                            && $record->payment_method === 'qr_code'
+                            && filled($record->payment?->slip_path))
                         ->requiresConfirmation()
                         ->action(function (Booking $record) {
-                            $record->update(['status' => 'paid']);
-                            $record->payment?->update(['paid_at' => now()]);
+                            DB::transaction(function () use ($record) {
+                                $booking = Booking::whereKey($record->id)->lockForUpdate()->firstOrFail();
+                                if ($booking->status !== 'awaiting_payment' || $booking->payment_method !== 'qr_code') {
+                                    return;
+                                }
+
+                                $fee = (int) config('ticketing.qr_payment_fee');
+                                $paidAt = now();
+                                $booking->update([
+                                    'status' => 'paid',
+                                    'amount_paid' => (float) $booking->total_amount + $fee,
+                                ]);
+                                $booking->payment()->updateOrCreate(
+                                    ['booking_id' => $booking->id],
+                                    [
+                                        'ticket_amount' => $booking->total_amount,
+                                        'transaction_fee' => $fee,
+                                        'method' => 'qr_code',
+                                        'paid_at' => $paidAt,
+                                    ],
+                                );
+                            });
+                        }),
+
+                    Action::make('cancel_booking')
+                        ->label('ยกเลิกการจอง')
+                        ->icon('heroicon-m-x-circle')
+                        ->color('danger')
+                        ->visible(fn (Booking $record) => in_array($record->status, ['pending', 'awaiting_payment'], true))
+                        ->requiresConfirmation()
+                        ->action(function (Booking $record) {
+                            DB::transaction(function () use ($record) {
+                                $booking = Booking::whereKey($record->id)->lockForUpdate()->firstOrFail();
+                                if (! in_array($booking->status, ['pending', 'awaiting_payment'], true)) {
+                                    return;
+                                }
+
+                                $showtime = $booking->showtime()->lockForUpdate()->first();
+                                $booking->update(['status' => 'cancelled']);
+                                $showtime?->increment('available_seats', $booking->quantity);
+                            });
                         }),
 
                     EditAction::make()
                         ->label('แก้ไขรายการ'),
-                    Action::make('change_status')
-                        ->label('เปลี่ยนสถานะ')
-                        ->icon('heroicon-m-arrow-path')
-                        ->form([
-                            \Filament\Forms\Components\Select::make('status')
-                                ->label('สถานะใหม่')
-                                ->options([
-                                    'pending' => 'รอชำระ',
-                                    'awaiting_payment' => 'รอตรวจสอบการชำระ',
-                                    'paid' => 'ชำระแล้ว',
-                                    'redeemed' => 'ตรวจตั๋วแล้ว',
-                                    'expired' => 'หมดอายุ',
-                                    'cancelled' => 'ยกเลิก',
-                                ])
-                                ->required(),
-                        ])
-                        ->action(fn (Booking $record, array $data) => $record->update(['status' => $data['status']])),
                 ])->label('จัดการ')->icon('heroicon-m-ellipsis-vertical'),
-            ])
-            ->toolbarActions([
-                BulkAction::make('change_status')
-                    ->label('เปลี่ยนสถานะทั้งหมด')
-                    ->icon('heroicon-m-arrow-path')
-                    ->form([
-                        \Filament\Forms\Components\Select::make('status')
-                            ->label('สถานะใหม่')
-                            ->options([
-                                'pending' => 'รอชำระ',
-                                'awaiting_payment' => 'รอตรวจสอบการชำระ',
-                                'paid' => 'ชำระแล้ว',
-                                'redeemed' => 'ตรวจตั๋วแล้ว',
-                                'expired' => 'หมดอายุ',
-                                'cancelled' => 'ยกเลิก',
-                            ])
-                            ->required(),
-                    ])
-                    ->requiresConfirmation()
-                    ->action(fn (\Illuminate\Support\Collection $records, array $data) => $records->each->update(['status' => $data['status']])),
             ]);
     }
 }

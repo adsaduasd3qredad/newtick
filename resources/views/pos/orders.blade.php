@@ -78,18 +78,33 @@
                         <td class="px-6 py-4">{{ $b->quantity }} คน</td>
                         <td class="px-6 py-4 max-w-xs text-xs text-slate-600">{{ $b->notes ?: '-' }}</td>
                         <td class="px-6 py-4">
-                            @if($b->payment_method == 'counter')
+                            @if($b->payment_method === 'counter')
                                 <span class="text-blue-600 bg-blue-50 px-2 py-1 rounded text-xs">เงินสดหน้าเคาน์เตอร์</span>
-                            @else
+                            @elseif($b->payment_method === 'qr_code')
                                 <span class="text-emerald-600 bg-emerald-50 px-2 py-1 rounded text-xs">ออนไลน์ (QR)</span>
+                            @else
+                                <span class="text-slate-400">-</span>
                             @endif
                         </td>
-                        <td class="px-6 py-4 text-right">{{ number_format($b->payment?->transaction_fee ?? 0, 2) }}</td>
-                        <td class="px-6 py-4 text-right font-bold">{{ number_format($b->amount_paid ?? $b->total_amount, 2) }}</td>
+                        <td class="px-6 py-4 text-right">
+                            {{ in_array($b->status, ['paid', 'redeemed'], true) ? number_format($b->payment?->transaction_fee ?? 0, 2) : '-' }}
+                        </td>
+                        <td class="px-6 py-4 text-right font-bold">
+                            {{ in_array($b->status, ['paid', 'redeemed'], true) ? number_format($b->amount_paid ?? $b->total_amount, 2) : '-' }}
+                        </td>
                         <td class="px-6 py-4 text-center">
+                            @php($statusLabel = match ($b->status) {
+                                'pending' => 'รอชำระ',
+                                'awaiting_payment' => $b->payment_method === 'counter' ? 'รอชำระหน้าเคาน์เตอร์' : 'รอตรวจสอบการชำระ',
+                                'paid' => 'ชำระแล้ว / รอตรวจตั๋ว',
+                                'redeemed' => 'ตรวจตั๋วแล้ว',
+                                'expired' => 'หมดอายุ',
+                                'cancelled' => 'ยกเลิก',
+                                default => $b->status,
+                            })
                             <span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase
                                 {{ $b->status === 'paid' ? 'bg-emerald-100 text-emerald-700' : ($b->status === 'redeemed' ? 'bg-slate-200 text-slate-700' : 'bg-amber-100 text-amber-700') }}">
-                                {{ $b->status }}
+                                {{ $statusLabel }}
                             </span>
                         </td>
                         <td class="px-6 py-4 text-center">

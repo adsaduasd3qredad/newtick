@@ -53,7 +53,7 @@
                 <p class="text-slate-600 text-sm sm:text-base mb-1">รหัสจอง <strong
                         class="text-slate-900 font-bold text-lg">#{{ $booking->id }}</strong></p>
                 <p class="text-slate-600 text-sm sm:text-base">ยอดชำระ <strong
-                        class="text-emerald-600 font-bold text-xl sm:text-2xl">{{ number_format($booking->total_amount, 2) }}
+                        id="payment-total" class="text-emerald-600 font-bold text-xl sm:text-2xl">{{ number_format($qrTotal, 2) }}
                         บาท</strong></p>
             </div>
 
@@ -93,7 +93,7 @@
             <div id="promptpay-panel" class="bg-blue-50 border border-blue-200 text-blue-800 p-6 rounded-2xl mb-8 max-w-md mx-auto text-center shadow-sm">
                 <h3 class="font-bold text-lg mb-3">สแกนเพื่อชำระเงินผ่าน PromptPay</h3>
                 <div class="bg-white p-3 rounded-2xl inline-block shadow-sm">{!! QrCode::size(220)->generate($qrPayload) !!}</div>
-                <p class="text-sm mt-3">ยอดชำระ {{ number_format($booking->total_amount, 2) }} บาท</p>
+                <p class="text-sm mt-3">ราคาบัตร {{ number_format($booking->total_amount, 2) }} + ค่าธรรมเนียม {{ number_format($qrPaymentFee, 2) }} = ยอดชำระ {{ number_format($qrTotal, 2) }} บาท</p>
             </div>
 
             <div class="flex justify-center max-w-md mx-auto">
@@ -144,6 +144,9 @@
         const counterPaymentNote = document.getElementById('counter-payment-note');
         const promptpayPanel = document.getElementById('promptpay-panel');
         const paymentSlip = document.querySelector('input[name="payment_slip"]');
+        const paymentTotal = document.getElementById('payment-total');
+        const ticketTotal = {{ json_encode((float) $booking->total_amount) }};
+        const qrTotal = {{ json_encode((float) $qrTotal) }};
 
         function updatePaymentMethod() {
             const isQr = document.querySelector('.payment-method:checked')?.value === 'qr_code';
@@ -151,6 +154,7 @@
             counterPaymentNote.classList.toggle('hidden', isQr);
             promptpayPanel.classList.toggle('hidden', !isQr);
             paymentSlip.required = isQr;
+            paymentTotal.textContent = (isQr ? qrTotal : ticketTotal).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
         paymentMethods.forEach((method) => method.addEventListener('change', updatePaymentMethod));

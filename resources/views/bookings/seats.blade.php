@@ -88,6 +88,12 @@
             border-color: #0284c7;
         }
 
+        .seat:focus-visible {
+            outline: 3px solid #0f172a;
+            outline-offset: 2px;
+            z-index: 3;
+        }
+
         /* สถานะเลือกแล้ว (สีทองพรีเมียม) */
         .seat.selected {
             border-color: #d97706;
@@ -187,6 +193,12 @@
                 </div>
             </div>
 
+            @if ($visitorDetails)
+                <div class="mb-5 rounded-xl border border-cyan-100 bg-cyan-50 px-4 py-3 text-center text-sm text-cyan-900">
+                    ยืนยันจำนวนผู้เข้าชมกลุ่มนี้ <strong>{{ $quantity }} คน</strong> · ระบบคำนวณจำนวนที่นั่งจากข้อมูลที่กรอกแล้ว
+                </div>
+            @endif
+
             <p class="text-center text-sm text-slate-600 mb-6 font-medium">
                 กรุณาเลือกที่นั่งจำนวน <span class="text-cyan-600 font-bold text-base">{{ $quantity }}</span>
                 ที่นั่ง
@@ -257,6 +269,9 @@
         <input type="hidden" name="booker_phone" value="{{ $booker_phone }}">
         <input type="hidden" name="visitor_type" value="{{ $visitor_type }}">
         <input type="hidden" name="quantity" value="{{ $quantity }}">
+        @foreach ($visitorDetails as $field => $value)
+            <input type="hidden" name="{{ $field }}" value="{{ $value }}">
+        @endforeach
         @if ($returnToPos)
             <input type="hidden" name="pos_amount_paid" value="{{ $posAmountPaid }}">
             <input type="hidden" name="pos_notes" value="{{ $posNotes }}">
@@ -456,22 +471,28 @@
                     const seatCode = group.row + number;
                     const isBooked = bookedSeats.includes(seatCode);
 
-                    const seat = document.createElement('span');
+                    const seat = document.createElement('button');
+                    seat.type = 'button';
                     seat.className = `seat ${isBooked ? 'unavailable' : ''}`;
                     seat.textContent = number;
                     seat.dataset.seat = seatCode;
+                    seat.setAttribute('aria-label', `ที่นั่ง ${seatCode}${isBooked ? ' ไม่ว่าง' : ' ว่าง'}`);
+                    seat.setAttribute('aria-pressed', 'false');
+                    seat.disabled = isBooked;
 
                     if (!isBooked) {
                         seat.addEventListener('click', function() {
                             if (selected.has(seatCode)) {
                                 selected.delete(seatCode);
                                 seat.classList.remove('selected');
+                                seat.setAttribute('aria-pressed', 'false');
                             } else {
                                 if (selected.size >= requiredSeats) {
                                     return; // เลือกครบจำนวนแล้ว
                                 }
                                 selected.add(seatCode);
                                 seat.classList.add('selected');
+                                seat.setAttribute('aria-pressed', 'true');
                             }
                             render();
                         });
@@ -500,6 +521,7 @@
 
                     selected.add(seat.dataset.seat);
                     seat.classList.add('selected');
+                    seat.setAttribute('aria-pressed', 'true');
                 });
             }
 

@@ -2,7 +2,7 @@
 @section('title', 'รอบฉาย')
 @section('content')
     <!-- Main Container -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-1 w-full">
+    <main class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
 
         <!-- Date Bar & Controls -->
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -55,7 +55,7 @@
         </div>
 
         <!-- Showtime Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-7">
             @forelse($showtimes as $showtime)
                 @php
                     $movieTitle = $showtime->movie->title_th ?? $showtime->movie->title ?? '';
@@ -63,15 +63,16 @@
                     $availableSeats = $showtime->available_seats;
                     $bookedSeats = $totalSeats - $availableSeats;
                     $isSoldOut = $availableSeats <= 0;
+                    $isPastShowtime = ! $showtime->isBookable();
                     $percentBooked = $totalSeats > 0 ? round(($bookedSeats / $totalSeats) * 100) : 0;
                 @endphp
 
                 <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-md hover:border-cyan-300 transition flex flex-col overflow-hidden">
                     
                     <!-- Showtime Card Body -->
-                    <div class="p-5 flex gap-4 flex-1">
+                    <div class="p-6 flex gap-6 flex-1">
                         <!-- Poster Image -->
-                        <div class="w-24 h-32 shrink-0 rounded-xl overflow-hidden shadow-sm border border-slate-100 bg-slate-100">
+                        <div class="w-36 h-52 sm:w-40 sm:h-56 2xl:w-44 2xl:h-60 shrink-0 rounded-xl overflow-hidden shadow-sm border border-slate-100 bg-slate-100">
                             @if ($showtime->movie?->poster_path)
                                 <img src="{{ Storage::url($showtime->movie->poster_path) }}"
                                     alt="{{ $movieTitle }}"
@@ -88,13 +89,17 @@
                             <div>
                                 <!-- Time Badge -->
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-slate-800 bg-slate-100 rounded-lg font-display">
+                                    <span class="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-bold text-slate-800 bg-slate-100 rounded-lg font-display">
                                         <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                         <span>{{ \Carbon\Carbon::parse($showtime->show_time)->format('H:i') }} น.</span>
                                     </span>
-                                    @if ($isSoldOut)
+                                    @if ($isPastShowtime)
+                                        <span class="px-2 py-1 text-[11px] font-semibold bg-slate-200 text-slate-600 rounded-md">
+                                            เริ่มฉายแล้ว · ปิดขาย
+                                        </span>
+                                    @elseif ($isSoldOut)
                                         <span class="px-2 py-0.5 text-[11px] font-semibold bg-rose-100 text-rose-700 rounded-md">
                                             เต็ม
                                         </span>
@@ -106,12 +111,12 @@
                                 </div>
 
                                 <!-- Movie Title -->
-                                <h3 class="font-bold text-slate-900 text-base leading-snug line-clamp-2" title="{{ $movieTitle }}">
+                                <h3 class="font-bold text-slate-900 text-xl 2xl:text-2xl leading-snug line-clamp-2" title="{{ $movieTitle }}">
                                     {{ $movieTitle ?: 'ไม่ระบุชื่อภาพยนตร์' }}
                                 </h3>
 
                                 @if ($showtime->movie && $showtime->movie->duration_minutes)
-                                    <p class="text-xs text-slate-400 mt-1">
+                                    <p class="text-sm text-slate-500 mt-2">
                                         ความยาว {{ $showtime->movie->duration_minutes }} นาที
                                     </p>
                                 @endif
@@ -119,7 +124,7 @@
 
                             <!-- Seat Details & Bar -->
                             <div class="mt-3">
-                                <div class="flex justify-between text-xs text-slate-500 mb-1">
+                                <div class="flex justify-between text-sm text-slate-500 mb-2">
                                     <span>ที่นั่งว่าง: <strong class="{{ $isSoldOut ? 'text-rose-600' : 'text-cyan-600' }} font-semibold">{{ $availableSeats }}</strong> / {{ $totalSeats }}</span>
                                     <span>{{ $percentBooked }}%</span>
                                 </div>
@@ -131,12 +136,16 @@
                     </div>
 
                     <!-- Action Footer -->
-                    <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-2">
+                    <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-2">
                         <span class="text-xs text-slate-400 font-mono">
                             รอบ #{{ $showtime->id }}
                         </span>
 
-                        @if ($isSoldOut)
+                        @if ($isPastShowtime)
+                            <button disabled class="bg-slate-200 text-slate-500 px-4 py-2 rounded-xl text-xs font-semibold cursor-not-allowed">
+                                รอบฉายเริ่มแล้ว ปิดการขาย
+                            </button>
+                        @elseif ($isSoldOut)
                             <button disabled class="bg-slate-300 text-slate-500 px-4 py-2 rounded-xl text-xs font-semibold cursor-not-allowed">
                                 ที่นั่งเต็มแล้ว
                             </button>

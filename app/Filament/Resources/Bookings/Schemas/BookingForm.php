@@ -16,6 +16,7 @@ class BookingForm
             ->components([
                 Select::make('showtime_id')
                     ->label('รอบการแสดง')
+                    ->disabledOn('edit')
                     ->relationship('showtime', 'id')
                     ->getOptionLabelFromRecordUsing(fn ($record) => ($record->movie ? $record->movie->title_th : 'Showtime #' . $record->id) . ' (' . \Carbon\Carbon::parse($record->show_date)->format('d/m/Y') . ' ' . \Carbon\Carbon::parse($record->show_time)->format('H:i') . ' น.)')
                     ->searchable()
@@ -48,21 +49,26 @@ class BookingForm
 
                 TextInput::make('quantity')
                     ->label('จำนวนที่นั่ง')
+                    ->disabledOn('edit')
                     ->required()
                     ->numeric(),
 
                 TagsInput::make('seats')
                     ->label('หมายเลขที่นั่ง (เช่น A1, A2)')
+                    ->disabledOn('edit')
                     ->placeholder('พิมพ์ที่นั่งแล้วกด Enter'),
 
                 TextInput::make('total_amount')
                     ->label('ยอดเงินรวม (บาท)')
+                    ->disabledOn('edit')
                     ->prefix('฿')
                     ->required()
                     ->numeric(),
 
                 TextInput::make('amount_paid')
                     ->label('ยอดเก็บจริง (บาท)')
+                    ->disabled()
+                    ->dehydrated(false)
                     ->prefix('฿')
                     ->numeric(),
 
@@ -76,6 +82,8 @@ class BookingForm
 
                 Select::make('status')
                     ->label('สถานะการจอง')
+                    ->disabled()
+                    ->dehydrated(false)
                     ->options([
                         'pending' => 'รอชำระ (Pending)',
                         'awaiting_payment' => 'รอชำระเงิน (Awaiting Payment)',
@@ -89,13 +97,15 @@ class BookingForm
 
                 Select::make('payment_method')
                     ->label('วิธีการชำระเงิน')
+                    ->disabledOn('edit')
                     ->options([
                         'qr_code' => 'PromptPay QR Code',
                         'counter' => 'ชำระที่เคาน์เตอร์ POS',
                     ]),
 
                 DateTimePicker::make('expires_at')
-                    ->label('หมดอายุชำระเงินเมื่อ'),
+                    ->label('หมดอายุชำระเงินเมื่อ')
+                    ->disabledOn('edit'),
 
                 TextInput::make('qr_payment_ref')
                     ->label('รหัสอ้างอิงการชำระเงิน'),

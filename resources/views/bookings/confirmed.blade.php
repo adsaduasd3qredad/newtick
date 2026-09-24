@@ -209,6 +209,17 @@
                     </div>
                 </div>
 
+                @if($booking->status === 'awaiting_payment' && $booking->payment_method === 'counter' && $booking->expires_at)
+                    @php($counterWindowStartsAt = $booking->showtime->startsAt()->subMinutes(30))
+                    <div id="counter-payment-window"
+                        data-start="{{ $counterWindowStartsAt->toIso8601String() }}"
+                        data-end="{{ $booking->expires_at->toIso8601String() }}"
+                        class="no-print mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-center text-sm text-amber-900">
+                        <p>จองแบบชำระหน้าเคาน์เตอร์ได้ถึง {{ $booking->expires_at->format('d/m/Y H:i') }} น.</p>
+                        <p id="counter-payment-countdown" class="mt-1 font-semibold"></p>
+                    </div>
+                @endif
+
                 <!-- Ticket Instructions Footer -->
                 <div class="bg-slate-50/90 px-6 sm:px-8 py-3.5 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-2">
                     <p>กรุณาแสดงหน้านี้หรือตั๋วที่พิมพ์แก่เจ้าหน้าที่ ณ ประตูทางเข้าก่อนรอบฉาย 15 นาที</p>
@@ -244,6 +255,34 @@
             <p>© 2026 ศูนย์วิทยาศาสตร์เพื่อการศึกษารังสิต. All rights reserved.</p>
         </div>
     </footer>
+    @if(isset($counterWindowStartsAt))
+        <script>
+            const counterWindowStartsAt = new Date(@json($counterWindowStartsAt->toIso8601String())).getTime();
+            const counterWindowEndsAt = new Date(@json($booking->expires_at->toIso8601String())).getTime();
+            const counterCountdown = document.getElementById('counter-payment-countdown');
+
+            function updateCounterPaymentWindow() {
+                const now = Date.now();
+                if (now < counterWindowStartsAt) {
+                    counterCountdown.textContent = `เริ่มนับถอยหลังวันที่ ${new Date(counterWindowStartsAt).toLocaleString('th-TH')}`;
+                    return;
+                }
+
+                const remaining = Math.max(0, counterWindowEndsAt - now);
+                if (remaining === 0) {
+                    counterCountdown.textContent = 'หมดเวลาชำระเงิน';
+                    return;
+                }
+
+                const minutes = Math.floor(remaining / 60000);
+                const seconds = Math.floor((remaining % 60000) / 1000);
+                counterCountdown.textContent = `เวลาชำระคงเหลือ ${minutes} นาที ${seconds} วินาที`;
+            }
+
+            updateCounterPaymentWindow();
+            setInterval(updateCounterPaymentWindow, 1000);
+        </script>
+    @endif
 </body>
 
 </html>
