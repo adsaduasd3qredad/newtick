@@ -151,13 +151,20 @@
                     <span>฿ {{ number_format($booking->payment->transaction_fee, 2) }}</span>
                 </div>
             @endif
+            @if ($booking->total_amount > (($booking->amount_paid ?? 0) - ($booking->payment?->transaction_fee ?? 0)))
+                @php($discount = max(0, $booking->total_amount - (($booking->amount_paid ?? 0) - ($booking->payment?->transaction_fee ?? 0))))
+                <div class="flex justify-between text-emerald-700 font-semibold">
+                    <span>ส่วนลดโปรโมชั่น (เข้าชมฟรี):</span>
+                    <span>- ฿ {{ number_format($discount, 2) }}</span>
+                </div>
+            @endif
             <div class="flex justify-between font-bold text-sm pt-1 border-t border-slate-200">
                 <span>ยอดชำระสุทธิ:</span>
                 <span class="font-display">฿ {{ number_format($booking->amount_paid ?? $booking->total_amount, 2) }}</span>
             </div>
             @if ($booking->notes)
-                <div class="pt-1 text-[10px] text-slate-600">
-                    หมายเหตุ: {{ $booking->notes }}
+                <div class="pt-1.5 text-[10px] text-slate-700 bg-amber-50 p-1.5 rounded border border-amber-200 font-medium">
+                    <strong>หมายเหตุ:</strong> {{ $booking->notes }}
                 </div>
             @endif
             <div class="flex justify-between text-[10px] text-slate-500 pt-0.5">

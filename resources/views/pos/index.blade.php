@@ -287,6 +287,46 @@
                     </div>
                 </div>
 
+                <!-- Promotion & Free Entries (Elderly / Children <= 100cm) -->
+                <div class="bg-amber-50/70 p-3.5 rounded-2xl border border-amber-200 text-xs">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-bold text-amber-900 flex items-center gap-1.5">
+                            <span>🎁</span>
+                            <span>โปรโมชั่นเข้าชมฟรี & หมายเหตุ</span>
+                        </span>
+                        <span class="text-[10px] text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-md font-semibold">บันทึกลง Report</span>
+                    </div>
+
+                    <!-- Free attendees buttons -->
+                    <div class="grid grid-cols-2 gap-2 mb-2.5">
+                        <div class="bg-white p-2 rounded-xl border border-amber-200 flex items-center justify-between">
+                            <span class="text-[11px] font-semibold text-slate-700">👴 ผู้สูงอายุ (ฟรี)</span>
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="stepFree('elderly', -1)" class="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 flex items-center justify-center">-</button>
+                                <span id="free_elderly_display" class="w-5 text-center font-bold text-slate-800 text-xs">0</span>
+                                <button type="button" onclick="stepFree('elderly', 1)" class="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 flex items-center justify-center">+</button>
+                            </div>
+                            <input type="hidden" name="free_elderly" id="free_elderly_input" value="0">
+                        </div>
+
+                        <div class="bg-white p-2 rounded-xl border border-amber-200 flex items-center justify-between">
+                            <span class="text-[11px] font-semibold text-slate-700">👶 เด็ก ≤100 ซม. (ฟรี)</span>
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="stepFree('children', -1)" class="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 flex items-center justify-center">-</button>
+                                <span id="free_children_display" class="w-5 text-center font-bold text-slate-800 text-xs">0</span>
+                                <button type="button" onclick="stepFree('children', 1)" class="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 flex items-center justify-center">+</button>
+                            </div>
+                            <input type="hidden" name="free_children" id="free_children_input" value="0">
+                        </div>
+                    </div>
+
+                    <!-- Custom Notes input -->
+                    <div>
+                        <input type="text" name="notes" id="modal_notes" placeholder="หมายเหตุเพิ่มเติม (ถ้ามี เช่น หน่วยงาน, บัตรพิเศษ)"
+                            class="w-full bg-white border border-amber-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400">
+                    </div>
+                </div>
+
                 <!-- Total Amount Summary -->
                 <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200 flex justify-between items-center">
                     <div>
@@ -366,8 +406,53 @@
 
         function updateModalTotal() {
             const qty = parseInt(quantityInput.value) || 0;
-            const total = qty * pricePerSeat;
-            totalAmountEl.textContent = total.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ฿';
+            const elderly = parseInt(document.getElementById('free_elderly_input')?.value) || 0;
+            const children = parseInt(document.getElementById('free_children_input')?.value) || 0;
+            const totalFree = Math.min(qty, elderly + children);
+            const payingQty = Math.max(0, qty - totalFree);
+
+            const total = payingQty * pricePerSeat;
+            let summaryText = total.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ฿';
+            if (totalFree > 0) {
+                summaryText += ` <span class="text-xs font-normal text-emerald-600 block">(ชำระ ${payingQty}, ฟรี ${totalFree})</span>`;
+            }
+            totalAmountEl.innerHTML = summaryText;
+        }
+
+        function stepFree(type, delta) {
+            const elderlyInput = document.getElementById('free_elderly_input');
+            const elderlyDisplay = document.getElementById('free_elderly_display');
+            const childrenInput = document.getElementById('free_children_input');
+            const childrenDisplay = document.getElementById('free_children_display');
+
+            let elderly = parseInt(elderlyInput.value) || 0;
+            let children = parseInt(childrenInput.value) || 0;
+            let qty = parseInt(quantityInput.value) || 1;
+
+            if (type === 'elderly') {
+                elderly = Math.max(0, elderly + delta);
+            } else if (type === 'children') {
+                children = Math.max(0, children + delta);
+            }
+
+            if (elderly + children > qty) {
+                qty = elderly + children;
+                if (qty <= currentMaxSeats) {
+                    quantityInput.value = qty;
+                } else {
+                    if (type === 'elderly') elderly = Math.max(0, currentMaxSeats - children);
+                    if (type === 'children') children = Math.max(0, currentMaxSeats - elderly);
+                    qty = currentMaxSeats;
+                    quantityInput.value = qty;
+                }
+            }
+
+            elderlyInput.value = elderly;
+            elderlyDisplay.textContent = elderly;
+            childrenInput.value = children;
+            childrenDisplay.textContent = children;
+
+            updateModalTotal();
         }
 
         // Close on ESC key or click outside

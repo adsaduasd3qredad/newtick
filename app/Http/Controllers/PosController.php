@@ -45,10 +45,12 @@ class PosController extends Controller
             'booker_name' => 'nullable|string|max:255',
             'booker_phone' => 'nullable|string|max:20',
             'visitor_type' => 'nullable|in:individual,school,government,company',
+            'free_elderly' => 'nullable|integer|min:0',
+            'free_children' => 'nullable|integer|min:0',
             'notes' => 'nullable|string|max:1000',
         ]);
 
-        return DB::transaction(function () use ($validated) {
+        return DB::transaction(function () use ($validated, $request) {
             $showtime = Showtime::where('id', $validated['showtime_id'])
                 ->lockForUpdate()
                 ->firstOrFail();
@@ -63,6 +65,29 @@ class PosController extends Controller
 
             if ($showtime->available_seats < $qty) {
                 return back()->withErrors(['quantity' => "ที่นั่งไม่พอ เหลือ {$showtime->available_seats} ที่นั่ง"]);
+            }
+
+            // คำนวณจำนวนตั๋วฟรีและยอดเงิน
+            $freeElderly = max(0, (int) ($request->input('free_elderly') ?? 0));
+            $freeChildren = max(0, (int) ($request->input('free_children') ?? 0));
+            $totalFree = min($qty, $freeElderly + $freeChildren);
+            $payingQty = max(0, $qty - $totalFree);
+
+            // รวมข้อความโปรโมชั่นและหมายเหตุ
+            $noteParts = [];
+            if ($freeElderly > 0) {
+                $noteParts[] = "ผู้สูงอายุเข้าชมฟรี {$freeElderly} คน";
+            }
+            if ($freeChildren > 0) {
+                $noteParts[] = "เด็กสูงไม่เกิน 100 ซม. เข้าชมฟรี {$freeChildren} คน";
+            }
+            $customNote = !empty($validated['notes']) ? trim($validated['notes']) : '';
+
+            if (!empty($noteParts)) {
+                $promoNote = implode(', ', $noteParts);
+                $finalNotes = $customNote ? ($promoNote . ' (' . $customNote . ')') : $promoNote;
+            } else {
+                $finalNotes = $customNote ?: null;
             }
 
             // หาที่นั่งที่ถูกจองไปแล้ว
@@ -92,6 +117,10 @@ class PosController extends Controller
             // ตัดจำนวนที่นั่งว่าง
             $showtime->decrement('available_seats', $qty);
 
+            $fee = $payingQty > 0 ? $this->paymentFee($validated['payment_method']) : 0;
+            $totalAmount = $this->pricePerSeat() * $qty;
+            $amountPaid = ($this->pricePerSeat() * $payingQty) + $fee;
+
             $bookerName = !empty($validated['booker_name']) ? trim($validated['booker_name']) : $this->getNextWalkinName();
             $visitorType = $validated['visitor_type'] ?? 'individual';
 
@@ -103,9 +132,9 @@ class PosController extends Controller
                 'visitor_type' => $visitorType,
                 'quantity' => $qty,
                 'seats' => $assignedSeats,
-                'total_amount' => $this->pricePerSeat() * $qty,
-                'amount_paid' => ($this->pricePerSeat() * $qty) + $this->paymentFee($validated['payment_method']),
-                'notes' => $validated['notes'] ?? null,
+                'total_amount' => $totalAmount,
+                'amount_paid' => $amountPaid,
+                'notes' => $finalNotes,
                 'status' => 'paid',
                 'payment_method' => $validated['payment_method'],
                 'qr_ticket_ref' => (string) Str::uuid(),
@@ -113,7 +142,7 @@ class PosController extends Controller
 
             $booking->payment()->create([
                 'ticket_amount' => $booking->total_amount,
-                'transaction_fee' => $this->paymentFee($validated['payment_method']),
+                'transaction_fee' => $fee,
                 'method' => $validated['payment_method'],
                 'paid_at' => now(),
             ]);
