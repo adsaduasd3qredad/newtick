@@ -129,7 +129,7 @@
                                     <span>{{ $percentBooked }}%</span>
                                 </div>
                                 <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                                    <div class="bg-cyan-500 h-1.5 rounded-full transition-all duration-300" style="width: {{ $percentBooked }}%"></div>
+                                    <div class="bg-cyan-500 h-1.5 rounded-full transition-all duration-300" style="<?php echo 'width: ' . $percentBooked . '%'; ?>"></div>
                                 </div>
                             </div>
                         </div>
@@ -152,12 +152,16 @@
                         @else
                             <div class="flex items-center gap-2">
                                 <button type="button"
-                                    onclick="openQuickSellModal({{ $showtime->id }}, '{{ addslashes($movieTitle) }}', '{{ \Carbon\Carbon::parse($showtime->show_time)->format('H:i') }}', {{ $availableSeats }})"
+                                    data-id="{{ $showtime->id }}"
+                                    data-title="{{ $movieTitle }}"
+                                    data-time="{{ \Carbon\Carbon::parse($showtime->show_time)->format('H:i') }}"
+                                    data-avail="{{ $availableSeats }}"
+                                    onclick="handleQuickSellClick(this)"
                                     class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm hover:shadow transition">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                                     </svg>
-                                    <span>⚡ ขายด่วน (Walk-in)</span>
+                                    <span>Walk-in</span>
                                 </button>
 
                                 <a href="{{ route('bookings.create', [$showtime->id, 'staff' => 1]) }}"
@@ -234,7 +238,7 @@
                     <label class="block text-xs font-semibold text-slate-700 mb-1.5">จำนวนตั๋ว (ที่นั่ง)</label>
                     <div class="grid grid-cols-6 gap-1.5 mb-2">
                         @foreach([1, 2, 3, 4, 5, 10] as $q)
-                            <button type="button" onclick="setQuantity({{ $q }})"
+                            <button type="button" onclick="setQuantity(Number(this.textContent.trim()))"
                                 class="py-2 text-xs font-bold rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50 text-slate-800 transition">
                                 {{ $q }}
                             </button>
@@ -316,9 +320,18 @@
         const availSeatsEl = document.getElementById('modal_avail_seats');
         const quantityInput = document.getElementById('modal_quantity');
         const totalAmountEl = document.getElementById('modal_total_amount');
-        const pricePerSeat = {{ (int) config('ticketing.price_per_seat', 50) }};
+        const pricePerSeat = Number("{{ (int) config('ticketing.price_per_seat', 50) }}");
 
         let currentMaxSeats = 160;
+
+        function handleQuickSellClick(btn) {
+            openQuickSellModal(
+                btn.getAttribute('data-id'),
+                btn.getAttribute('data-title'),
+                btn.getAttribute('data-time'),
+                parseInt(btn.getAttribute('data-avail'), 10)
+            );
+        }
 
         function openQuickSellModal(id, title, time, availSeats) {
             showtimeIdInput.value = id;

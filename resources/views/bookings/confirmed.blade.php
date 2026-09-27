@@ -331,8 +331,8 @@
     </footer>
     @if(isset($counterWindowStartsAt))
         <script>
-            const counterWindowStartsAt = new Date(@json($counterWindowStartsAt->toIso8601String())).getTime();
-            const counterWindowEndsAt = new Date(@json($booking->expires_at->toIso8601String())).getTime();
+            const counterWindowStartsAt = new Date("{{ $counterWindowStartsAt->toIso8601String() }}").getTime();
+            const counterWindowEndsAt = new Date("{{ $booking->expires_at->toIso8601String() }}").getTime();
             const counterCountdown = document.getElementById('counter-payment-countdown');
 
             function updateCounterPaymentWindow() {
