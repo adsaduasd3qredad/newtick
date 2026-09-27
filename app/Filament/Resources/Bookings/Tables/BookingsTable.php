@@ -122,7 +122,7 @@ class BookingsTable
             ])
             ->recordActions([
                 Action::make('change_status')
-                    ->label('เปลี่ยนสถานะ')
+                    ->label('')
                     ->icon('heroicon-m-arrows-right-left')
                     ->color('warning')
                     ->button()

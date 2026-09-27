@@ -1,154 +1,20 @@
-@extends('pos.layout')
-@section('title', 'รอบฉาย')
-@section('content')
-    <!-- Main Container -->
-    <main class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+<?php
+$file = 'resources/views/pos/index.blade.php';
+$content = file_get_contents($file);
 
-        <!-- Date Bar & Controls -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            
-            <div>
-                <div class="flex items-center gap-2">
-                    <h2 class="text-xl font-bold text-slate-800">
-                        รอบฉายวันที่: {{ $selectedDate->locale('th')->translatedFormat('j F Y') }}
-                    </h2>
-                    @if ($isToday)
-                        <span class="px-2.5 py-0.5 text-xs font-semibold bg-emerald-100 text-emerald-700 rounded-full">
-                            วันนี้
-                        </span>
-                    @endif
-                </div>
-                <p class="text-xs text-slate-500 mt-1">
-                    พบทั้งหมด <strong class="text-slate-800 font-semibold">{{ $showtimes->count() }}</strong> รอบฉาย
-                    @if ($showtimes->isNotEmpty())
-                        | ที่นั่งว่างรวม <strong class="text-cyan-600 font-semibold">{{ $showtimes->sum('available_seats') }}</strong> ที่นั่ง
-                    @endif
-                </p>
-            </div>
+// 1. Update the buttons in the action footer
+$oldButton = <<<'HTML'
+                        @else
+                            <a href="{{ route('bookings.create', [$showtime->id, 'staff' => 1]) }}"
+                                title="เลือกที่นั่งในโดมเอง"
+                                class="inline-flex items-center gap-1.5 bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-xs transition">
+                                <span>เลือกที่นั่งและขายตั๋ว</span>
+                                <span aria-hidden="true">→</span>
+                            </a>
+                        @endif
+HTML;
 
-            <!-- Date Navigation Buttons -->
-            <div class="flex items-center flex-wrap gap-2">
-                <a href="{{ route('pos.index', ['date' => $prevDate]) }}"
-                    class="inline-flex items-center gap-1 px-3.5 py-2 text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition">
-                    ‹ วันก่อนหน้า
-                </a>
-
-                @if (!$isToday)
-                    <a href="{{ route('pos.index') }}"
-                        class="px-3.5 py-2 text-xs font-medium text-cyan-700 bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 rounded-xl transition">
-                        วันนี้
-                    </a>
-                @endif
-
-                <a href="{{ route('pos.index', ['date' => $nextDate]) }}"
-                    class="inline-flex items-center gap-1 px-3.5 py-2 text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition">
-                    วันถัดไป ›
-                </a>
-
-                <!-- Date Picker Input -->
-                <form action="{{ route('pos.index') }}" method="GET" class="inline-flex items-center">
-                    <input type="date" name="date" value="{{ $dateString }}"
-                        onchange="this.form.submit()"
-                        class="text-xs py-1.5 px-3 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-200 text-slate-700 font-medium">
-                </form>
-            </div>
-        </div>
-
-        <!-- Showtime Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-7">
-            @forelse($showtimes as $showtime)
-                @php
-                    $movieTitle = $showtime->movie->title_th ?? $showtime->movie->title ?? '';
-                    $totalSeats = $showtime->total_seats ?? 160;
-                    $availableSeats = $showtime->available_seats;
-                    $bookedSeats = $totalSeats - $availableSeats;
-                    $isSoldOut = $availableSeats <= 0;
-                    $isPastShowtime = ! $showtime->isBookable();
-                    $percentBooked = $totalSeats > 0 ? round(($bookedSeats / $totalSeats) * 100) : 0;
-                @endphp
-
-                <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-md hover:border-cyan-300 transition flex flex-col overflow-hidden">
-                    
-                    <!-- Showtime Card Body -->
-                    <div class="p-6 flex gap-6 flex-1">
-                        <!-- Poster Image -->
-                        <div class="w-36 h-52 sm:w-40 sm:h-56 2xl:w-44 2xl:h-60 shrink-0 rounded-xl overflow-hidden shadow-sm border border-slate-100 bg-slate-100">
-                            @if ($showtime->movie?->poster_path)
-                                <img src="{{ Storage::url($showtime->movie->poster_path) }}"
-                                    alt="{{ $movieTitle }}"
-                                    class="w-full h-full object-cover">
-                            @else
-                                <div class="w-full h-full flex items-center justify-center text-xs text-slate-400">
-                                    ไม่มีโปสเตอร์
-                                </div>
-                            @endif
-                        </div>
-
-                        <!-- Info -->
-                        <div class="flex-1 flex flex-col justify-between min-w-0">
-                            <div>
-                                <!-- Time Badge -->
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-bold text-slate-800 bg-slate-100 rounded-lg font-display">
-                                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        <span>{{ \Carbon\Carbon::parse($showtime->show_time)->format('H:i') }} น.</span>
-                                    </span>
-                                    @if ($isPastShowtime)
-                                        <span class="px-2 py-1 text-[11px] font-semibold bg-slate-200 text-slate-600 rounded-md">
-                                            เริ่มฉายแล้ว · ปิดขาย
-                                        </span>
-                                    @elseif ($isSoldOut)
-                                        <span class="px-2 py-0.5 text-[11px] font-semibold bg-rose-100 text-rose-700 rounded-md">
-                                            เต็ม
-                                        </span>
-                                    @else
-                                        <span class="px-2 py-0.5 text-[11px] font-semibold bg-emerald-50 text-emerald-700 rounded-md">
-                                            เปิดขาย
-                                        </span>
-                                    @endif
-                                </div>
-
-                                <!-- Movie Title -->
-                                <h3 class="font-bold text-slate-900 text-xl 2xl:text-2xl leading-snug line-clamp-2" title="{{ $movieTitle }}">
-                                    {{ $movieTitle ?: 'ไม่ระบุชื่อภาพยนตร์' }}
-                                </h3>
-
-                                @if ($showtime->movie && $showtime->movie->duration_minutes)
-                                    <p class="text-sm text-slate-500 mt-2">
-                                        ความยาว {{ $showtime->movie->duration_minutes }} นาที
-                                    </p>
-                                @endif
-                            </div>
-
-                            <!-- Seat Details & Bar -->
-                            <div class="mt-3">
-                                <div class="flex justify-between text-sm text-slate-500 mb-2">
-                                    <span>ที่นั่งว่าง: <strong class="{{ $isSoldOut ? 'text-rose-600' : 'text-cyan-600' }} font-semibold">{{ $availableSeats }}</strong> / {{ $totalSeats }}</span>
-                                    <span>{{ $percentBooked }}%</span>
-                                </div>
-                                <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                                    <div class="bg-cyan-500 h-1.5 rounded-full transition-all duration-300" style="width: {{ $percentBooked }}%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Action Footer -->
-                    <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-2">
-                        <span class="text-xs text-slate-400 font-mono">
-                            รอบ #{{ $showtime->id }}
-                        </span>
-
-                        @if ($isPastShowtime)
-                            <button disabled class="bg-slate-200 text-slate-500 px-4 py-2 rounded-xl text-xs font-semibold cursor-not-allowed">
-                                รอบฉายเริ่มแล้ว ปิดการขาย
-                            </button>
-                        @elseif ($isSoldOut)
-                            <button disabled class="bg-slate-300 text-slate-500 px-4 py-2 rounded-xl text-xs font-semibold cursor-not-allowed">
-                                ที่นั่งเต็มแล้ว
-                            </button>
+$newButton = <<<'HTML'
                         @else
                             <div class="flex items-center gap-2">
                                 <button type="button"
@@ -168,37 +34,22 @@
                                 </a>
                             </div>
                         @endif
-                    </div>
-                </div>
-            @empty
-                <div class="col-span-full bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
-                    <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-400">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
-                        </svg>
-                    </div>
-                    <h3 class="text-slate-700 text-lg font-bold">ไม่มีรอบฉายภาพยนตร์ในวันที่เลือก</h3>
-                    <p class="text-sm text-slate-400 mt-1 max-w-md mx-auto">
-                        สามารถกดปุ่ม "สร้างรอบฉายอัตโนมัติจากสัปดาห์นี้" ที่ระบบหลังบ้าน (Admin -> รอบฉาย) หรือเพิ่มรอบฉายด้วยตนเอง
-                    </p>
+HTML;
 
-                    <div class="mt-6 flex justify-center gap-3">
-                        <a href="{{ route('pos.index') }}"
-                            class="px-4 py-2 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
-                            กลับไปดูรอบฉายวันนี้
-                        </a>
-                        @if (auth()->check() && auth()->user()->role === 'admin')
-                            <a href="{{ url('/admin/showtimes') }}"
-                                class="px-4 py-2 text-xs font-medium text-white bg-cyan-600 hover:bg-cyan-700 rounded-xl transition shadow-sm">
-                                ไปหน้ารอบฉาย (Admin)
-                            </a>
-                        @endif
-                    </div>
-                </div>
-            @endforelse
-        </div>
-    </main>
+$content = str_replace($oldButton, $newButton, $content);
 
+// 2. Replace the modal section (uncomment and improve)
+$modalStart = '    @if(false)';
+$modalEnd = '    @endif';
+
+$posStart = strpos($content, $modalStart);
+$posEnd = strrpos($content, $modalEnd);
+
+if ($posStart !== false && $posEnd !== false) {
+    $beforeModal = substr($content, 0, $posStart);
+    $afterModal = substr($content, $posEnd + strlen($modalEnd));
+
+    $newModalSection = <<<'HTML'
     <!-- Quick Sell Modal for Walk-in Customers -->
     <div id="quickSellModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
@@ -372,5 +223,12 @@
             });
         }
     </script>
+HTML;
 
-@endsection
+    $content = $beforeModal . $newModalSection . $afterModal;
+    file_put_contents($file, $content);
+    echo "SUCCESS: Updated pos/index.blade.php with Quick Sell Modal!\n";
+} else {
+    echo "ERROR: Could not find modal delimiters in pos/index.blade.php\n";
+    exit(1);
+}

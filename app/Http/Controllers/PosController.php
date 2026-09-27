@@ -92,7 +92,7 @@ class PosController extends Controller
             // ตัดจำนวนที่นั่งว่าง
             $showtime->decrement('available_seats', $qty);
 
-            $bookerName = !empty($validated['booker_name']) ? trim($validated['booker_name']) : 'ลูกค้าหน้าร้าน (Walk-in)';
+            $bookerName = !empty($validated['booker_name']) ? trim($validated['booker_name']) : $this->getNextWalkinName();
             $visitorType = $validated['visitor_type'] ?? 'individual';
 
             $booking = Booking::create([
@@ -323,5 +323,20 @@ class PosController extends Controller
     private function paymentFee(string $method): int
     {
         return $method === 'qr_code' ? (int) config('ticketing.qr_payment_fee') : 0;
+    }
+
+    private function getNextWalkinName(): string
+    {
+        $maxNum = Booking::where('booker_name', 'like', 'Walk-in %')
+            ->pluck('booker_name')
+            ->map(function ($name) {
+                if (preg_match('/^Walk-in\s+(\d+)$/i', $name, $matches)) {
+                    return (int) $matches[1];
+                }
+                return 0;
+            })
+            ->max() ?? 0;
+
+        return 'Walk-in ' . ($maxNum + 1);
     }
 }
