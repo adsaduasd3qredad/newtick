@@ -129,7 +129,7 @@
                                     <span>{{ $percentBooked }}%</span>
                                 </div>
                                 <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                                    <div class="bg-cyan-500 h-1.5 rounded-full transition-all duration-300" style="<?php echo 'width: ' . $percentBooked . '%'; ?>"></div>
+                                    <div class="bg-cyan-500 h-1.5 rounded-full transition-all duration-300" style="--percent: {{ $percentBooked }}%; width: var(--percent);"></div>
                                 </div>
                             </div>
                         </div>
