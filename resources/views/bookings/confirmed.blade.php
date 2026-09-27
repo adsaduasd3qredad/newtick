@@ -125,9 +125,23 @@
                     </div>
 
                     <div class="text-center sm:text-right">
-                        <span class="px-3 py-1 text-xs font-bold bg-emerald-500 text-white rounded-full inline-block shadow-sm">
-                            ชำระเงินสำเร็จ (PAID)
-                        </span>
+                        @if($booking->status === 'paid' || $booking->status === 'redeemed')
+                            <span class="px-3 py-1 text-xs font-bold bg-emerald-500 text-white rounded-full inline-block shadow-sm">
+                                ชำระเงินสำเร็จ (PAID)
+                            </span>
+                        @elseif($booking->status === 'awaiting_payment')
+                            <span class="px-3 py-1 text-xs font-bold bg-amber-500 text-white rounded-full inline-block shadow-sm">
+                                รอชำระเงิน (AWAITING PAYMENT)
+                            </span>
+                        @elseif($booking->status === 'expired')
+                            <span class="px-3 py-1 text-xs font-bold bg-red-500 text-white rounded-full inline-block shadow-sm">
+                                หมดอายุ (EXPIRED)
+                            </span>
+                        @else
+                            <span class="px-3 py-1 text-xs font-bold bg-slate-500 text-white rounded-full inline-block shadow-sm">
+                                {{ $booking->status }}
+                            </span>
+                        @endif
                         <p class="text-xs text-slate-300 mt-1.5 font-mono">
                             รหัสจอง: <strong class="text-white text-sm">#{{ $booking->id }}</strong>
                         </p>
@@ -235,7 +249,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                     </svg>
-                    <span>พิมพ์ตั๋ว / บันทึก PDF</span>
+                    <span>ปริ้นใบเสร็จ / บันทึก PDF</span>
                 </button>
 
                 <a href="{{ route('showtimes.index') }}"

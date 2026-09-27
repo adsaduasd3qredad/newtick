@@ -55,7 +55,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
             </svg>
-            <span>พิมพ์สลิปตั๋ว (Print)</span>
+            <span>ปริ้นใบเสร็จ (Print)</span>
         </button>
 
         <a href="{{ route('pos.index') }}"
@@ -161,7 +161,13 @@
             @endif
             <div class="flex justify-between text-[10px] text-slate-500">
                 <span>สถานะ:</span>
-                <span class="font-bold text-emerald-700">ชำระเงินแล้ว ({{ $booking->payment_method === 'qr_code' ? 'QR Code' : 'เงินสด' }})</span>
+                @if(in_array($booking->status, ['paid', 'redeemed']))
+                    <span class="font-bold text-emerald-700">ชำระเงินแล้ว ({{ $booking->payment_method === 'qr_code' ? 'QR Code' : 'เงินสด' }})</span>
+                @elseif($booking->status === 'awaiting_payment')
+                    <span class="font-bold text-amber-700">รอชำระเงิน ({{ $booking->payment_method === 'counter' ? 'หน้าเคาน์เตอร์' : 'QR Code' }})</span>
+                @else
+                    <span class="font-bold text-slate-700">{{ $booking->status }}</span>
+                @endif
             </div>
         </div>
 

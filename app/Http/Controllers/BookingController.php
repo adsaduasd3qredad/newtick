@@ -254,18 +254,21 @@ class BookingController extends Controller
         // Only an authenticated staff member may complete a payment at the POS.
         $returnToPos = $this->isAuthorizedStaffRequest($request);
         $slipPath = $request->file('payment_slip')?->store('payment-slips', 'public');
+        $paymentMethod = $request->input('payment_method');
 
+        // POS counter bookings stay as 'awaiting_payment' until staff collects payment at POS verify screen
         $updates = [
-            'payment_method' => $request->input('payment_method'),
-            'status' => $returnToPos ? 'paid' : 'awaiting_payment',
+            'payment_method' => $paymentMethod,
+            'status' => 'awaiting_payment',
             'qr_payment_ref' => (string) Str::uuid(),
         ];
 
-        if (! $returnToPos && $request->input('payment_method') === 'counter') {
+        // Set counter payment deadline for both POS and customer counter bookings
+        if ($paymentMethod === 'counter') {
             $updates['expires_at'] = $booking->showtime->startsAt()->addMinutes(30);
         }
 
-        $updated = DB::transaction(function () use ($booking, $updates, $slipPath, $request, $returnToPos): bool {
+        $updated = DB::transaction(function () use ($booking, $updates, $slipPath, $request, $returnToPos, $paymentMethod): bool {
             $showtime = Showtime::whereKey($booking->showtime_id)->lockForUpdate()->first();
             $locked = Booking::whereKey($booking->id)->lockForUpdate()->first();
 
@@ -280,18 +283,18 @@ class BookingController extends Controller
             }
 
             $locked->update($updates);
-            $fee = $this->paymentFee($request->input('payment_method'));
+            $fee = $this->paymentFee($paymentMethod);
             $locked->payment()->updateOrCreate(
                 ['booking_id' => $locked->id],
                 [
                     'ticket_amount' => $locked->total_amount,
                     'transaction_fee' => $fee,
-                    'method' => $request->input('payment_method'),
+                    'method' => $paymentMethod,
                     'slip_path' => $slipPath,
-                    'paid_at' => $returnToPos ? now() : null,
+                    'paid_at' => null,
                 ]
             );
-            $locked->update(['amount_paid' => $returnToPos ? $locked->total_amount + $fee : null]);
+            $locked->update(['amount_paid' => null]);
 
             return true;
         });
@@ -301,7 +304,7 @@ class BookingController extends Controller
         }
 
         if ($returnToPos) {
-            return redirect()->route('pos.index')->with('success', 'ชำระเงินและออกตั๋วเรียบร้อยแล้ว');
+            return redirect()->route('pos.receipt', $booking->id)->with('info', 'สร้างรายการจองเรียบร้อย รอชำระเงินที่หน้าเคาน์เตอร์');
         }
 
         return redirect()->route('bookings.confirmed', $booking->qr_ticket_ref);
