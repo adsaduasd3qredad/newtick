@@ -20,10 +20,33 @@
             font-family: 'Chakra Petch', 'IBM Plex Sans Thai', sans-serif;
         }
 
+        @page {
+            size: A4 portrait;
+            margin: 10mm;
+        }
+
         @media print {
-            body {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            html, body {
                 background: #ffffff !important;
                 padding: 0 !important;
+                margin: 0 !important;
+                height: auto !important;
+                min-height: 0 !important;
+                display: block !important;
+            }
+            main {
+                display: block !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                min-height: 0 !important;
+            }
+            main > div {
+                max-width: 100% !important;
+                margin: 0 auto !important;
             }
             .no-print {
                 display: none !important;
@@ -31,7 +54,31 @@
             .ticket-card {
                 box-shadow: none !important;
                 border: 1px solid #cbd5e1 !important;
-                max-width: 100% !important;
+                max-width: 720px !important;
+                margin: 0 auto !important;
+                border-radius: 1.25rem !important;
+                overflow: hidden !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .ticket-body-grid {
+                display: grid !important;
+                grid-template-columns: 1.8fr 1fr !important;
+                gap: 1.25rem !important;
+                padding: 1.25rem 1.5rem !important;
+                align-items: center !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .ticket-details-col {
+                grid-column: span 1 !important;
+            }
+            .ticket-qr-col {
+                grid-column: span 1 !important;
+                padding: 1rem !important;
+            }
+            .ticket-header-print {
+                padding: 1.25rem 1.5rem !important;
             }
         }
     </style>
@@ -113,7 +160,7 @@
             <div class="ticket-card bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
                 
                 <!-- Ticket Header -->
-                <div class="{{ $isPaid ? 'bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900' : 'bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600' }} text-white p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="{{ $isPaid ? 'bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900' : 'bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600' }} ticket-header-print text-white p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-center gap-4">
                     <div class="flex items-center gap-4 text-center sm:text-left">
                         <div class="w-12 h-12 rounded-2xl {{ $isPaid ? 'bg-cyan-500/20 border-cyan-400/30 text-cyan-300' : 'bg-white/20 border-white/30 text-white' }} border flex items-center justify-center shadow-inner shrink-0">
                             @if($isPaid)
@@ -157,7 +204,6 @@
                 </div>
 
                 @if($isAwaiting && $isCounter)
-                    <!-- Counter Payment Instructions Banner -->
                     <div class="bg-amber-50 border-b border-amber-200 px-6 sm:px-8 py-4">
                         <div class="flex items-start gap-3">
                             <svg class="w-6 h-6 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -171,13 +217,8 @@
                     </div>
                 @endif
 
-                <!-- Ticket Body Grid -->
-                <div class="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-                    
-                    <!-- Movie & Details (2 Cols) -->
-                    <div class="md:col-span-2 space-y-5">
-                        
-                        <!-- Movie Title -->
+                <div class="ticket-body-grid p-6 sm:p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                    <div class="ticket-details-col md:col-span-2 space-y-5">
                         <div>
                             <p class="text-xs text-slate-400 uppercase font-semibold">ภาพยนตร์รอบการแสดง</p>
                             <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-display mt-0.5">
@@ -188,7 +229,6 @@
                             @endif
                         </div>
 
-                        <!-- Date & Time Grid -->
                         <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200/70 text-sm">
                             <div>
                                 <p class="text-xs text-slate-400 font-medium">วันที่จัดแสดง</p>
@@ -213,7 +253,6 @@
                             <p class="mt-1 text-xs text-slate-500">เจ้าหน้าที่จะตรวจสอบและจัดการที่นั่งจากรหัสการจอง</p>
                         </div>
 
-                        <!-- Booker info & payment -->
                         <div class="pt-3 border-t border-slate-100 flex flex-wrap justify-between items-center text-xs text-slate-600 gap-2">
                             <div>
                                 <span>ผู้จอง: <strong class="text-slate-800">{{ $booking->booker_name }}</strong></span>
@@ -232,8 +271,7 @@
                         </div>
                     </div>
 
-                    <!-- QR Stub (1 Col) -->
-                    <div class="text-center flex flex-col items-center justify-center p-6 {{ $isAwaiting ? 'bg-amber-50/60 border-amber-300' : 'bg-slate-50 border-slate-300' }} rounded-2xl border border-dashed">
+                    <div class="ticket-qr-col text-center flex flex-col items-center justify-center p-6 {{ $isAwaiting ? 'bg-amber-50/60 border-amber-300' : 'bg-slate-50 border-slate-300' }} rounded-2xl border border-dashed">
                         <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-200 mb-3">
                             {!! QrCode::size(160)->generate($booking->qr_ticket_ref) !!}
                         </div>
@@ -257,7 +295,6 @@
                     </div>
                 @endif
 
-                <!-- Ticket Instructions Footer -->
                 <div class="{{ $isAwaiting ? 'bg-amber-50/50 border-amber-100' : 'bg-slate-50/90 border-slate-100' }} px-6 sm:px-8 py-3.5 border-t flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-2">
                     <p>{{ $isAwaiting ? 'กรุณานำใบจองนี้ไปแสดงที่เคาน์เตอร์จำหน่ายตั๋วก่อนรอบฉาย 15 นาที' : 'กรุณาแสดงหน้านี้หรือตั๋วที่พิมพ์แก่เจ้าหน้าที่ ณ ประตูทางเข้าก่อนรอบฉาย 15 นาที' }}</p>
                     <p class="font-mono text-slate-400">Issued: {{ now()->format('d/m/Y H:i') }}</p>
