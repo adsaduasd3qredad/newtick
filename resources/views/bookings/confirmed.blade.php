@@ -103,20 +103,32 @@
                 @endforeach
             </div>
 
-            <!-- Ticket Card (Boarding Pass Cinema Design) -->
+            @php
+                $isPaid = in_array($booking->status, ['paid', 'redeemed']);
+                $isAwaiting = in_array($booking->status, ['pending', 'awaiting_payment']);
+                $isCounter = $booking->payment_method === 'counter';
+            @endphp
+
+            <!-- Ticket Card -->
             <div class="ticket-card bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
                 
                 <!-- Ticket Header -->
-                <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-indigo-900">
+                <div class="{{ $isPaid ? 'bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900' : 'bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600' }} text-white p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-center gap-4">
                     <div class="flex items-center gap-4 text-center sm:text-left">
-                        <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center text-cyan-300 shadow-inner shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-                            </svg>
+                        <div class="w-12 h-12 rounded-2xl {{ $isPaid ? 'bg-cyan-500/20 border-cyan-400/30 text-cyan-300' : 'bg-white/20 border-white/30 text-white' }} border flex items-center justify-center shadow-inner shrink-0">
+                            @if($isPaid)
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                                </svg>
+                            @else
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                            @endif
                         </div>
                         <div>
-                            <span class="text-xs text-cyan-300 font-semibold tracking-wider uppercase font-display">
-                                บัตรเข้าชมภาพยนตร์เต็มโดม (E-TICKET)
+                            <span class="text-xs {{ $isPaid ? 'text-cyan-300' : 'text-white/90' }} font-semibold tracking-wider uppercase font-display">
+                                {{ $isPaid ? 'บัตรเข้าชมภาพยนตร์เต็มโดม (E-TICKET)' : 'ใบจองตั๋ว — รอชำระเงินหน้าเคาน์เตอร์' }}
                             </span>
                             <h2 class="text-xl sm:text-2xl font-bold font-display text-white">
                                 ท้องฟ้าจำลองรังสิต
@@ -125,28 +137,39 @@
                     </div>
 
                     <div class="text-center sm:text-right">
-                        @if($booking->status === 'paid' || $booking->status === 'redeemed')
+                        @if($isPaid)
                             <span class="px-3 py-1 text-xs font-bold bg-emerald-500 text-white rounded-full inline-block shadow-sm">
                                 ชำระเงินสำเร็จ (PAID)
                             </span>
-                        @elseif($booking->status === 'awaiting_payment')
-                            <span class="px-3 py-1 text-xs font-bold bg-amber-500 text-white rounded-full inline-block shadow-sm">
-                                รอชำระเงิน (AWAITING PAYMENT)
+                        @elseif($isAwaiting)
+                            <span class="px-3 py-1 text-xs font-bold bg-white text-amber-700 rounded-full inline-block shadow-sm">
+                                รอชำระเงิน
                             </span>
                         @elseif($booking->status === 'expired')
                             <span class="px-3 py-1 text-xs font-bold bg-red-500 text-white rounded-full inline-block shadow-sm">
-                                หมดอายุ (EXPIRED)
-                            </span>
-                        @else
-                            <span class="px-3 py-1 text-xs font-bold bg-slate-500 text-white rounded-full inline-block shadow-sm">
-                                {{ $booking->status }}
+                                หมดอายุ
                             </span>
                         @endif
-                        <p class="text-xs text-slate-300 mt-1.5 font-mono">
+                        <p class="text-xs {{ $isPaid ? 'text-slate-300' : 'text-white/80' }} mt-1.5 font-mono">
                             รหัสจอง: <strong class="text-white text-sm">#{{ $booking->id }}</strong>
                         </p>
                     </div>
                 </div>
+
+                @if($isAwaiting && $isCounter)
+                    <!-- Counter Payment Instructions Banner -->
+                    <div class="bg-amber-50 border-b border-amber-200 px-6 sm:px-8 py-4">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-6 h-6 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div class="text-sm text-amber-900">
+                                <p class="font-bold mb-1">นำใบจองนี้ไปแสดงหรือสแกนที่เคาน์เตอร์</p>
+                                <p class="text-amber-700">กรุณาชำระเงินที่เคาน์เตอร์จำหน่ายตั๋วก่อนรอบฉาย เจ้าหน้าที่จะสแกน QR Code ด้านล่างเพื่อยืนยันและออกตั๋วให้ท่าน</p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
                 <!-- Ticket Body Grid -->
                 <div class="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
@@ -198,25 +221,25 @@
                                     <span class="text-slate-400 ml-2">({{ $booking->booker_phone }})</span>
                                 @endif
                             </div>
-                            <div>
-                                                            <div class="flex items-center gap-2">
-                                <span>ยอดชำระ: <strong class="text-emerald-600 text-sm font-bold">{{ number_format($booking->total_amount, 2) }} บาท</strong></span>
-                                @if(in_array($booking->status, ['pending', 'awaiting_payment']))
-                                    <span class="px-2 py-0.5 bg-rose-100 text-rose-700 rounded text-[10px] font-bold">รอชำระเงิน</span>
-                                @elseif($booking->status == 'paid')
+                            <div class="flex items-center gap-2">
+                                <span>ยอดชำระ: <strong class="{{ $isPaid ? 'text-emerald-600' : 'text-amber-600' }} text-sm font-bold">{{ number_format($booking->total_amount, 2) }} บาท</strong></span>
+                                @if($isAwaiting)
+                                    <span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded text-[10px] font-bold">รอชำระเงิน</span>
+                                @elseif($isPaid)
                                     <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded text-[10px] font-bold">ชำระแล้ว</span>
                                 @endif
-                            </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- QR Stub (1 Col) -->
-                    <div class="text-center flex flex-col items-center justify-center p-6 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
+                    <div class="text-center flex flex-col items-center justify-center p-6 {{ $isAwaiting ? 'bg-amber-50/60 border-amber-300' : 'bg-slate-50 border-slate-300' }} rounded-2xl border border-dashed">
                         <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-200 mb-3">
                             {!! QrCode::size(160)->generate($booking->qr_ticket_ref) !!}
                         </div>
-                        <p class="text-xs font-bold text-slate-700">สแกนเพื่อเข้าชม</p>
+                        <p class="text-xs font-bold {{ $isAwaiting ? 'text-amber-700' : 'text-slate-700' }}">
+                            {{ $isAwaiting ? 'แสดง QR นี้ที่เคาน์เตอร์' : 'สแกนเพื่อเข้าชม' }}
+                        </p>
                         <p class="text-[11px] text-slate-400 mt-0.5 max-w-[180px] break-all font-mono">
                             Ref: {{ substr($booking->qr_ticket_ref, 0, 13) }}...
                         </p>
@@ -228,15 +251,15 @@
                     <div id="counter-payment-window"
                         data-start="{{ $counterWindowStartsAt->toIso8601String() }}"
                         data-end="{{ $booking->expires_at->toIso8601String() }}"
-                        class="no-print mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-center text-sm text-amber-900">
+                        class="no-print mx-6 sm:mx-8 mb-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-center text-sm text-amber-900">
                         <p>จองแบบชำระหน้าเคาน์เตอร์ได้ถึง {{ $booking->expires_at->format('d/m/Y H:i') }} น.</p>
                         <p id="counter-payment-countdown" class="mt-1 font-semibold"></p>
                     </div>
                 @endif
 
                 <!-- Ticket Instructions Footer -->
-                <div class="bg-slate-50/90 px-6 sm:px-8 py-3.5 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-2">
-                    <p>กรุณาแสดงหน้านี้หรือตั๋วที่พิมพ์แก่เจ้าหน้าที่ ณ ประตูทางเข้าก่อนรอบฉาย 15 นาที</p>
+                <div class="{{ $isAwaiting ? 'bg-amber-50/50 border-amber-100' : 'bg-slate-50/90 border-slate-100' }} px-6 sm:px-8 py-3.5 border-t flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-2">
+                    <p>{{ $isAwaiting ? 'กรุณานำใบจองนี้ไปแสดงที่เคาน์เตอร์จำหน่ายตั๋วก่อนรอบฉาย 15 นาที' : 'กรุณาแสดงหน้านี้หรือตั๋วที่พิมพ์แก่เจ้าหน้าที่ ณ ประตูทางเข้าก่อนรอบฉาย 15 นาที' }}</p>
                     <p class="font-mono text-slate-400">Issued: {{ now()->format('d/m/Y H:i') }}</p>
                 </div>
             </div>
@@ -249,7 +272,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                     </svg>
-                    <span>ปริ้นใบเสร็จ / บันทึก PDF</span>
+                    <span>พิมพ์ตั๋ว / บันทึก PDF</span>
                 </button>
 
                 <a href="{{ route('showtimes.index') }}"
