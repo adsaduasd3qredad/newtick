@@ -1,3 +1,7 @@
+<?php
+$file = 'resources/views/pos/receipt.blade.php';
+
+$newContent = <<<'BLADE'
 <!DOCTYPE html>
 <html lang="th">
 
@@ -179,3 +183,10 @@
 </body>
 
 </html>
+BLADE;
+
+file_put_contents($file, $newContent);
+echo "SUCCESS: Updated receipt.blade.php\n";
+
+exec('php -l ' . escapeshellarg($file), $output, $returnCode);
+echo implode("\n", $output) . "\n";
