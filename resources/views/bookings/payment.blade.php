@@ -112,13 +112,29 @@
                     @if ($returnToPos)
                         <input type="hidden" name="return_to_pos" value="1">
                     @endif
-                    <div id="qr-payment-fields">
-                    <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 bg-white cursor-pointer">
-                        <input type="checkbox" name="has_slip" value="1" class="h-5 w-5 text-cyan-600">
-                        <span class="text-sm font-semibold">ลูกค้ามีสลิปการโอนเงิน</span>
-                    </label>
-                    <input type="file" name="payment_slip" accept="image/*"
-                        class="block w-full text-sm text-slate-600 border border-slate-200 rounded-xl p-3 bg-white">
+                    <div id="qr-payment-fields" class="space-y-3">
+                        <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 bg-white cursor-pointer">
+                            <input type="checkbox" name="has_slip" value="1" class="h-5 w-5 text-cyan-600" id="has-slip-check" checked>
+                            <span class="text-sm font-semibold">ลูกค้ามีสลิปการโอนเงิน (สแกนตรวจสลิปอัตโนมัติ)</span>
+                        </label>
+
+                        <div class="border-2 border-dashed border-slate-300 hover:border-cyan-500 rounded-2xl p-4 bg-white transition text-center">
+                            <input type="file" name="payment_slip" id="payment-slip-input" accept="image/*"
+                                class="hidden">
+                            <label for="payment-slip-input" class="cursor-pointer block">
+                                <div id="slip-upload-placeholder" class="py-4">
+                                    <svg class="mx-auto h-12 w-12 text-slate-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <p class="text-sm font-medium text-slate-700">คลิกเพื่อเลือกรูปภาพสลิป หรือแตะที่นี่</p>
+                                    <p class="text-xs text-slate-400 mt-1">รองรับ JPG, PNG หรือภาพถ่ายจากแอปธนาคาร</p>
+                                </div>
+                                <div id="slip-preview-container" class="hidden">
+                                    <img id="slip-preview-img" src="" alt="สลิปที่เลือก" class="max-h-64 mx-auto rounded-xl shadow-md border border-slate-200 object-contain">
+                                    <p class="text-xs text-cyan-600 font-semibold mt-2 hover:underline">คลิกเพื่อเปลี่ยนรูปภาพสลิป</p>
+                                </div>
+                            </label>
+                        </div>
                     </div>
                     <div id="counter-payment-note" class="hidden p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm">
                         ระบบจะออกตั๋วออนไลน์ให้ แต่สถานะจะเป็น “รอชำระเงิน” ให้นำตั๋วไปชำระที่เคาน์เตอร์
@@ -155,6 +171,26 @@
             promptpayPanel.classList.toggle('hidden', !isQr);
             paymentSlip.required = isQr;
             paymentTotal.textContent = (isQr ? qrTotal : ticketTotal).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        const slipInput = document.getElementById('payment-slip-input');
+        const slipPlaceholder = document.getElementById('slip-upload-placeholder');
+        const slipPreviewContainer = document.getElementById('slip-preview-container');
+        const slipPreviewImg = document.getElementById('slip-preview-img');
+
+        if (slipInput) {
+            slipInput.addEventListener('change', function(e) {
+                const file = e.target.files?.[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        slipPreviewImg.src = evt.target.result;
+                        slipPreviewContainer.classList.remove('hidden');
+                        slipPlaceholder.classList.add('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
         }
 
         paymentMethods.forEach((method) => method.addEventListener('change', updatePaymentMethod));

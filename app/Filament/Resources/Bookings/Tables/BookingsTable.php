@@ -51,20 +51,36 @@ class BookingsTable
                 TextColumn::make('status')
                     ->label('สถานะ')
                     ->badge()
-                    ->formatStateUsing(fn (string $state, Booking $record): string => match ($state) {
-                        'pending' => 'รอเลือก/ชำระ',
-                        'awaiting_payment' => $record->payment_method === 'counter' ? 'รอชำระหน้าเคาน์เตอร์' : 'รอตรวจสอบ PromptPay',
-                        'paid' => 'ชำระแล้ว / รอตรวจตั๋ว',
-                        'redeemed' => 'ตรวจตั๋วแล้ว',
-                        'expired' => 'หมดอายุ',
-                        'cancelled' => 'ยกเลิก',
-                        default => $state,
+                    ->formatStateUsing(function (string $state, Booking $record): string {
+                        if ($state === 'awaiting_payment') {
+                            if ($record->payment_method === 'counter') {
+                                return 'รอชำระหน้าเคาน์เตอร์';
+                            }
+                            $verifyType = $record->payment?->slip_verify_result['status_type'] ?? null;
+                            if ($verifyType === 'invalid_slip') {
+                                return 'สลิปไม่ถูกต้อง (ชำระเคาน์เตอร์)';
+                            }
+                            return 'รอตรวจสอบ PromptPay';
+                        }
+
+                        if ($state === 'paid') {
+                            $isAuto = !empty($record->payment?->slip_verify_result['verified']);
+                            return $isAuto ? 'ชำระแล้ว (ตรวจสลิปอัตโนมัติ)' : 'ชำระแล้ว / รอตรวจตั๋ว';
+                        }
+
+                        return match ($state) {
+                            'pending' => 'รอเลือก/ชำระ',
+                            'redeemed' => 'ตรวจตั๋วแล้ว',
+                            'expired' => 'หมดอายุ',
+                            'cancelled' => 'ยกเลิก',
+                            default => $state,
+                        };
                     })
                     ->colors([
-                        'warning' => fn ($state) => in_array($state, ['pending', 'awaiting_payment']),
+                        'warning' => fn ($state, Booking $record) => in_array($state, ['pending', 'awaiting_payment']) && ($record->payment?->slip_verify_result['status_type'] ?? '') !== 'invalid_slip',
+                        'danger' => fn ($state, Booking $record) => in_array($state, ['expired', 'cancelled']) || (($record->payment?->slip_verify_result['status_type'] ?? '') === 'invalid_slip'),
                         'success' => 'paid',
                         'info' => 'redeemed',
-                        'danger' => fn ($state) => in_array($state, ['expired', 'cancelled']),
                     ]),
 
                 TextColumn::make('amount_paid')
@@ -201,6 +217,16 @@ class BookingsTable
                             }
 
                             $booking->update($updateData);
+
+                            \App\Models\AuditLog::log(
+                                action: 'admin_change_status',
+                                description: sprintf('เปลี่ยนสถานะออเดอร์ #%s จาก "%s" เป็น "%s"', $booking->id, $oldStatus, $newStatus),
+                                booking: $booking,
+                                properties: [
+                                    'old_status' => $oldStatus,
+                                    'new_status' => $newStatus,
+                                ]
+                            );
                         });
 
                         Notification::make()
@@ -232,6 +258,22 @@ class BookingsTable
                         ->url(fn (Booking $record): string => asset('storage/' . $record->payment->slip_path))
                         ->openUrlInNewTab(),
 
+                    Action::make('view_verify_result')
+                        ->label('ผลตรวจ EasySlip')
+                        ->icon('heroicon-m-cpu-chip')
+                        ->color('info')
+                        ->visible(fn (Booking $record): bool => filled($record->payment?->slip_verify_result))
+                        ->modalHeading('ผลการตรวจสอบสลิปอัตโนมัติ (EasySlip API)')
+                        ->modalDescription(fn (Booking $record): string => 'ออเดอร์ #' . $record->id . ' - ' . ($record->payment?->slip_verify_result['reason'] ?? 'ไม่มีข้อมูล'))
+                        ->form([
+                            \Filament\Forms\Components\Textarea::make('api_result')
+                                ->label('รายละเอียด Raw JSON จาก API')
+                                ->default(fn (Booking $record): string => json_encode($record->payment?->slip_verify_result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))
+                                ->rows(8)
+                                ->disabled(),
+                        ])
+                        ->modalSubmitAction(false),
+
                     Action::make('mark_paid')
                         ->label('ยืนยันรับเงิน')
                         ->icon('heroicon-m-check')
@@ -260,6 +302,14 @@ class BookingsTable
                                         'paid_at' => $paidAt,
                                     ],
                                 );
+
+                                \App\Models\AuditLog::log(
+                                    action: 'admin_confirm_payment',
+                                    description: sprintf('ผู้ดูแลระบบตรวจสอบสลิปและกดยืนยันรับเงินยอด %.2f บาท สำหรับออเดอร์ #%s', (float) $booking->total_amount + $fee, $booking->id),
+                                    booking: $booking,
+                                    amount: (float) $booking->total_amount + $fee,
+                                    paymentMethod: 'qr_code'
+                                );
                             });
                         }),
 
@@ -279,6 +329,12 @@ class BookingsTable
                                 $showtime = $booking->showtime()->lockForUpdate()->first();
                                 $booking->update(['status' => 'cancelled']);
                                 $showtime?->increment('available_seats', $booking->quantity);
+
+                                \App\Models\AuditLog::log(
+                                    action: 'admin_cancel_booking',
+                                    description: sprintf('ผู้ดูแลระบบกดยกเลิกการจองออเดอร์ #%s และคืนที่นั่ง %d ที่นั่งสู่ระบบ', $booking->id, $booking->quantity),
+                                    booking: $booking
+                                );
                             });
                         }),
 

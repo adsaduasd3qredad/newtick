@@ -215,6 +215,49 @@
                             </div>
                         </div>
                     </div>
+                @elseif($isAwaiting && $booking->payment_method === 'qr_code')
+                    @php
+                        $verifyType = $booking->payment?->slip_verify_result['status_type'] ?? null;
+                        $verifyReason = $booking->payment?->slip_verify_result['reason'] ?? null;
+                    @endphp
+                    @if($verifyType === 'invalid_slip')
+                        <div class="bg-amber-50 border-b border-amber-200 px-6 sm:px-8 py-4">
+                            <div class="flex items-start gap-3">
+                                <svg class="w-6 h-6 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                <div class="text-sm text-amber-900">
+                                    <p class="font-bold mb-1">สลิปการโอนเงินไม่ผ่านการตรวจสอบอัตโนมัติ — กรุณานำใบจองนี้ไปชำระที่เคาน์เตอร์</p>
+                                    <p class="text-amber-800">
+                                        {{ $verifyReason ?? 'ไม่พบ QR Code ในสลิป หรือยอดเงินไม่ถูกต้อง กรุณาติดต่อชำระเงินกับเจ้าหน้าที่ ณ เคาน์เตอร์จำหน่ายตั๋ว' }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="bg-blue-50 border-b border-blue-200 px-6 sm:px-8 py-4">
+                            <div class="flex items-start gap-3">
+                                <svg class="w-6 h-6 text-blue-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <div class="text-sm text-blue-900">
+                                    <p class="font-bold mb-1">ระบบกำลังรอเจ้าหน้าที่ตรวจสอบสลิป</p>
+                                    <p class="text-blue-700">
+                                        {{ $verifyReason ?? 'ระบบกำลังส่งข้อมูลให้เจ้าหน้าที่ตรวจสอบความถูกต้อง ท่านสามารถนำใบจองนี้ไปติดต่อที่เคาน์เตอร์ได้เช่นกัน' }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                @elseif($isPaid && !empty($booking->payment?->slip_verify_result['verified']))
+                    <div class="bg-emerald-50 border-b border-emerald-200 px-6 sm:px-8 py-3.5">
+                        <div class="flex items-center gap-2.5 text-xs sm:text-sm text-emerald-800 font-medium">
+                            <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>ระบบตรวจสอบสลิปการโอนเงินอัตโนมัติสำเร็จแล้ว สามารถนำ E-Ticket นี้แสดง ณ จุดจำหน่ายตั๋วหรือทางเข้าได้ทันที</span>
+                        </div>
+                    </div>
                 @endif
 
                 <div class="ticket-body-grid p-6 sm:p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-center">

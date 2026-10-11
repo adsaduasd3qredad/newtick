@@ -32,6 +32,15 @@
         <!-- Login Card -->
         <div class="bg-white p-8 sm:p-10 rounded-2xl border border-gray-200 shadow-xl">
             
+            @if (session('success'))
+                <div class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-700 p-4 rounded-xl text-sm flex items-center gap-2">
+                    <svg class="w-5 h-5 shrink-0 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
             @if (isset($errors) && $errors->any())
                 <div class="mb-6 bg-red-50 border border-red-200 text-red-600 p-4 rounded-xl text-sm flex items-center gap-2">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,7 +60,12 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-sm font-medium text-gray-700">Password</label>
+                        <a href="{{ route('password.request') }}" class="text-xs text-cyan-600 hover:text-cyan-700 hover:underline">
+                            ลืมรหัสผ่าน?
+                        </a>
+                    </div>
                     <input type="password" name="password" required
                         class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3.5 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition">
                 </div>

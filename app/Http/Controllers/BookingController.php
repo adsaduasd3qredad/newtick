@@ -255,9 +255,35 @@ class BookingController extends Controller
         $returnToPos = $this->isAuthorizedStaffRequest($request);
         $slipPath = $request->file('payment_slip')?->store('payment-slips', 'public');
 
+        // ตรวจสอบสลิปอัตโนมัติ (เฉพาะลูกค้าออนไลน์ที่โอน PromptPay)
+        $slipVerifyResult = null;
+        $autoVerified = false;
+
+        if (! $returnToPos
+            && $request->input('payment_method') === 'qr_code'
+            && $request->hasFile('payment_slip')
+            && config('ticketing.slip_verify_enabled', false)
+        ) {
+            try {
+                $fee = $this->paymentFee('qr_code');
+                $expectedAmount = (float) $booking->total_amount + $fee;
+
+                $verifier = new \App\Services\SlipVerificationService();
+                $slipVerifyResult = $verifier->verify($request->file('payment_slip'), $expectedAmount);
+                $autoVerified = $slipVerifyResult['verified'] ?? false;
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('Slip auto-verify failed, fallback to manual', [
+                    'booking_id' => $booking->id,
+                    'error' => $e->getMessage(),
+                ]);
+                $slipVerifyResult = ['verified' => false, 'reason' => 'API Error: ' . $e->getMessage(), 'raw' => null];
+                $autoVerified = false;
+            }
+        }
+
         $updates = [
             'payment_method' => $request->input('payment_method'),
-            'status' => $returnToPos ? 'paid' : 'awaiting_payment',
+            'status' => $returnToPos ? 'paid' : ($autoVerified ? 'paid' : 'awaiting_payment'),
             'qr_payment_ref' => (string) Str::uuid(),
         ];
 
@@ -265,7 +291,7 @@ class BookingController extends Controller
             $updates['expires_at'] = $booking->showtime->startsAt()->addMinutes(30);
         }
 
-        $updated = DB::transaction(function () use ($booking, $updates, $slipPath, $request, $returnToPos): bool {
+        $updated = DB::transaction(function () use ($booking, $updates, $slipPath, $request, $returnToPos, $autoVerified, $slipVerifyResult): bool {
             $showtime = Showtime::whereKey($booking->showtime_id)->lockForUpdate()->first();
             $locked = Booking::whereKey($booking->id)->lockForUpdate()->first();
 
@@ -281,6 +307,8 @@ class BookingController extends Controller
 
             $locked->update($updates);
             $fee = $this->paymentFee($request->input('payment_method'));
+            $isPaid = $returnToPos || $autoVerified;
+
             $locked->payment()->updateOrCreate(
                 ['booking_id' => $locked->id],
                 [
@@ -288,10 +316,11 @@ class BookingController extends Controller
                     'transaction_fee' => $fee,
                     'method' => $request->input('payment_method'),
                     'slip_path' => $slipPath,
-                    'paid_at' => $returnToPos ? now() : null,
+                    'paid_at' => $isPaid ? now() : null,
+                    'slip_verify_result' => $slipVerifyResult,
                 ]
             );
-            $locked->update(['amount_paid' => $returnToPos ? $locked->total_amount + $fee : null]);
+            $locked->update(['amount_paid' => $isPaid ? $locked->total_amount + $fee : null]);
 
             return true;
         });

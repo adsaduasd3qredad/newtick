@@ -147,6 +147,24 @@ class PosController extends Controller
                 'paid_at' => now(),
             ]);
 
+            \App\Models\AuditLog::log(
+                action: 'pos_quick_sell',
+                description: sprintf(
+                    'ขายตั๋วด่วน Walk-in จำนวน %d ที่นั่ง (ยอดเงิน: %.2f บาท, ชำระ: %s)',
+                    $validated['quantity'],
+                    $amountPaid,
+                    $validated['payment_method'] === 'counter' ? 'เงินสดหน้าเคาน์เตอร์' : 'โอนเงิน QR Code'
+                ),
+                booking: $booking,
+                amount: $amountPaid,
+                paymentMethod: $validated['payment_method'],
+                properties: [
+                    'seats' => $assignedSeats,
+                    'free_elderly' => $freeElderly,
+                    'free_children' => $freeChildren,
+                ]
+            );
+
             return redirect()->route('pos.receipt', $booking->id);
         });
     }
@@ -205,6 +223,15 @@ class PosController extends Controller
                 'method' => $paymentMethod,
                 'paid_at' => now(),
             ]);
+
+            \App\Models\AuditLog::log(
+                action: 'pos_collect_payment',
+                description: sprintf('รับชำระเงินและออกตั๋วสำหรับออเดอร์ #%s (ยอดเงิน: %.2f บาท, วิธี: %s)', $booking->id, $amountPaid, $paymentMethod),
+                booking: $booking,
+                amount: $amountPaid,
+                paymentMethod: $paymentMethod
+            );
+
             return redirect()->route('pos.receipt', $booking->id)->with('success', 'ชำระเงินและออกตั๋วเรียบร้อยแล้ว');
         }
 
@@ -213,6 +240,13 @@ class PosController extends Controller
                 'status' => 'redeemed',
                 'checked_in_at' => now()
             ]);
+
+            \App\Models\AuditLog::log(
+                action: 'pos_checkin_redeem',
+                description: sprintf('สแกนตรวจตั๋วเข้าชมสำเร็จสำหรับออเดอร์ #%s (%d ที่นั่ง)', $booking->id, $booking->quantity),
+                booking: $booking
+            );
+
             return redirect()->route('pos.receipt', $booking->id)->with('success', 'ออกตั๋วเรียบร้อยแล้ว');
         }
 

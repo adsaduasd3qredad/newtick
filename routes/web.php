@@ -22,10 +22,74 @@ Route::get('/bookings/{booking:qr_ticket_ref}/payment', [BookingController::clas
 Route::post('/bookings/{booking:qr_ticket_ref}/confirm', [BookingController::class, 'confirmPayment'])->name('bookings.confirm');
 Route::get('/bookings/{booking:qr_ticket_ref}/confirmed', [BookingController::class, 'confirmed'])->name('bookings.confirmed');
 
-// --- 2. ระบบ Login / Logout กลางสำหรับพนักงาน (Staff) ---
+// --- 2. ระบบ Login / Logout / Reset Password สำหรับเจ้าหน้าที่ ---
 Route::get('/login', function () {
     return view('auth.login');
 })->middleware('throttle:6,1')->name('login');
+
+Route::get('/forgot-password', function () {
+    return view('auth.forgot-password');
+})->middleware('guest')->name('password.request');
+
+Route::post('/forgot-password', function (Request $request) {
+    $request->validate(['email' => ['required', 'email']]);
+
+    $user = \App\Models\User::where('email', $request->email)->first();
+    if (! $user) {
+        return back()->withErrors(['email' => 'ไม่พบอีเมลนี้ในระบบ']);
+    }
+
+    $token = \Illuminate\Support\Str::random(60);
+    DB::table('password_reset_tokens')->updateOrInsert(
+        ['email' => $user->email],
+        [
+            'token' => \Illuminate\Support\Facades\Hash::make($token),
+            'created_at' => now(),
+        ]
+    );
+
+    $resetUrl = route('password.reset', ['token' => $token, 'email' => $user->email]);
+
+    return back()->with([
+        'status' => 'ระบบได้สร้างลิงก์สำหรับรีเซ็ตรหัสผ่านเรียบร้อยแล้ว',
+        'demo_reset_url' => $resetUrl,
+    ]);
+})->middleware('guest')->name('password.email');
+
+Route::get('/reset-password/{token}', function (Request $request, string $token) {
+    return view('auth.reset-password', [
+        'token' => $token,
+        'email' => $request->query('email', ''),
+    ]);
+})->middleware('guest')->name('password.reset');
+
+Route::post('/reset-password', function (Request $request) {
+    $request->validate([
+        'token' => ['required'],
+        'email' => ['required', 'email'],
+        'password' => ['required', 'min:6', 'confirmed'],
+    ]);
+
+    $record = DB::table('password_reset_tokens')->where('email', $request->email)->first();
+
+    if (! $record || ! \Illuminate\Support\Facades\Hash::check($request->token, $record->token)) {
+        return back()->withErrors(['email' => 'โทเค็นสำหรับรีเซ็ตรหัสผ่านไม่ถูกต้องหรือหมดอายุ']);
+    }
+
+    if (Carbon::parse($record->created_at)->addHours(2)->isPast()) {
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+        return back()->withErrors(['email' => 'ลิงก์รีเซ็ตรหัสผ่านหมดอายุแล้ว กรุณาขอลิงก์ใหม่']);
+    }
+
+    $user = \App\Models\User::where('email', $request->email)->firstOrFail();
+    $user->update([
+        'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+    ]);
+
+    DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+    return redirect()->route('login')->with('success', 'เปลี่ยนรหัสผ่านใหม่สำเร็จแล้ว กรุณาเข้าสู่ระบบด้วยรหัสผ่านใหม่');
+})->middleware('guest')->name('password.update');
 
 Route::post('/login', function (Request $request) {
     $credentials = $request->validate([
