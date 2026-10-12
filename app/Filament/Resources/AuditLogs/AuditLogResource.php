@@ -30,6 +30,11 @@ class AuditLogResource extends Resource
         return 'บันทึกประวัติการทำงาน';
     }
 
+    public static function canAccess(): bool
+    {
+        return false;
+    }
+
     public static function getPluralModelLabel(): string
     {
         return 'บันทึกประวัติการทำงาน (Audit Logs)';
